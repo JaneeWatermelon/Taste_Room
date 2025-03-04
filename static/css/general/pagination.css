@@ -1,0 +1,82 @@
+:root {
+    --color-white: #FFFFFF;
+    --color-light-gray: #ACACAC;
+    --color-light-ghost: #F1F1F1;
+
+    --color-cookie: #F7B779;
+    --color-orange: #D68C45;
+
+    --color-green: #4C956C;
+    --color-light-green: #95CF00;
+
+    --color-pink: #FFC9B9;
+    --color-red: #FF6766;
+    --color-heart: #DB4443;
+    
+    --color-cream: #DDE5B6;
+    --color-light-cream: #FEFEE3;
+    
+    --color-yellow: #26F42D;
+    --color-link: #3161FF;
+    
+    --color-black: #000000;
+    --color-black-50: rgba(0, 0, 0, 0.5);
+    --color-black-75: rgba(0, 0, 0, 0.75);
+
+    --tiny: 4px;
+    --small: 8px;
+    --normal: 12px;
+    --mid: 16px;
+    --big: 24px;
+    --huge: 32px;
+    --mega: 48px;
+
+    --padding-window: 60px;
+}
+
+@media (max-width: 720px) {
+    :root {
+        --padding-window: var(--normal);
+    }
+}
+
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--small);
+    margin: 0 var(--padding-window);
+    border-radius: 100px;
+    background-color: var(--color-white);
+    outline: 1px solid var(--color-light-ghost);
+}
+.pagination > .pagination_button {
+    background-color: var(--color-green);
+    padding: var(--mid) var(--huge);
+    border-radius: 100px;
+}
+.pagination > .pagination_button.disabled {
+    opacity: 0.5;
+}
+.pagination > .page_numbers_wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--mid);
+}
+.pagination > .page_numbers_wrapper h3 {
+    color: var(--color-black-50);
+    font-family: "Lilita_Regular";
+}
+.pagination > .page_numbers_wrapper > .active > h3 {
+    color: var(--color-cookie);
+}
+
+@media (max-width: 720px) {
+    .pagination {
+        padding: var(--tiny);
+    }
+    .pagination > .pagination_button {
+        padding: var(--normal) var(--mid);
+    }
+}

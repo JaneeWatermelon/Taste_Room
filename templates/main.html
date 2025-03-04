@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../static/css/general/vars.css">
+    <link rel="stylesheet" href="../static/css/general/fonts.css">
+    <link rel="stylesheet" href="../static/css/general/base.css">
+    <link rel="stylesheet" href="../static/css/main.css">
+    <link rel="stylesheet" href="../static/css/general/dishes_animation.css">
+    <link rel="stylesheet" href="../static/css/recipe/recipe_card.css">
+    <link rel="stylesheet" href="../static/css/recipe/repice_card_long.css">
+    <link rel="stylesheet" href="../static/css/news/news_card.css">
+    <link rel="stylesheet" href="../static/css/windows.css">
+    <link rel="stylesheet" href="../static/css/general/swiper.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+</head>
+<body>
+    <header>
+        <div class="header_wrapper">
+            <a href="main.html">
+                <img id="main_cookie" src="../static/svg/Cookie/TR.svg">
+            </a>
+            
+            <div class="header_sections d_mobile_none">
+                <a href="popular_recipes.html"><h4 class="medium_font">Популярное</h4></a>
+                <a href="category_recipes.html"><h4 class="medium_font">Рецепты по категориям</h4></a>
+                <a href="articles.html"><h4 class="medium_font">Статьи</h4></a>
+            </div>
+            <div class="header_buttons">
+                <img id="add_recipe" src="../static/svg/Plus_Minus/Plus_fill.svg">
+                <img id="tg_notif" src="../static/svg/Socials_WB/Notif.svg">
+                <img class="d_mobile_none" id="profile" src="../static/svg/Cookie/Cookie_with_hat.svg">
+                <div class="burger">
+                    <span class="line"></span>
+                    <span class="line"></span>
+                    <span class="line"></span>
+                </div>
+            </div>
+        </div>
+        <div class="top_waves_wrapper">
+            <img class="d_mobile_none" id="top_waves" src="../static/svg/Shapes/Waves_header_desktop.svg">
+            <img class="d_desktop_none" id="top_waves" src="../static/svg/Shapes/Waves_header_mobile.svg">
+        </div>
+    </header>
+    <main>
+        <section class="welcome_section">
+            <div class="welcome_section_info">
+                <h1 class="lilita_font d_desktop_none">Создай шедевр у себя дома</h1>
+                <div class="find_by_title">
+                    <h1 class="lilita_font d_mobile_none">Создай шедевр у себя дома</h1>
+                    <h3 class="letter_spacing_25 d_mobile_none">найди по названию</h3>
+                    <h4 class="letter_spacing_25 d_desktop_none">найди по названию</h4>
+                    <div class="input_wrapper">
+                        <input placeholder="Введите название блюда">
+                        <button class="input_button">
+                            <img src="../static/svg/Arrows/White_right.svg">
+                        </button>
+                    </div>
+                </div>
+                <div class="find_by_ingredients">
+                    <h3 class="letter_spacing_25 d_mobile_none">или из того, что есть в холодильнике</h3>
+                    <h4 class="letter_spacing_25 d_desktop_none">или из того, что есть в холодильнике</h4>
+                    <div class="buttons_wrapper">
+                        <div class="input_wrapper">
+                            <input placeholder="Введите название ингредиента">
+                            <button class="input_button">
+                                <img src="../static/svg/Arrows/White_right.svg">
+                            </button>
+                        </div>
+                        <div class="input_wrapper magnifier">
+                            <button class="input_button magnifier">
+                                <img src="../static/svg/Shapes/Magnifier.svg">
+                            </button>
+                        </div>
+                    </div>
+                    <div class="ingredients_wrapper">
+                        <div class="ingredient_item">
+                            <div class="icon_wrapper">
+                                <div class="icon_inner">
+                                    <img src="../static/svg/Ingredients/Egg.svg">
+                                </div>
+                                <div class="yes_inner">
+                                    <img src="../static/svg/Yes_No/Yes_shadow.svg">
+                                </div>
+                                <div class="no_inner">
+                                    <img src="../static/svg/Yes_No/No_shadow.svg">
+                                </div>
+                            </div>
+                            <p>Яйцо</p>
+                        </div>
+                        <div class="ingredient_item">
+                            <div class="icon_wrapper">
+                                <div class="icon_inner">
+                                    <img src="../static/svg/Ingredients/Egg.svg">
+                                </div>
+                                <div class="yes_inner">
+                                    <img src="../static/svg/Yes_No/Yes_shadow.svg">
+                                </div>
+                                <div class="no_inner">
+                                    <img src="../static/svg/Yes_No/No_shadow.svg">
+                                </div>
+                            </div>
+                            <p>Яйцо</p>
+                        </div>
+                        <div class="ingredient_item">
+                            <div class="icon_wrapper">
+                                <div class="icon_inner">
+                                    <img src="../static/svg/Ingredients/Egg.svg">
+                                </div>
+                                <div class="yes_inner">
+                                    <img src="../static/svg/Yes_No/Yes_shadow.svg">
+                                </div>
+                                <div class="no_inner">
+                                    <img src="../static/svg/Yes_No/No_shadow.svg">
+                                </div>
+                            </div>
+                            <p>Яйцо</p>
+                        </div>
+                    </div>
+                    <h4>Выбранные:</h4>
+                    <div class="ingredients_wrapper">
+                        <div class="ingredient_item">
+                            <div class="icon_wrapper">
+                                <div class="icon_inner">
+                                    <img src="../static/svg/Ingredients/Egg.svg">
+                                </div>
+                                <div class="yes_inner">
+                                    <img src="../static/svg/Yes_No/Yes_shadow.svg">
+                                </div>
+                                <div class="no_inner">
+                                    <img src="../static/svg/Yes_No/No_shadow.svg">
+                                </div>
+                            </div>
+                            <p>Яйцо</p>
+                        </div>
+                        <div class="ingredient_item">
+                            <div class="icon_wrapper">
+                                <div class="icon_inner">
+                                    <img src="../static/svg/Ingredients/Egg.svg">
+                                </div>
+                                <div class="yes_inner">
+                                    <img src="../static/svg/Yes_No/Yes_shadow.svg">
+                                </div>
+                                <div class="no_inner">
+                                    <img src="../static/svg/Yes_No/No_shadow.svg">
+                                </div>
+                            </div>
+                            <p>Яйцо</p>
+                        </div>
+                        <div class="ingredient_item">
+                            <div class="icon_wrapper">
+                                <div class="icon_inner">
+                                    <img src="../static/svg/Ingredients/Egg.svg">
+                                </div>
+                                <div class="yes_inner">
+                                    <img src="../static/svg/Yes_No/Yes_shadow.svg">
+                                </div>
+                                <div class="no_inner">
+                                    <img src="../static/svg/Yes_No/No_shadow.svg">
+                                </div>
+                            </div>
+                            <p>Яйцо</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="welcome_section_plate d_mobile_none">
+                <img id="double_circle" src="../static/svg/Shapes/Double_circle.svg">
+                <div class="dishes_wrapper">
+                    <img id="ragu" src="../static/img/dishes/ragu.png">
+                    <img id="drink_1" src="../static/img/dishes/drink_1.png">
+                    <img id="tofu" src="../static/img/dishes/tofu.png">
+                    <img id="drink_2" src="../static/img/dishes/drink_2.png">
+                    <img id="fish" src="../static/img/dishes/fish.png">
+                    <img id="drink_3" src="../static/img/dishes/drink_3.png">
+                </div>
+            </div>
+        </section>
+        <section class="section_title">
+            <span class="line"></span>
+            <h2 class="lilita_font">Новые рецепты</h2>
+            <span class="line"></span>
+        </section>
+        <section class="new_recipes_section">
+            <div class="cards_wrapper">
+                <div class="recipe_item">
+                    <div class="recipe_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                            </a>
+                            <div class="heart_wrapper">
+                                <img src="../static/svg/Random_icons/Heart_blank.svg">
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="calories">
+                                <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                <h4>128 ккал</h4>
+                            </div>
+                            <div class="time">
+                                <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                <h4>1 ч 45 мин</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Какая-то странная лапша c сыром и травой</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для лапши, которое можно было придумать</h4>
+                    </div>
+                    <div class="recipe_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4>Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+                <div class="recipe_item">
+                    <div class="recipe_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                            </a>
+                            <div class="heart_wrapper">
+                                <img src="../static/svg/Random_icons/Heart_blank.svg">
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="calories">
+                                <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                <h4>128 ккал</h4>
+                            </div>
+                            <div class="time">
+                                <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                <h4>1 ч 45 мин</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Какая-то странная лапша c сыром и травой</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для лапши, которое можно было придумать</h4>
+                    </div>
+                    <div class="recipe_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4>Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+                <div class="recipe_item">
+                    <div class="recipe_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                            </a>
+                            <div class="heart_wrapper">
+                                <img src="../static/svg/Random_icons/Heart_blank.svg">
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="calories">
+                                <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                <h4>128 ккал</h4>
+                            </div>
+                            <div class="time">
+                                <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                <h4>1 ч 45 мин</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Какая-то странная лапша c сыром и травой</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для лапши, которое можно было придумать</h4>
+                    </div>
+                    <div class="recipe_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4>Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+                <div class="recipe_item">
+                    <div class="recipe_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                            </a>
+                            <div class="heart_wrapper">
+                                <img src="../static/svg/Random_icons/Heart_blank.svg">
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="calories">
+                                <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                <h4>128 ккал</h4>
+                            </div>
+                            <div class="time">
+                                <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                <h4>1 ч 45 мин</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Какая-то странная лапша c сыром и травой</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для лапши, которое можно было придумать</h4>
+                    </div>
+                    <div class="recipe_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4>Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="cards_wrapper_long d_mobile_none">
+                <div class="recipe_and_art">
+                    <div class="recipe_item_long">
+                        <div class="recipe_item_header">
+                            <div class="image_wrapper">
+                                <a href="">
+                                    <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                                </a>
+                                <div class="heart_wrapper">
+                                    <img src="../static/svg/Random_icons/Heart_blank.svg">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="recipe_item_content">
+                            <div class="recipe_item_body">
+                                <a href="">
+                                    <h2 class="title medium_font">Какая-то странная лапша c сыром и травой</h2>
+                                </a>
+                                <h3 class="description">Супер крутое описание для лапши, которое можно было придумать</h3>
+                                <div class="info">
+                                    <div class="calories_and_time">
+                                        <div class="calories">
+                                            <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                            <h3>128 ккал</h3>
+                                        </div>
+                                        <div class="time">
+                                            <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                            <h3>1 ч 45 мин</h3>
+                                        </div>
+                                    </div>
+                                    <div class="rating">
+                                        <h3>(34)</h3>
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_off.svg">
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="recipe_item_footer">
+                                <a href="" class="icon_title">
+                                    <img src="../static/svg/Cookie/Smile_half_black.svg">
+                                    <h3>Дашка Мелешенко</h3>
+                                </a>
+                                <a href="">
+                                    <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="art_wrapper">
+                        <div class="art_info">
+                            <h2>Рекламный баннер</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="recipe_and_art">
+                    <div class="recipe_item_long">
+                        <div class="recipe_item_header">
+                            <div class="image_wrapper">
+                                <a href="">
+                                    <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                                </a>
+                                <div class="heart_wrapper">
+                                    <img src="../static/svg/Random_icons/Heart_blank.svg">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="recipe_item_content">
+                            <div class="recipe_item_body">
+                                <a href="">
+                                    <h2 class="title medium_font">Какая-то странная лапша c сыром и травой</h2>
+                                </a>
+                                <h3 class="description">Супер крутое описание для лапши, которое можно было придумать</h3>
+                                <div class="info">
+                                    <div class="calories_and_time">
+                                        <div class="calories">
+                                            <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                            <h3>128 ккал</h3>
+                                        </div>
+                                        <div class="time">
+                                            <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                            <h3>1 ч 45 мин</h3>
+                                        </div>
+                                    </div>
+                                    <div class="rating">
+                                        <h3>(34)</h3>
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_off.svg">
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="recipe_item_footer">
+                                <a href="" class="icon_title">
+                                    <img src="../static/svg/Cookie/Smile_half_black.svg">
+                                    <h3>Дашка Мелешенко</h3>
+                                </a>
+                                <a href="">
+                                    <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="art_wrapper">
+                        <div class="art_info">
+                            <h2>Рекламный баннер</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="recipe_and_art">
+                    <div class="recipe_item_long">
+                        <div class="recipe_item_header">
+                            <div class="image_wrapper">
+                                <a href="">
+                                    <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                                </a>
+                                <div class="heart_wrapper">
+                                    <img src="../static/svg/Random_icons/Heart_blank.svg">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="recipe_item_content">
+                            <div class="recipe_item_body">
+                                <a href="">
+                                    <h2 class="title medium_font">Какая-то странная лапша c сыром и травой</h2>
+                                </a>
+                                <h3 class="description">Супер крутое описание для лапши, которое можно было придумать</h3>
+                                <div class="info">
+                                    <div class="calories_and_time">
+                                        <div class="calories">
+                                            <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                            <h3>128 ккал</h3>
+                                        </div>
+                                        <div class="time">
+                                            <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                            <h3>1 ч 45 мин</h3>
+                                        </div>
+                                    </div>
+                                    <div class="rating">
+                                        <h3>(34)</h3>
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_off.svg">
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="recipe_item_footer">
+                                <a href="" class="icon_title">
+                                    <img src="../static/svg/Cookie/Smile_half_black.svg">
+                                    <h3>Дашка Мелешенко</h3>
+                                </a>
+                                <a href="">
+                                    <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="art_wrapper">
+                        <div class="art_info">
+                            <h2>Рекламный баннер</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section_title">
+            <span class="line"></span>
+            <h2 class="lilita_font">Популярно сейчас</h2>
+            <span class="line"></span>
+        </section>
+        <section class="new_recipes_section d_mobile_none">
+            <div class="cards_wrapper">
+                <div class="recipe_item">
+                    <div class="recipe_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                            </a>
+                            <div class="heart_wrapper">
+                                <img src="../static/svg/Random_icons/Heart_blank.svg">
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="calories">
+                                <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                <h4>128 ккал</h4>
+                            </div>
+                            <div class="time">
+                                <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                <h4>1 ч 45 мин</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Какая-то странная лапша c сыром и травой</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для лапши, которое можно было придумать</h4>
+                    </div>
+                    <div class="recipe_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4>Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+                <div class="recipe_item">
+                    <div class="recipe_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                            </a>
+                            <div class="heart_wrapper">
+                                <img src="../static/svg/Random_icons/Heart_blank.svg">
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="calories">
+                                <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                <h4>128 ккал</h4>
+                            </div>
+                            <div class="time">
+                                <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                <h4>1 ч 45 мин</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Какая-то странная лапша c сыром и травой</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для лапши, которое можно было придумать</h4>
+                    </div>
+                    <div class="recipe_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4>Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+                <div class="recipe_item">
+                    <div class="recipe_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                            </a>
+                            <div class="heart_wrapper">
+                                <img src="../static/svg/Random_icons/Heart_blank.svg">
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="calories">
+                                <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                <h4>128 ккал</h4>
+                            </div>
+                            <div class="time">
+                                <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                <h4>1 ч 45 мин</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Какая-то странная лапша c сыром и травой</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для лапши, которое можно было придумать</h4>
+                    </div>
+                    <div class="recipe_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4>Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+                <div class="recipe_item">
+                    <div class="recipe_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                            </a>
+                            <div class="heart_wrapper">
+                                <img src="../static/svg/Random_icons/Heart_blank.svg">
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="calories">
+                                <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                <h4>128 ккал</h4>
+                            </div>
+                            <div class="time">
+                                <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                <h4>1 ч 45 мин</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Какая-то странная лапша c сыром и травой</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для лапши, которое можно было придумать</h4>
+                    </div>
+                    <div class="recipe_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4>Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="cards_wrapper_long d_mobile_none">
+                <div class="recipe_and_art">
+                    <div class="recipe_item_long">
+                        <div class="recipe_item_header">
+                            <div class="image_wrapper">
+                                <a href="">
+                                    <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                                </a>
+                                <div class="heart_wrapper">
+                                    <img src="../static/svg/Random_icons/Heart_blank.svg">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="recipe_item_content">
+                            <div class="recipe_item_body">
+                                <a href="">
+                                    <h2 class="title medium_font">Какая-то странная лапша c сыром и травой</h2>
+                                </a>
+                                <h3 class="description">Супер крутое описание для лапши, которое можно было придумать</h3>
+                                <div class="info">
+                                    <div class="calories_and_time">
+                                        <div class="calories">
+                                            <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                            <h3>128 ккал</h3>
+                                        </div>
+                                        <div class="time">
+                                            <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                            <h3>1 ч 45 мин</h3>
+                                        </div>
+                                    </div>
+                                    <div class="rating">
+                                        <h3>(34)</h3>
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_off.svg">
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="recipe_item_footer">
+                                <a href="" class="icon_title">
+                                    <img src="../static/svg/Cookie/Smile_half_black.svg">
+                                    <h3>Дашка Мелешенко</h3>
+                                </a>
+                                <a href="">
+                                    <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="art_wrapper">
+                        <div class="art_info">
+                            <h2>Рекламный баннер</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="recipe_and_art">
+                    <div class="recipe_item_long">
+                        <div class="recipe_item_header">
+                            <div class="image_wrapper">
+                                <a href="">
+                                    <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                                </a>
+                                <div class="heart_wrapper">
+                                    <img src="../static/svg/Random_icons/Heart_blank.svg">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="recipe_item_content">
+                            <div class="recipe_item_body">
+                                <a href="">
+                                    <h2 class="title medium_font">Какая-то странная лапша c сыром и травой</h2>
+                                </a>
+                                <h3 class="description">Супер крутое описание для лапши, которое можно было придумать</h3>
+                                <div class="info">
+                                    <div class="calories_and_time">
+                                        <div class="calories">
+                                            <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                            <h3>128 ккал</h3>
+                                        </div>
+                                        <div class="time">
+                                            <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                            <h3>1 ч 45 мин</h3>
+                                        </div>
+                                    </div>
+                                    <div class="rating">
+                                        <h3>(34)</h3>
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_off.svg">
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="recipe_item_footer">
+                                <a href="" class="icon_title">
+                                    <img src="../static/svg/Cookie/Smile_half_black.svg">
+                                    <h3>Дашка Мелешенко</h3>
+                                </a>
+                                <a href="">
+                                    <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="art_wrapper">
+                        <div class="art_info">
+                            <h2>Рекламный баннер</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="recipe_and_art">
+                    <div class="recipe_item_long">
+                        <div class="recipe_item_header">
+                            <div class="image_wrapper">
+                                <a href="">
+                                    <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                                </a>
+                                <div class="heart_wrapper">
+                                    <img src="../static/svg/Random_icons/Heart_blank.svg">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="recipe_item_content">
+                            <div class="recipe_item_body">
+                                <a href="">
+                                    <h2 class="title medium_font">Какая-то странная лапша c сыром и травой</h2>
+                                </a>
+                                <h3 class="description">Супер крутое описание для лапши, которое можно было придумать</h3>
+                                <div class="info">
+                                    <div class="calories_and_time">
+                                        <div class="calories">
+                                            <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                            <h3>128 ккал</h3>
+                                        </div>
+                                        <div class="time">
+                                            <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                            <h3>1 ч 45 мин</h3>
+                                        </div>
+                                    </div>
+                                    <div class="rating">
+                                        <h3>(34)</h3>
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_on.svg">
+                                        <img src="../static/svg/Stars/Star_off.svg">
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="recipe_item_footer">
+                                <a href="" class="icon_title">
+                                    <img src="../static/svg/Cookie/Smile_half_black.svg">
+                                    <h3>Дашка Мелешенко</h3>
+                                </a>
+                                <a href="">
+                                    <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="art_wrapper">
+                        <div class="art_info">
+                            <h2>Рекламный баннер</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="new_recipes_section d_desktop_none swiper">
+            <div class="cards_wrapper swiper-wrapper">
+                <div class="recipe_item swiper-slide">
+                    <div class="recipe_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                            </a>
+                            <div class="heart_wrapper">
+                                <img src="../static/svg/Random_icons/Heart_blank.svg">
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="calories">
+                                <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                <h4>128 ккал</h4>
+                            </div>
+                            <div class="time">
+                                <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                <h4>1 ч 45 мин</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Какая-то странная лапша c сыром и травой</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для лапши, которое можно было придумать</h4>
+                    </div>
+                    <div class="recipe_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4>Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+                <div class="recipe_item swiper-slide">
+                    <div class="recipe_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                            </a>
+                            <div class="heart_wrapper">
+                                <img src="../static/svg/Random_icons/Heart_blank.svg">
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="calories">
+                                <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                <h4>128 ккал</h4>
+                            </div>
+                            <div class="time">
+                                <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                <h4>1 ч 45 мин</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Какая-то странная лапша c сыром и травой</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для лапши, которое можно было придумать</h4>
+                    </div>
+                    <div class="recipe_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4>Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+                <div class="recipe_item swiper-slide">
+                    <div class="recipe_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                            </a>
+                            <div class="heart_wrapper">
+                                <img src="../static/svg/Random_icons/Heart_blank.svg">
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="calories">
+                                <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                <h4>128 ккал</h4>
+                            </div>
+                            <div class="time">
+                                <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                <h4>1 ч 45 мин</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Какая-то странная лапша c сыром и травой</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для лапши, которое можно было придумать</h4>
+                    </div>
+                    <div class="recipe_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4>Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+                <div class="recipe_item swiper-slide">
+                    <div class="recipe_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/noodles.jpg">
+                            </a>
+                            <div class="heart_wrapper">
+                                <img src="../static/svg/Random_icons/Heart_blank.svg">
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="calories">
+                                <img src="../static/svg/Random_icons/Callories_icon.svg">
+                                <h4>128 ккал</h4>
+                            </div>
+                            <div class="time">
+                                <img src="../static/svg/Random_icons/Clock_icon.svg">
+                                <h4>1 ч 45 мин</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Какая-то странная лапша c сыром и травой</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для лапши, которое можно было придумать</h4>
+                    </div>
+                    <div class="recipe_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4>Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <img class="swiper_nav prev" style="transform: rotate(180deg);" src="../static/svg/Arrows/Slider_right.svg">
+            <img class="swiper_nav next" src="../static/svg/Arrows/Slider_right.svg">
+        </section>
+        <section class="section_title d_desktop_none">
+            <span class="line"></span>
+            <h2 class="lilita_font">Интересно почитать</h2>
+            <span class="line"></span>
+        </section>
+        <section class="news_recs_section d_desktop_none swiper">
+            <div class="news_recs_wrapper swiper-wrapper">
+                <div class="news_item swiper-slide">
+                    <div class="news_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/eggs.jpeg">
+                            </a>
+                            <div class="date_wrapper">
+                                <h4>25.10.2024</h4>
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="rating">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <h4 class="black_75">(34)</h4>
+                            </div>
+                            <div class="views">
+                                <img src="../static/svg/Random_icons/Eye_icon.svg">
+                                <h4 class="green">34</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Чем заменить яйцо в выпечке</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для статьи, которое можно было придумать</h4>
+                    </div>
+                    <div class="news_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4 class="black_75">Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+                <div class="news_item swiper-slide">
+                    <div class="news_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/eggs.jpeg">
+                            </a>
+                            <div class="date_wrapper">
+                                <h4>25.10.2024</h4>
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="rating">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <h4 class="black_75">(34)</h4>
+                            </div>
+                            <div class="views">
+                                <img src="../static/svg/Random_icons/Eye_icon.svg">
+                                <h4 class="green">34</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Чем заменить яйцо в выпечке</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для статьи, которое можно было придумать</h4>
+                    </div>
+                    <div class="news_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4 class="black_75">Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+                <div class="news_item swiper-slide">
+                    <div class="news_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/eggs.jpeg">
+                            </a>
+                            <div class="date_wrapper">
+                                <h4>25.10.2024</h4>
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="rating">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <h4 class="black_75">(34)</h4>
+                            </div>
+                            <div class="views">
+                                <img src="../static/svg/Random_icons/Eye_icon.svg">
+                                <h4 class="green">34</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Чем заменить яйцо в выпечке</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для статьи, которое можно было придумать</h4>
+                    </div>
+                    <div class="news_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4 class="black_75">Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+                <div class="news_item swiper-slide">
+                    <div class="news_item_header">
+                        <div class="image_wrapper">
+                            <a href="">
+                                <img class="back_image" src="../static/img/recipe_and_article/eggs.jpeg">
+                            </a>
+                            <div class="date_wrapper">
+                                <h4>25.10.2024</h4>
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="rating">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <img src="../static/svg/Stars/Star_on.svg">
+                                <h4 class="black_75">(34)</h4>
+                            </div>
+                            <div class="views">
+                                <img src="../static/svg/Random_icons/Eye_icon.svg">
+                                <h4 class="green">34</h4>
+                            </div>
+                        </div>
+                        <a href="">
+                            <h3 class="title medium_font">Чем заменить яйцо в выпечке</h3>
+                        </a>
+                        <h4 class="description">Супер крутое описание для статьи, которое можно было придумать</h4>
+                    </div>
+                    <div class="news_item_footer">
+                        <a href="" class="icon_title">
+                            <img src="../static/svg/Cookie/Smile_half_black.svg">
+                            <h4 class="black_75">Дашка Мелешенко</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="../static/svg/Random_icons/Share_icon.svg">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <img class="swiper_nav prev" style="transform: rotate(180deg);" src="../static/svg/Arrows/Slider_right.svg">
+            <img class="swiper_nav next" src="../static/svg/Arrows/Slider_right.svg">
+        </section>
+        <div class="pop_up_window cook_time_window d_none">
+            <p>Время приготовления</p>
+            <div class="inner_wrapper">
+                <img src="../static/svg/Random_icons/Clock_icon.svg">
+                <h5 class="green">Общее - 1 ч 45 мин</h5>
+            </div>
+            <div class="inner_wrapper">
+                <img src="../static/svg/Random_icons/Clock_icon_red.svg">
+                <h5 class="red">Активное - 1 ч 15 мин</h5>
+            </div>
+        </div>
+        <div class="pop_up_window ingredients_window d_none">
+            <p>Ингредиенты</p>
+            <div class="inner_wrapper">
+                <h5>Сахар - 2 ст.л.</h5>
+            </div>
+            <div class="inner_wrapper">
+                <h5>Лапша - 500 г</h5>
+            </div>
+            <div class="inner_wrapper">
+                <h5>Вода - 1 литр</h5>
+            </div>
+            <div class="inner_wrapper">
+                <h5>Сыр - 250 г</h5>
+            </div>
+            <div class="inner_wrapper">
+                <h5>Зелень - 100г</h5>
+            </div>
+        </div>
+        <div class="back_black d_none">
+            <div class="burger_menu d_none">
+                <div class="profile_info d_none">
+                    <a href="" class="image_wrapper">
+                        <img src="../static/img/Profile/author_default.png">
+                    </a>
+                    <a href="" class="name_and_tag">
+                        <h4>Дашка Мелешенко</h4>
+                        <h5 class="black_50">@dashka_meleshenko</h5>
+                    </a>
+                </div>
+                <div class="profile_info">
+                    <a href="" class="name_and_tag">
+                        <h4>Войти в профиль</h4>
+                        <h5 class="black_50">Ещё больше возможностей!</h5>
+                    </a>
+                </div>
+                <div class="chapters_list">
+                    <a href="" class="chapter_item">
+                        <img src="../static/svg/Cookie/Smile_black.svg">
+                        <h3>Главная</h3>
+                    </a>
+                    <a href="" class="chapter_item">
+                        <img src="../static/svg/Stars/Star_off_black.svg">
+                        <h3>Популярное</h3>
+                    </a>
+                    <a href="" class="chapter_item">
+                        <img src="../static/svg/Random_icons/Tree_icon.svg">
+                        <h3>Рецепты по категориям</h3>
+                    </a>
+                    <a href="" class="chapter_item">
+                        <img src="../static/svg/Random_icons/Article_black_icon.svg">
+                        <h3>Статьи</h3>
+                    </a>
+                </div>
+                <div class="chapters_list">
+                    <a href="" class="chapter_item">
+                        <img src="../static/svg/Plus_Minus/Plus_blank.svg">
+                        <h3>Добавить рецепт</h3>
+                    </a>
+                    <a href="" class="chapter_item">
+                        <img src="../static/svg/Plus_Minus/Plus_blank.svg">
+                        <h3>Добавить статью</h3>
+                    </a>
+                </div>
+                <div class="socials_info">
+                    <h4 class="medium_font">Наши контакты:</h4>
+                    <div class="socials_icons">
+                        <a href=""><img src="../static/svg/Socials_WB/TG_blank.svg"></a>
+                        <a href=""><img src="../static/svg/Socials_WB/VK_blank.svg"></a>
+                        <a href=""><img src="../static/svg/Socials_WB/Email_blank.svg"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <img class="d_mobile_none" id="footer_waves" src="../static/svg/Shapes/Waves_footer_desktop.svg">
+        <img class="d_desktop_none" id="footer_waves" src="../static/svg/Shapes/Waves_footer_mobile.svg">
+        <div class="footer_wrapper">
+            <img class="d_mobile_none" src="../static/svg/Shapes/Chocolates_footer_desktop.svg">
+            <div class="footer_content">
+                <h3>Заблудились?</h3>
+                <div class="footer_info">
+                    <a href=""><h4>Главная</h4></a>
+                    <a href=""><h4>Популярное</h4></a>
+                    <a href=""><h4>Рецепты по категориям</h4></a>
+                    <a href=""><h4>Статьи</h4></a>
+                </div>
+            </div>
+            <span class="line"></span>
+            <img class="d_mobile_none" src="../static/svg/Shapes/Chocolates_footer_desktop.svg" style="transform: rotate(180deg)">
+            <div class="footer_content">
+                <h3>Хочешь знать обо всех новинках?</h3>
+                <div class="footer_info">
+                    <h4>Подпишись на рассылку в <a href="" class="link_color">Телеграме</a></h4>
+                </div>
+                <h3>Понравился рецепт?</h3>
+                <div class="footer_info">
+                    <h4>Сохрани в <a href="" class="link_color">профиль</a>, чтобы не потерять</h4>
+                    <h4>Или <a href="" class="link_color">поделись</a> своим шедевром!</h4>
+                </div>
+            </div>
+            <span class="line"></span>
+            <img class="d_mobile_none" src="../static/svg/Shapes/Chocolates_footer_desktop.svg">
+            <div class="footer_content">
+                <h3>Остались вопросы?</h3>
+                <div class="footer_info">
+                    <div class="social_div">
+                        <a href="">
+                            <img src="../static/svg/Socials_WB/TG_blank.svg">
+                            <h4>Наш телеграм</h4>
+                        </a>
+                    </div>
+                    <div class="social_div">
+                        <a href="">
+                            <img src="../static/svg/Socials_WB/VK_blank.svg">
+                            <h4>ВКонтакте</h4>
+                        </a>
+                    </div>
+                    <div class="social_div">
+                        <a href="">
+                            <img src="../static/svg/Socials_WB/Email_blank.svg">
+                            <h4>tasteroom@yandex.ru</h4>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <img class="d_mobile_none" src="../static/svg/Shapes/Chocolates_footer_desktop.svg" style="transform: rotate(180deg)">
+            <img class="d_desktop_none" src="../static/svg/Shapes/Chocolates_footer_mobile.svg">
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="../static/js/swiper.js"></script>
+    <script src="../static/js/textarea.js"></script>
+    <script src="../static/js/header_scroll.js"></script>
+    <script src="../static/js/dishes_animation.js"></script>
+    <script src="../static/js/heart_anim.js"></script>
+    <script src="../static/js/windows.js"></script>
+    <script src="../static/js/set_image_height.js"></script>
+</body>
+</html>

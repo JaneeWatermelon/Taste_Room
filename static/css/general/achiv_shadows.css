@@ -1,0 +1,78 @@
+.shadow {
+    transition: all 0.25s ease;
+}
+
+.silver_shadow:hover {
+    transform: scale(1.1);
+    animation: silver_shadow_animation 1s linear infinite;
+}
+.gold_shadow:hover {
+    transform: scale(1.1);
+    animation: gold_shadow_animation 0.75s linear infinite;
+}
+.ruby_shadow:hover {
+    transform: scale(1.1);
+    animation: ruby_shadow_animation 0.5s linear infinite;
+}
+.achievements_section > * .achiv_list > .achiv_item.disabled > img:hover {
+    filter: brightness(0.65);
+    transform: scale(1);
+    animation: disabled_shadow_animation 1s linear infinite;
+}
+
+@keyframes silver_shadow_animation {
+    0% {
+        filter: drop-shadow(-2px -2px 5px rgba(152, 240, 255, 0.5)) drop-shadow(2px 2px 5px rgba(131, 203, 255, 0.5));
+    }
+    33% {
+        filter: drop-shadow(2px -2px 5px rgba(152, 240, 255, 0.5)) drop-shadow(-2px 2px 5px rgba(131, 203, 255, 0.5));
+    }
+    66% {
+        filter: drop-shadow(2px 2px 5px rgba(152, 240, 255, 0.5)) drop-shadow(-2px -2px 5px rgba(131, 203, 255, 0.5));
+    }
+    100% {
+        filter: drop-shadow(-2px -2px 5px rgba(152, 240, 255, 0.5)) drop-shadow(2px 2px 5px rgba(131, 203, 255, 0.5));
+    }
+}
+@keyframes gold_shadow_animation {
+    0% {
+        filter: drop-shadow(-2px -2px 5px rgba(255, 171, 126, 0.5)) drop-shadow(2px 2px 5px rgba(223, 255, 116, 0.5));
+    }
+    33% {
+        filter: drop-shadow(2px -2px 5px rgba(255, 171, 126, 0.5)) drop-shadow(-2px 2px 5px rgba(223, 255, 116, 0.5));
+    }
+    66% {
+        filter: drop-shadow(2px 2px 5px rgba(255, 171, 126, 0.5)) drop-shadow(-2px -2px 5px rgba(223, 255, 116, 0.5));
+    }
+    100% {
+        filter: drop-shadow(-2px -2px 5px rgba(255, 171, 126, 0.5)) drop-shadow(2px 2px 5px rgba(223, 255, 116, 0.5));
+    }
+}
+@keyframes ruby_shadow_animation {
+    0% {
+        filter: drop-shadow(-2px -2px 5px rgba(255, 0, 64, 0.5)) drop-shadow(2px 2px 5px rgba(255, 0, 161, 0.5));
+    }
+    33% {
+        filter: drop-shadow(2px -2px 5px rgba(255, 0, 64, 0.5)) drop-shadow(-2px 2px 5px rgba(255, 0, 161, 0.5));
+    }
+    66% {
+        filter: drop-shadow(2px 2px 5px rgba(255, 0, 64, 0.5)) drop-shadow(-2px -2px 5px rgba(255, 0, 161, 0.5));
+    }
+    100% {
+        filter: drop-shadow(-2px -2px 5px rgba(255, 0, 64, 0.5)) drop-shadow(2px 2px 5px rgba(255, 0, 161, 0.5));
+    }
+}
+@keyframes disabled_shadow_animation {
+    0% {
+        filter: drop-shadow(-2px -2px 5px rgba(0, 0, 0, 0.5)) drop-shadow(2px 2px 5px rgba(90, 90, 90, 0.5)) brightness(0.65);
+    }
+    33% {
+        filter: drop-shadow(2px -2px 5px rgba(0, 0, 0, 0.5)) drop-shadow(-2px 2px 5px rgba(90, 90, 90, 0.5)) brightness(0.65);
+    }
+    66% {
+        filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.5)) drop-shadow(-2px -2px 5px rgba(90, 90, 90, 0.5)) brightness(0.65);
+    }
+    100% {
+        filter: drop-shadow(-2px -2px 5px rgba(255, 0, 64, 0.5)) drop-shadow(2px 2px 5px rgba(90, 90, 90, 0.5)) brightness(0.65);
+    }
+}

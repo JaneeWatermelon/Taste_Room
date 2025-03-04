@@ -1,0 +1,32 @@
+.swiper {
+    display: flex !important;
+    width: calc(100% + 0px);
+    position: relative;
+}
+.swiper .swiper-wrapper {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0 !important;
+    position: relative;
+}
+.swiper .swiper-slide {
+    box-sizing: border-box;
+}
+
+.swiper_nav {
+    position: absolute;
+    z-index: 1;
+    cursor: pointer;
+}
+.swiper_nav.prev {
+    left: 12px;
+}
+.swiper_nav.next {
+    right: 12px;
+}
+
+@media (max-width: 720px) {
+    .swiper_nav {
+        height: 70px;
+    }
+}

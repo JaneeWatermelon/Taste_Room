@@ -1,0 +1,543 @@
+:root {
+    --color-white: #FFFFFF;
+    --color-light-gray: #ACACAC;
+    --color-light-ghost: #F1F1F1;
+
+    --color-cookie: #F7B779;
+    --color-orange: #D68C45;
+
+    --color-green: #4C956C;
+    --color-light-green: #95CF00;
+
+    --color-pink: #FFC9B9;
+    --color-red: #FF6766;
+    --color-heart: #DB4443;
+    
+    --color-cream: #DDE5B6;
+    --color-light-cream: #FEFEE3;
+    
+    --color-yellow: #26F42D;
+    --color-link: #3161FF;
+    
+    --color-black: #000000;
+    --color-black-50: rgba(0, 0, 0, 0.5);
+    --color-black-75: rgba(0, 0, 0, 0.75);
+
+    --tiny: 4px;
+    --small: 8px;
+    --normal: 12px;
+    --mid: 16px;
+    --big: 24px;
+    --huge: 32px;
+    --mega: 48px;
+
+    --padding-window: 60px;
+}
+
+@media (max-width: 720px) {
+    :root {
+        --padding-window: var(--normal);
+    }
+}
+
+.edit_section .title > .sub_title_and_mark {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+}
+.edit_section .title > .sub_title_and_mark > img {
+    height: 28px;
+}
+
+.input_wrapper {
+    padding: var(--small);
+    border-radius: var(--small);
+}
+.input_wrapper.fit {
+    max-width: 25%;
+}
+
+textarea.fixed {
+    height: 100%;
+    max-height: 100%;
+}
+
+input[type='checkbox'] {
+    height: 20px;
+}
+
+.input_wrapper.disabled {
+    background-color: #F5F5F5;
+}
+
+.marks_limits {
+    display: flex;
+    align-items: center;
+    gap: var(--mid);
+}
+.marks_limits > h4 {
+    color: var(--color-black-50);
+}
+
+.main_content {
+    display: flex;
+    gap: var(--mid);
+    padding: 0 var(--padding-window);
+}
+
+.navigation_section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mid);
+    justify-content: center;
+    height: fit-content;
+    width: fit-content;
+    position: sticky;
+}
+.navigation_section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mid);
+    justify-content: center;
+}
+.navigation_section > h3 {
+    text-align: center;
+}
+.navigation_section > .links_wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+    border-radius: var(--mid);
+    outline: 1px solid var(--color-light-ghost);
+    padding: var(--mid);
+    background-color: var(--color-white);
+}
+.navigation_section > .links_wrapper > .link_item {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+}
+.navigation_section > .links_wrapper > .link_item > img {
+    height: 18px;
+}
+.navigation_section > .links_wrapper > .link_item > h4 {
+    color: var(--color-black-50);
+    text-wrap: nowrap;
+    white-space: nowrap;
+}
+.navigation_section > .links_wrapper > .link_item > .done {
+    color: var(--color-green);
+}
+.navigation_section > .links_wrapper > .link_item > .current {
+    font-family: "NTSomic_Medium";
+    color: var(--color-black);
+}
+
+
+.edit_section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mid);
+    width: 100%;
+}
+.edit_section .line {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background-color: var(--color-cookie);
+}
+.edit_section > .main_title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--small);
+}
+.edit_section > .main_title > h1 {
+    text-align: center;
+}
+.edit_section > .sub_section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mid);
+    position: relative;
+}
+.edit_section > .sub_section > h2 {
+    color: var(--color-cookie);
+    font-family: "Lilita_Regular";
+}
+.edit_section > .sub_section > .title {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+}
+.edit_section > .sub_section > .title > .condition {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+    padding-left: var(--small);
+}
+.edit_section > .sub_section > .title > .marks_limits {
+    display: flex;
+    align-items: center;
+    gap: var(--mid);
+}
+.edit_section > .sub_section > .title > .marks_limits > h4 {
+    color: var(--color-black-50);
+}
+.edit_section > .title_and_opacity > .opacity {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+}
+.edit_section > .title_and_opacity > .opacity > #opacity_radios {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+}
+.edit_section > .title_and_opacity > .opacity > #opacity_radios > .opacity_item {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+}
+.edit_section > .ingredients_and_portions > .ingredients {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+}
+.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+}
+.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .trash_icon {
+    height: 20px;
+    cursor: pointer;
+}
+.edit_section > .ingredients_and_portions > .portions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+}
+.edit_section > .categories > .categories_list {
+    display: flex;
+    /* grid-template-columns: repeat(5, 1fr); */
+    gap: var(--mid);
+}
+.edit_section > .categories > .categories_list > .title_and_list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--small);
+}
+.edit_section > .categories > .categories_list > .title_and_list > .category_item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tiny);
+}
+.edit_section > .categories > .categories_list > .title_and_list > .category_item .category {
+    display: flex;
+    align-items: center;
+    gap: var(--tiny);
+}
+.edit_section > .categories > .categories_list > .title_and_list > .category_item .category {
+    display: flex;
+    align-items: center;
+    gap: var(--tiny);
+}
+.edit_section > .categories > .categories_list > .title_and_list > .category_item > .first_category > img {
+    height: 16px;
+    cursor: pointer;
+}
+.edit_section > .categories > .categories_list > .title_and_list > .category_item > .second_categories {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tiny);
+    padding-left: var(--small);
+}
+.edit_section > .categories > .categories_list > .title_and_list > .category_item input[type='checkbox'] {
+    height: 12px;
+}
+.edit_section > .categories > .categories_list > .title_and_list > .category_item input[type='checkbox']::after {
+    font-size: 10px;
+    line-height: 10px;
+}
+.edit_section > .categories > .categories_list > .title_and_list > .line {
+    background-color: var(--color-black);
+    height: 2px;
+}
+
+
+.edit_section > .step_photos > .steps_list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mid);
+}
+.edit_section > .step_photos > .steps_list > .step_item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+    transition: height 0.3s ease;
+}
+.edit_section > .step_photos > .steps_list > .step_item > .content {
+    display: flex;
+    gap: var(--mid);
+}
+.edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper {
+    display: flex;
+    border-radius: var(--small);
+    background-color: var(--color-light-ghost);
+}
+.edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .move_bar {
+    display: flex;
+    align-items: center;
+    padding: var(--small);
+    cursor: pointer;
+}
+
+.edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper {
+    display: flex;
+    height: 200px;
+    aspect-ratio: 1.5;
+    position: relative;
+}
+.edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper .back_image {
+    border-radius: var(--small);
+    height: 200px;
+    aspect-ratio: 1.5;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper > .delete_and_change {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: absolute;
+    right: 0;
+    width: fit-content;
+    height: 100%;
+}
+.edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper > .delete_and_change > .action_item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--small);
+    height: fit-content;
+    width: fit-content;
+    background-color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+}
+.edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper > .delete_and_change > .action_item > img {
+    height: 16px;
+}
+.edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper > .delete_and_change > .delete {
+    border-radius: 0 var(--small) 0 var(--small);
+}
+.edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper > .delete_and_change > .change {
+    border-radius: var(--small) 0 var(--small) 0;
+}
+.edit_section > .step_photos > .steps_list > .step_item > .content > .field_wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+    width: 100%;
+}
+.edit_section > .step_photos > .steps_list > .step_item > .content > .field_wrapper > .input_wrapper {
+    align-items: start;
+    height: 100%;
+}
+.edit_section > .step_photos > .add_step_button {
+    display: flex;
+    gap: var(--mid);
+    align-items: center;
+    justify-content: center;
+    padding: var(--small) var(--mid);
+    border-radius: var(--small);
+    background-color: var(--color-cookie);
+    width: fit-content;
+}
+.edit_section > .step_photos > .add_step_button > img {
+    height: 21px;
+}
+
+.edit_section > .ready_dish_photo > .photo_list {
+    display: flex;
+    gap: var(--small);
+    overflow: auto;
+}
+.edit_section > .ready_dish_photo > .photo_list > .photo_item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+    transition: width 0.3s ease;
+}
+.edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--small);
+    background-color: var(--color-light-ghost);
+}
+.edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .move_bar {
+    display: flex;
+    justify-content: center;
+    padding: var(--small);
+    cursor: pointer;
+}
+
+.edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper {
+    display: flex;
+    height: 200px;
+    aspect-ratio: 1.5;
+    position: relative;
+}
+.edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper .back_image {
+    border-radius: var(--small);
+    height: 200px;
+    aspect-ratio: 1.5;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper > .delete_and_change {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: absolute;
+    right: 0;
+    width: fit-content;
+    height: 100%;
+}
+.edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper > .delete_and_change > .action_item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--small);
+    height: fit-content;
+    width: fit-content;
+    background-color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+}
+.edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper > .delete_and_change > .action_item > img {
+    height: 16px;
+}
+.edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper > .delete_and_change > .delete {
+    border-radius: 0 var(--small) 0 var(--small);
+}
+.edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper > .delete_and_change > .change {
+    border-radius: var(--small) 0 var(--small) 0;
+}
+.edit_section > .ready_dish_photo > .add_photo_button {
+    display: flex;
+    gap: var(--huge);
+    justify-content: center;
+    align-items: center;
+    padding: var(--small);
+    background-color: rgba(247, 183, 121, 0.5);
+    outline: 1px solid var(--color-cookie);
+    border-radius: var(--mid);
+    position: relative;
+}
+.edit_section > .ready_dish_photo > .add_photo_button > img {
+    height: 66px;
+}
+.edit_section > .ready_dish_photo > .add_photo_button > .info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+    align-items: center;
+}
+.edit_section > .ready_dish_photo > .add_photo_button > .image_input {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+.edit_section > .continue_and_drafts {
+    display: flex;
+    gap: var(--mid);
+}
+.edit_section > .continue_and_drafts > * {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--mid);
+    padding: var(--small) var(--mid);
+    border-radius: var(--small);
+}
+.edit_section > .continue_and_drafts > .continue_button {
+    background-color: var(--color-cookie);
+}
+.edit_section > .continue_and_drafts > .continue_button > img {
+    height: 20px;
+}
+.edit_section > .continue_and_drafts > .drafts_button {
+    background-color: var(--color-light-ghost);
+}
+.edit_section > .continue_and_drafts > .drafts_button > img {
+    height: 24px;
+}
+
+.edit_section > .cook_time .time_units {
+    display: flex;
+    align-items: center;
+    gap: var(--big);
+}
+.edit_section > .cook_time .time_units > .time_unit_item {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+}
+
+@media (max-width: 720px) {
+    .edit_section > .sub_section {
+        gap: var(--normal);
+    }
+    .edit_section > .categories > .categories_list {
+        gap: var(--normal);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .edit_section > .step_photos > .steps_list {
+        gap: var(--normal);
+    }
+    .edit_section > .step_photos > .steps_list > .step_item > .content {
+        flex-direction: column;
+        gap: var(--small);
+    }
+    .edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper {
+        height: auto;
+        width: 100%;
+    }
+    .edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper .back_image {
+        width: 100%;
+        height: auto;
+    }
+    .edit_section > .step_photos > .steps_list > .step_item > .content > .field_wrapper > .input_wrapper {
+        min-height: 100px;
+    }
+    .edit_section > .step_photos > .add_step_button {
+        width: auto;
+    }
+    .edit_section > .ready_dish_photo > .add_photo_button {
+        justify-content: space-evenly;
+    }
+    .edit_section > .description_to_recipe .input_wrapper {
+        min-height: 100px;
+        align-items: start;
+    }
+    .edit_section > .continue_and_drafts {
+        gap: var(--small);
+    }
+    .edit_section > .continue_and_drafts > * {
+        flex-basis: 50%;
+        padding: var(--small);
+    }
+    .edit_section .title > .sub_title_and_mark > img {
+        height: 20px;
+    }
+}

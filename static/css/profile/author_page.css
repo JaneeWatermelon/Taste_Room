@@ -1,0 +1,6 @@
+@media (max-width: 720px) {
+    .profile_chapters {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}

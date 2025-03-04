@@ -1,0 +1,113 @@
+@font-face {
+    font-family: "Lilita_Regular";
+    src: url("../../fonts/Lilita_One_Regular.ttf");
+}
+@font-face {
+    font-family: "NTSomic_Regular";
+    src: url("../../fonts/NTSomic-Regular.ttf");
+}
+@font-face {
+    font-family: "NTSomic_Medium";
+    src: url("../../fonts/NTSomic-Medium.ttf");
+}
+@font-face {
+    font-family: "NTSomic_Bold";
+    src: url("../../fonts/NTSomic-Bold.ttf");
+}
+
+.lilita_font {
+    font-family: "Lilita_Regular";
+}
+.regular_font {
+    font-family: "NTSomic_Regular";
+}
+.medium_font {
+    font-family: "NTSomic_Medium";
+}
+.bold_font {
+    font-family: "NTSomic_Bold";
+}
+
+.letter_spacing_25 {
+    letter-spacing: 6px;
+}
+
+html {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    input,
+    textarea,
+    select,
+    li {
+        font-family: "NTSomic_Regular";
+        font-weight: inherit;
+        margin: 0;
+    }
+}
+html h1 {
+    font-size: 3rem; /*48px*/
+    line-height: 3.25rem; /*52px*/
+}
+html h2 {
+    font-size: 2rem; /*32px*/
+    line-height: 2.25rem; /*36px*/
+}
+html h3 {
+    font-size: 1.5rem; /*24px*/
+    line-height: 1.75rem; /*28px*/
+}
+html h4 {
+    font-size: 1rem; /*16px*/
+    line-height: 1.125rem; /*18px*/
+}
+html h5 {
+    font-size: 0.75rem; /*12px*/
+    line-height: 0.875rem; /*14px*/
+}
+html h6 {
+    font-size: 0.5rem; /*8px*/
+    line-height: 0.625rem; /*10px*/
+}
+html p, html input, html li, html textarea {
+    font-size: 0.875rem; /*14px*/
+    line-height: 1rem; /*16px*/
+}
+
+@media (max-width: 720px) {
+    html h1 {
+        font-size: 2rem; /*32px*/
+        line-height: 2.25rem; /*36px*/
+    }
+    html h2 {
+        font-size: 1.5rem; /*24px*/
+        line-height: 1.75rem; /*28px*/
+    }
+    html h3 {
+        font-size: 1.125rem; /*18px*/
+        line-height: 1.25rem; /*20px*/
+    }
+    html h4 {
+        font-size: 0.875rem; /*14px*/
+        line-height: 1rem; /*16px*/
+    }
+    html h5 {
+        font-size: 0.625rem; /*10px*/
+        line-height: 0.75rem; /*12px*/
+    }
+    html h6 {
+        font-size: 0.5rem; /*8px*/
+        line-height: 0.625rem; /*10px*/
+    }
+    html p, html input, html li, html textarea {
+        font-size: 0.75rem; /*12px*/
+        line-height: 0.875rem; /*14px*/
+    }
+    .letter_spacing_25 {
+        letter-spacing: 3.5px;
+    }
+}

@@ -1,0 +1,20 @@
+#double_circle {
+    position: relative;
+    left: 175px;
+}
+.dishes_wrapper {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    height: 600px;
+}
+.dishes_wrapper > * {
+    height: 100%;
+    position: absolute;
+    opacity: 0;
+    transition: transform 1s ease-in-out, opacity 0.3s ease-in;
+}
+#ragu {
+    opacity: 1;
+    transform: rotate(360deg);
+}
