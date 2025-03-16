@@ -1,0 +1,695 @@
+:root {
+    --color-white: #FFFFFF;
+    --color-light-gray: #ACACAC;
+    --color-light-ghost: #F1F1F1;
+
+    --color-cookie: #F7B779;
+    --color-orange: #D68C45;
+
+    --color-green: #4C956C;
+    --color-light-green: #95CF00;
+
+    --color-pink: #FFC9B9;
+    --color-red: #FF6766;
+    --color-heart: #DB4443;
+    
+    --color-cream: #DDE5B6;
+    --color-light-cream: #FEFEE3;
+    
+    --color-yellow: #26F42D;
+    --color-link: #3161FF;
+    
+    --color-black: #000000;
+    --color-black-50: rgba(0, 0, 0, 0.5);
+    --color-black-75: rgba(0, 0, 0, 0.75);
+
+    --tiny: 4px;
+    --small: 8px;
+    --normal: 12px;
+    --mid: 16px;
+    --big: 24px;
+    --huge: 32px;
+    --mega: 48px;
+
+    --padding-window: 60px;
+}
+
+@media (max-width: 720px) {
+    :root {
+        --padding-window: var(--normal);
+    }
+}
+
+.main_content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mid);
+    padding: 0 var(--padding-window);
+}
+
+.new_recipes_section {
+    padding: 0;
+    gap: var(--normal);
+}
+.new_recipes_section > .publish_types,
+.articles_section > .publish_types {
+    display: flex;
+    gap: var(--normal);
+}
+.new_recipes_section > .publish_types > .publish_type_item,
+.articles_section > .publish_types > .publish_type_item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--small);
+    border-radius: var(--small);
+    background-color: var(--color-white);
+    outline: 1px solid var(--color-light-ghost);
+    flex-grow: 1;
+    cursor: pointer;
+}
+.new_recipes_section > .publish_types > .publish_type_item.active,
+.articles_section > .publish_types > .publish_type_item.active {
+    background-color: rgba(76, 149, 108, 0.75);
+    outline: none;
+}
+.new_recipes_section > .publish_types > .publish_type_item > *,
+.articles_section > .publish_types > .publish_type_item > * {
+    color: var(--color-black-50);
+}
+.new_recipes_section > .publish_types > .publish_type_item.active > *,
+.articles_section > .publish_types > .publish_type_item.active > * {
+    color: var(--color-white);
+}
+
+.profile_header {
+    display: flex;
+    align-items: center;
+    padding: var(--big) var(--mid);
+    border-radius: var(--mid);
+    gap: var(--mid);
+    background-color: var(--color-pink);
+}
+.profile_header > .content {
+    display: flex;
+    align-items: center;
+    gap: var(--mid);
+}
+.profile_header > .content > .image_wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height: 120px;
+    aspect-ratio: 1;
+}
+.profile_header > .content > .image_wrapper > img {
+    object-fit: cover;
+    width: 100%;
+    border-radius: 100px;
+}
+.profile_header > .content > .info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--normal);
+}
+.profile_header > .content > .info > .name_tag_descr_achiv {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+}
+.profile_header > .content > .info > .name_tag_descr_achiv > .name_tag_descr {
+    display: flex;
+    flex-direction: column;
+    gap: var(--normal);
+}
+.profile_header > .content > .info > .name_tag_descr_achiv > .name_tag_descr > .name_and_tag {
+    display: flex;
+    align-items: center;
+    gap: var(--mid);
+}
+.profile_header > .content > .info > .socials_and_date_joined {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--mid);
+}
+.profile_header > .content > .info > .socials_and_date_joined > .socials_wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+}
+.profile_header > .content > .info > .socials_and_date_joined > .socials_wrapper > .socials {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+}
+.profile_header > .content > .info > .socials_and_date_joined > .socials_wrapper > .socials img {
+    height: 21px;
+}
+.profile_header > .settings_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--small);
+}
+.profile_header > .settings_wrapper h4, 
+.profile_header > .settings_wrapper p {
+    text-wrap: nowrap;
+    white-space: nowrap;
+}
+.profile_header > .settings_wrapper > .settings {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+    background-color: var(--color-white);
+    border-radius: var(--small);
+    padding: var(--small);
+}
+.profile_header > .settings_wrapper > .settings > .subs_wrapper {
+    display: flex;
+    justify-content: center;
+    gap: var(--small);
+    background-color: var(--color-light-ghost);
+    border-radius: var(--small);
+    padding: var(--tiny) var(--small);
+}
+.profile_header > .settings_wrapper > .settings > .sub_action_wrapper {
+    display: flex;
+    justify-content: center;
+    gap: var(--small);
+    background-color: var(--color-red);
+    border-radius: var(--small);
+    padding: var(--tiny) var(--small);
+}
+.profile_header > .settings_wrapper > .settings > .sub_action_wrapper.disabled {
+    background-color: var(--color-light-ghost);
+}
+.profile_header > .settings_wrapper > .settings > .sub_action_wrapper > p {
+    color: var(--color-white);
+}
+.profile_header > .settings_wrapper > .settings > .sub_action_wrapper.disabled > p {
+    color: var(--color-black);
+}
+.profile_header > .settings_wrapper > .settings > .settings_item {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+    cursor: pointer;
+}
+.profile_header > .settings_wrapper > .settings > .settings_item > img {
+    height: 21px;
+}
+.profile_chapters {
+    display: flex;
+    gap: var(--mid);
+    align-items: center;
+}
+.profile_chapters > .chapter_wrapper {
+    display: flex;
+    gap: var(--mid);
+    align-items: center;
+}
+.profile_chapters h4 {
+    font-family: "NTSomic_Medium";
+}
+.profile_chapters > .chapter_wrapper > .add_button {
+    display: flex;
+    gap: var(--small);
+    align-items: center;
+    padding: var(--tiny) var(--small);
+    border-radius: var(--small);
+    cursor: pointer;
+}
+.profile_chapters > .chapter_wrapper > .add_button > h4 {
+    color: var(--color-white);
+}
+.profile_chapters > .chapter_wrapper > .add_button.recipe {
+    background-color: var(--color-cookie);
+}
+.profile_chapters > .chapter_wrapper > .add_button.news {
+    background-color: var(--color-green);
+}
+.profile_chapters > .line {
+    width: 2px;
+    border-radius: 2px;
+    background-color: var(--color-black);
+}
+
+.subs_section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+}
+.subs_section > .subs_wrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--small);
+}
+.subs_section > .subs_wrapper > .subs_item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: var(--huge);
+    padding: var(--small);
+    gap: var(--small);
+}
+.subs_section > .subs_wrapper > .subs_item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: var(--huge);
+    padding: var(--small);
+    gap: var(--small);
+    background-color: var(--color-white);
+}
+.subs_section > .subs_wrapper > .subs_item > .info {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+}
+.subs_section > .subs_wrapper > .subs_item > .info > .name_and_tag {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+}
+.subs_section > .subs_wrapper > .subs_item > .info > .image_wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    aspect-ratio: 1;
+}
+.subs_section > .subs_wrapper > .subs_item > .info > .image_wrapper > img {
+    object-fit: cover;
+    border-radius: 50px;
+    width: 100%;
+}
+.subs_section > .subs_wrapper > .subs_item > .sub_button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--small);
+    background-color: var(--color-light-ghost);
+    border-radius: var(--huge);
+    height: calc(100% - 16px);
+    cursor: pointer;
+}
+.subs_section > .subs_wrapper > .subs_item > .sub_button > * {
+    color: var(--color-black-50);
+}
+.subs_section > .subs_wrapper > .subs_item > .sub_button.active {
+    background-color: var(--color-red);
+}
+.subs_section > .subs_wrapper > .subs_item > .sub_button.active > h4 {
+    color: var(--color-white);
+    font-family: "NTSomic_Medium";
+}
+
+.articles_section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+}
+.articles_section > .cards_wrapper {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--small);
+}
+
+.nothing_section {
+    display: flex;
+    align-items: center;
+    gap: var(--big);
+}
+.nothing_section > img {
+    height: 85px;
+}
+
+.settings_section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--mid);
+}
+.settings_section > .save_button {
+    display: flex;
+    justify-content: center;
+    padding: var(--small) var(--huge);
+    background-color: var(--color-green);
+    border-radius: var(--small);
+    width: fit-content;
+    cursor: pointer;
+}
+.settings_section > .save_button > h4 {
+    color: var(--color-white);
+    font-family: "NTSomic_Medium";
+}
+.settings_section > .settings {
+    display: grid;
+    grid-template-columns: 2fr 10fr;
+    gap: var(--huge);
+}
+.settings_section > .settings > .background_and_avatar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mid);
+}
+.settings_section > .settings > .background_and_avatar > * {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+}
+.settings_section > .settings > .background_and_avatar > * > .title {
+    display: flex;
+    gap: var(--small);
+}
+.settings_section > .settings > .background_and_avatar > * > .title > img {
+    height: 18px;
+}
+.settings_section > .settings > .background_and_avatar > .background > .colors {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--small);
+    padding: var(--small);
+    border-radius: var(--small);
+    background-color: var(--color-white);
+}
+.settings_section > .settings > .background_and_avatar > .background > .colors > .color_item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--small);
+    aspect-ratio: 1;
+    padding: var(--small);
+    cursor: pointer;
+}
+.settings_section > .settings > .background_and_avatar > .background > .colors > .color_item > img {
+    display: none;
+    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+}
+.settings_section > .settings > .background_and_avatar > .background > .colors > .color_item.active > img {
+    display: block;
+}
+.settings_section > .settings > .background_and_avatar > .avatar > .image_item {
+    display: flex;
+    border-radius: var(--small);
+    background-color: var(--color-white);
+    overflow: hidden;
+}
+.settings_section > .settings > .background_and_avatar > .avatar > .image_item > .content {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+    padding: var(--small);
+}
+.settings_section > .settings > .background_and_avatar > .avatar > .image_item > .content > img {
+    height: 66px;
+}
+.settings_section > .settings > .background_and_avatar > .avatar > .image_item > .yes_wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: var(--big);
+    padding: var(--tiny);
+    background-color: var(--color-light-green);
+}
+.settings_section > .settings > .background_and_avatar > .avatar > .image_item > .yes_wrapper > img {
+    width: 100%;
+}
+
+.settings_section > .settings > .fields_wrapper {
+    display: flex;
+    gap: var(--big);
+}
+.settings_section > .settings > .fields_wrapper > .fields_part {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mid);
+    width: 100%;
+}
+.settings_section > .settings > .fields_wrapper > .fields_part > .fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--normal);
+}
+.settings_section > .settings > .fields_wrapper > .fields_part > .fields > .field_item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+}
+.settings_section > .settings > .fields_wrapper > .fields_part > .fields > .field_item > .title_and_mark {
+    display: flex;
+    gap: var(--small);
+    align-items: center;
+}
+.settings_section > .settings > .fields_wrapper > .fields_part > .fields > .field_item > .title_and_mark > img {
+    height: 24px;
+}
+
+.achievements_section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--big);
+}
+.achievements_section > * {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mid);
+}
+.achievements_section > * .achiv_list {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+}
+.achievements_section > * .achiv_list > .achiv_item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.achievements_section > * .achiv_list > .achiv_item > img {
+    height: 85px;
+    cursor: pointer;
+}
+.achievements_section > * .achiv_list > .achiv_item.disabled > img {
+    filter: brightness(0.65);
+}
+.achievements_section > .all_achiv > .type {
+    display: flex;
+    flex-direction: column;
+    gap: var(--normal);
+}
+.achievements_section > .all_achiv > .type.multiple_time > .multiple_achiv_list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--normal);
+}
+.achievements_section > .all_achiv > .type.multiple_time > .multiple_achiv_list > .multiple_achiv_item {
+    display: flex;
+    align-items: center;
+}
+.achievements_section > .all_achiv > .type.multiple_time > .multiple_achiv_list > .multiple_achiv_item > * {
+    width: 100%;
+    text-align: center;
+}
+.achievements_section > .all_achiv > .type.multiple_time > .multiple_achiv_list > .multiple_achiv_item > .achiv_list {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.settings_section .input_wrapper {
+    padding: var(--small);
+    border-radius: var(--small);
+}
+.input_wrapper.disabled {
+    background-color: #F5F5F5;
+}
+
+@media (max-width: 720px) {
+    .profile_header {
+        display: flex;
+        flex-direction: column;
+        padding: var(--mid);
+        border-radius: var(--mid);
+        gap: var(--normal);
+        background-color: var(--color-pink);
+    }
+    .profile_header > .avatar_and_settings {
+        display: flex;
+        align-items: center;
+        gap: var(--mid);
+        justify-content: space-between;
+        width: 100%;
+    }
+    .profile_header > .avatar_and_settings > .image_wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 120px;
+        height: 120px;
+        aspect-ratio: 1;
+    }
+    .profile_header > .avatar_and_settings > .image_wrapper > img {
+        object-fit: cover;
+        width: 100%;
+        border-radius: 100px;
+    }
+    .profile_header > .avatar_and_settings > .settings_wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--small);
+        width: 100%;
+    }
+    .profile_header > .avatar_and_settings > .settings_wrapper h4, 
+    .profile_header > .avatar_and_settings > .settings_wrapper p {
+        text-wrap: nowrap;
+        white-space: nowrap;
+    }
+    .profile_header > .avatar_and_settings > .settings_wrapper > .settings {
+        display: flex;
+        flex-direction: column;
+        gap: var(--small);
+        background-color: var(--color-white);
+        border-radius: var(--small);
+        padding: var(--small);
+        width: -webkit-fill-available;
+    }
+    .profile_header > .avatar_and_settings > .settings_wrapper > .settings > .subs_wrapper {
+        display: flex;
+        justify-content: center;
+        gap: var(--small);
+        background-color: var(--color-light-ghost);
+        border-radius: var(--small);
+        padding: var(--tiny) var(--small);
+    }
+    .profile_header > .avatar_and_settings > .settings_wrapper > .settings > .sub_action_wrapper {
+        display: flex;
+        justify-content: center;
+        gap: var(--small);
+        background-color: var(--color-red);
+        border-radius: var(--small);
+        padding: var(--tiny) var(--small);
+    }
+    .profile_header > .avatar_and_settings > .settings_wrapper > .settings > .sub_action_wrapper.disabled {
+        background-color: var(--color-light-ghost);
+    }
+    .profile_header > .avatar_and_settings > .settings_wrapper > .settings > .sub_action_wrapper > p {
+        color: var(--color-white);
+    }
+    .profile_header > .avatar_and_settings > .settings_wrapper > .settings > .sub_action_wrapper.disabled > p {
+        color: var(--color-black);
+    }
+    .profile_header > .avatar_and_settings > .settings_wrapper > .settings > .settings_item {
+        display: flex;
+        align-items: center;
+        gap: var(--small);
+    }
+    .profile_header > .avatar_and_settings > .settings_wrapper > .settings > .settings_item > img {
+        height: 21px;
+    }
+    .profile_chapters {
+        display: flex;
+        flex-direction: column;
+        gap: var(--small);
+        align-items: start;
+    }
+    .profile_header > .content > .info {
+        display: flex;
+        flex-direction: column;
+        gap: var(--normal);
+    }
+    .profile_header > .content > .info > .name_tag_descr_achiv {
+        flex-direction: column;
+        gap: var(--normal);
+    }
+    .profile_header > .content > .info > .name_tag_descr_achiv > .name_tag_descr {
+        flex-direction: row;
+        width: 100%;
+    }
+    .profile_header > .content > .info > .name_tag_descr_achiv > .name_tag_descr > .name_and_tag {
+        flex-direction: column;
+        align-items: start;
+        gap: var(--small);
+        width: 100%;
+    }
+    .profile_header > .content > .info > .socials_and_date_joined {
+        flex-direction: column;
+        align-items: start;
+        gap: var(--small);
+    }
+    .new_recipes_section > .publish_types,
+    .articles_section > .publish_types {
+        flex-direction: column;
+        gap: var(--small);
+    }
+    .articles_section > .cards_wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+    .subs_section > .subs_wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+    .subs_section > .subs_wrapper > .subs_item > .info > .name_and_tag {
+        flex-direction: column;
+        gap: var(--tiny);
+        align-items: start;
+    }
+
+    .settings_section > .settings {
+        display: flex;
+        flex-direction: column;
+    }
+    .settings_section > .settings > .background_and_avatar {
+        flex-direction: row;
+        gap: var(--small);
+    }
+    .settings_section > .settings > .background_and_avatar > * > .title {
+        gap: var(--tiny);
+    }
+    .settings_section > .settings > .background_and_avatar > * > .title > img {
+        height: 17px;
+    }
+    .settings_section > .settings > .background_and_avatar > .avatar > .image_item {
+        height: 100%;
+    }
+    .settings_section > .settings > .fields_wrapper {
+        flex-direction: column;
+        gap: var(--mid);
+    }
+    .settings_section > .settings > .fields_wrapper > .fields_part > .fields > .field_item > .title_and_mark > img {
+        height: 17px;
+    }
+    .settings_section > .save_button {
+        width: -webkit-fill-available;
+    }
+    .achievements_section {
+        gap: var(--mid);
+    }
+    .achievements_section > * {
+        gap: var(--small);
+    }
+    .achievements_section > * .achiv_list {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    .achievements_section > .all_achiv > .type {
+        gap: var(--small);
+    }
+    .achievements_section > * .achiv_list > .achiv_item > img {
+        height: 70px;
+    }
+    .achievements_section > .all_achiv > .type.multiple_time > .multiple_achiv_list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--small);
+    }
+    .achievements_section > .all_achiv > .type.multiple_time > .multiple_achiv_list > .multiple_achiv_item {
+        gap: var(--small);
+    }
+    .achievements_section > .all_achiv > .type.multiple_time > .multiple_achiv_list > .multiple_achiv_item > .achiv_list {
+        gap: var(--small);
+    }
+}

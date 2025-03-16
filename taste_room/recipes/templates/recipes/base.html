@@ -1,0 +1,137 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Document</title>
+
+    <meta name="csrf-token" content="{{ csrf_token }}">
+
+    <link rel="stylesheet" href="{% static 'css/general/vars.css' %}">
+    <link rel="stylesheet" href="{% static 'css/general/fonts.css' %}">
+    <link rel="stylesheet" href="{% static 'css/general/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/windows.css' %}">
+    <link rel="stylesheet" href="{% static 'css/general/swiper.css' %}">
+    <link rel="stylesheet" href="{% static 'css/general/inputs.css' %}">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+    {% block custom_styles %}
+    {% endblock %}
+</head>
+<body id="body">
+    <header>
+        <div class="header_wrapper">
+            <a href="{% url 'main' %}">
+                <img id="main_cookie" src="{% static 'svg/Cookie/TR.svg' %}">
+            </a>
+
+            <div class="header_sections d_mobile_none">
+                <a href="{% url 'recipes:popular' %}"><h4 class="medium_font {% if active_popular %}active{% endif %}">Популярное</h4></a>
+                <a href="{% url 'recipes:index' %}"><h4 class="medium_font {% if active_recipes %}active{% endif %}">Рецепты по категориям</h4></a>
+                <a href="{% url 'news:index' %}"><h4 class="medium_font {% if active_news %}active{% endif %}">Статьи</h4></a>
+            </div>
+            <div class="header_buttons">
+                <a href="{% url 'recipes:create' %}"><img id="add_recipe" src="{% static 'svg/Plus_Minus/Plus_fill.svg' %}"></a>
+                <a href="{% url 'recipes:create' %}"><img id="tg_notif" src="{% static 'svg/Socials_WB/Notif.svg' %}"></a>
+                {% if user.is_authenticated %}
+                <a class="profile_icon_wrapper" href="{% url 'users:profile' %}"><img class="d_mobile_none" id="profile" src="{{ user.avatar.url }}"></a>
+                {% else %}
+                <a href="{% url 'users:profile' %}"><img class="d_mobile_none" id="profile" src="{% static 'svg/Cookie/Cookie_with_hat.svg' %}"></a>
+                {% endif %}
+                <div class="burger">
+                    <span class="line"></span>
+                    <span class="line"></span>
+                    <span class="line"></span>
+                </div>
+            </div>
+        </div>
+        <div class="top_waves_wrapper">
+            <img class="d_mobile_none" id="top_waves" src="{% static 'svg/Shapes/Waves_header_desktop.svg' %}">
+            <img class="d_desktop_none" id="top_waves" src="{% static 'svg/Shapes/Waves_header_mobile.svg' %}">
+        </div>
+    </header>
+    {% block main %}
+    {% endblock %}
+    <a href="#body" id="go_up_wrapper">
+            <img src="{% static 'svg/Random_icons/Show_Hide_icon_gray.svg' %}">
+        </a>
+    <footer>
+        <img class="d_mobile_none" id="footer_waves" src="{% static 'svg/Shapes/Waves_footer_desktop.svg' %}">
+        <img class="d_desktop_none" id="footer_waves" src="{% static 'svg/Shapes/Waves_footer_mobile.svg' %}">
+        <div class="footer_wrapper">
+            <img class="d_mobile_none" src="{% static 'svg/Shapes/Chocolates_footer_desktop.svg' %}">
+            <div class="footer_content">
+                <h3>Заблудились?</h3>
+                <div class="footer_info">
+                    <a href="{% url 'main' %}"><h4>Главная</h4></a>
+                    <a href="{% url 'recipes:popular' %}"><h4>Популярное</h4></a>
+                    <a href="{% url 'recipes:index' %}"><h4>Рецепты по категориям</h4></a>
+                    <a href="{% url 'news:index' %}"><h4>Статьи</h4></a>
+                </div>
+            </div>
+            <span class="line"></span>
+            <img class="d_mobile_none" src="{% static 'svg/Shapes/Chocolates_footer_desktop.svg' %}" style="transform: rotate(180deg)">
+            <div class="footer_content">
+                <h3>Хочешь знать обо всех новинках?</h3>
+                <div class="footer_info">
+                    <h4>Подпишись на рассылку в <a href="" class="link_color">Телеграме</a></h4>
+                </div>
+                <h3>Понравился рецепт?</h3>
+                <div class="footer_info">
+                    <h4>Сохрани в <a href="{% url 'users:profile' %}" class="link_color">профиль</a>, чтобы не потерять</h4>
+                    <h4>Или <a href="{% url 'recipes:create' %}" class="link_color">поделись</a> своим шедевром!</h4>
+                </div>
+            </div>
+            <span class="line"></span>
+            <img class="d_mobile_none" src="{% static 'svg/Shapes/Chocolates_footer_desktop.svg' %}">
+            <div class="footer_content">
+                <h3>Остались вопросы?</h3>
+                <div class="footer_info">
+                    <div class="social_div">
+                        <a href="">
+                            <img src="{% static 'svg/Socials_WB/TG_blank.svg' %}">
+                            <h4>Наш телеграм</h4>
+                        </a>
+                    </div>
+                    <div class="social_div">
+                        <a href="">
+                            <img src="{% static 'svg/Socials_WB/VK_blank.svg' %}">
+                            <h4>ВКонтакте</h4>
+                        </a>
+                    </div>
+                    <div class="social_div">
+                        <a href="">
+                            <img src="{% static 'svg/Socials_WB/Email_blank.svg' %}">
+                            <h4>tasteroom@yandex.ru</h4>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <img class="d_mobile_none" src="{% static 'svg/Shapes/Chocolates_footer_desktop.svg' %}" style="transform: rotate(180deg)">
+            <img class="d_desktop_none" src="{% static 'svg/Shapes/Chocolates_footer_mobile.svg' %}">
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="{% static 'js/swiper.js' %}"></script>
+    <script src="{% static 'js/textarea.js' %}"></script>
+    <script src="{% static 'js/header_scroll.js' %}"></script>
+    <script src="{% static 'js/heart_anim.js' %}"></script>
+    <script src="{% static 'js/category.js' %}"></script>
+    <script src="{% static 'js/windows.js' %}"></script>
+    <script src="{% static 'js/set_image_height.js' %}"></script>
+
+    <script>
+        const heart_blank_icon = "{% static 'svg/Random_icons/Heart_blank.svg' %}";
+        const heart_fill_icon = "{% static 'svg/Random_icons/Heart_fill.svg' %}";
+    </script>
+
+    {% block custom_scripts %}
+    {% endblock %}
+</body>
+</html>

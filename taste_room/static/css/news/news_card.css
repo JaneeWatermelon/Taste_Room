@@ -1,0 +1,168 @@
+:root {
+    --color-white: #FFFFFF;
+    --color-light-gray: #ACACAC;
+    --color-light-ghost: #F1F1F1;
+
+    --color-cookie: #F7B779;
+    --color-orange: #D68C45;
+
+    --color-green: #4C956C;
+    --color-light-green: #95CF00;
+
+    --color-pink: #FFC9B9;
+    --color-red: #FF6766;
+    --color-heart: #DB4443;
+    
+    --color-cream: #DDE5B6;
+    --color-light-cream: #FEFEE3;
+    
+    --color-yellow: #26F42D;
+    --color-link: #3161FF;
+    
+    --color-black: #000000;
+    --color-black-50: rgba(0, 0, 0, 0.5);
+    --color-black-75: rgba(0, 0, 0, 0.75);
+
+    --tiny: 4px;
+    --small: 8px;
+    --normal: 12px;
+    --mid: 16px;
+    --big: 24px;
+    --huge: 32px;
+    --mega: 48px;
+
+    --padding-window: 60px;
+}
+
+@media (max-width: 720px) {
+    :root {
+        --padding-window: var(--normal);
+    }
+}
+
+.news_item {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: var(--color-white);
+    border-radius: var(--mid);
+    padding: var(--small);
+    gap: var(--mid);
+}
+
+
+.news_item > .news_item_header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+    position: relative;
+}
+.news_item > .news_item_header > .image_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    aspect-ratio: 1.5;
+    position: relative;
+}
+.news_item > .news_item_header > .image_wrapper .back_image {
+    border-radius: var(--normal);
+    width: 100%;
+    aspect-ratio: 1.5;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.news_item > .news_item_header > .image_wrapper > .date_wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--tiny) var(--small);
+    border-radius: var(--small);
+    background-color: rgba(255, 255, 255, 0.75);
+    width: fit-content;
+    height: fit-content;
+    position: absolute;
+    right: var(--small);
+    top: var(--small);
+}
+.news_item > .news_item_header > .image_wrapper > .buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+    justify-content: center;
+    align-items: center;
+    height: fit-content;
+    position: absolute;
+    bottom: var(--small);
+    width: 100%;
+    cursor: pointer;
+}
+.news_item > .news_item_header > .image_wrapper > .buttons > * {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--small);
+    padding: var(--small);
+    border-radius: var(--small);
+    height: fit-content;
+    width: calc(100% - 32px);
+}
+.news_item > .news_item_header > .image_wrapper > .buttons > * > img {
+    height: 18px;
+}
+.news_item > .news_item_header > .image_wrapper > .buttons > .change {
+    background-color: rgba(255, 255, 255, 0.75);
+}
+.news_item > .news_item_header > .image_wrapper > .buttons > .unpublic {
+    background-color: rgba(255, 103, 102, 0.75);
+}
+.news_item > .news_item_header > .image_wrapper > .buttons > .public {
+    background-color: rgba(76, 149, 108, 0.75);
+}
+.news_item > .news_item_header > .image_wrapper > .buttons > .moderator {
+    background-color: rgba(214, 140, 69, 0.75);
+}
+.news_item > .news_item_header > .info, .news_item_header > .info > * {
+    display: flex;
+    align-items: center;
+}
+.news_item > .news_item_header > .info {
+    justify-content: space-between;
+}
+.news_item > .news_item_header > .info > * {
+    gap: var(--small);
+}
+.news_item > .news_item_header > .info img {
+    height: 25px;
+}
+
+.news_item > .news_item_footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.news_item > .news_item_footer > .icon_title {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+}
+.news_item > .news_item_footer > .icon_title > img {
+    height: 22px;
+}
+
+.news_item > .news_item_footer .share_button {
+    height: 32px;
+}
+
+@media (max-width: 720px) {
+    .news_item > .news_item_header > .info > * {
+        gap: var(--tiny);
+    }
+    .news_item > .news_item_header > .info img {
+        height: 20px;
+    }
+    .news_item > .news_item_footer > .icon_title {
+        gap: var(--tiny);
+    }
+}

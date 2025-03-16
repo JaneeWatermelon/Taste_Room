@@ -1,0 +1,108 @@
+:root {
+    --color-white: #FFFFFF;
+    --color-light-gray: #ACACAC;
+    --color-light-ghost: #F1F1F1;
+
+    --color-cookie: #F7B779;
+    --color-orange: #D68C45;
+
+    --color-green: #4C956C;
+    --color-light-green: #95CF00;
+
+    --color-pink: #FFC9B9;
+    --color-red: #FF6766;
+    --color-heart: #DB4443;
+    
+    --color-cream: #DDE5B6;
+    --color-light-cream: #FEFEE3;
+    
+    --color-yellow: #26F42D;
+    --color-link: #3161FF;
+    
+    --color-black: #000000;
+    --color-black-50: rgba(0, 0, 0, 0.5);
+    --color-black-75: rgba(0, 0, 0, 0.75);
+
+    --tiny: 4px;
+    --small: 8px;
+    --normal: 12px;
+    --mid: 16px;
+    --big: 24px;
+    --huge: 32px;
+    --mega: 48px;
+
+    --padding-window: 60px;
+}
+
+@media (max-width: 720px) {
+    :root {
+        --padding-window: var(--normal);
+    }
+}
+
+.welcome_section_info .input_wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--mid);
+    align-items: center;
+    padding: var(--small) var(--small) var(--small) var(--big);
+    background-color: var(--color-white);
+    border-radius: 100px;
+    outline: 1px solid var(--color-light-ghost);
+}
+.welcome_section_info .input_wrapper.magnifier {
+    padding: var(--small);
+}
+
+.welcome_section_info .input_wrapper input {
+    outline: none;
+    border: none;
+    width: 100%;
+}
+.welcome_section_info .input_wrapper input::placeholder {
+    font-size: 0.875rem; /*14px*/
+    line-height: 1rem; /*16px*/
+    color: var(--color-black-50);
+    font-family: "NTSomic_Regular";
+}
+.welcome_section_info .input_wrapper .input_button {
+    background-color: var(--color-green);
+    padding: var(--mid) var(--huge);
+    border-radius: 100px;
+    cursor: pointer;
+}
+.welcome_section_info .input_wrapper .input_button > img {
+    display: block;
+}
+.welcome_section_info .input_wrapper .input_button.magnifier {
+    padding: var(--small) 36px;
+}
+
+@media (max-width: 720px) {
+    .welcome_section_info .input_wrapper {
+        gap: var(--small);
+        padding: var(--tiny) var(--tiny) var(--tiny) var(--normal);
+    }
+    .welcome_section_info .input_wrapper input::placeholder {
+        font-size: 0.75rem; /*12px*/
+        line-height: 0.875rem; /*14px*/
+    }
+    .welcome_section_info .input_wrapper.magnifier {
+        padding: var(--tiny);
+    }
+    .welcome_section_info .input_wrapper .input_button {
+        padding: var(--normal) var(--mid);
+    }
+    .welcome_section_info .input_wrapper .input_button.magnifier {
+        padding: 6px 22px;
+    }
+    .welcome_section_info .input_wrapper .input_button.magnifier > img {
+        height: 22px;
+    }
+}
+@media (min-width: 721px) {
+    .section_title > h2 {
+        font-size: 3rem; /*48px*/
+        line-height: 3.25rem; /*52px*/
+    }
+}

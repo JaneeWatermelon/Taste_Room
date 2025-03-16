@@ -1,0 +1,338 @@
+{% extends 'recipes/base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block custom_styles %}
+    <link rel="stylesheet" href="{% static 'css/recipe/recipe_card.css' %}">
+    <link rel="stylesheet" href="{% static 'css/news/news_card.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile/profile.css' %}">
+    <link rel="stylesheet" href="{% static 'css/profile/author_page.css' %}">
+{% endblock %}
+
+{% block main %}
+    <main>
+        <section class="bread_crumbs">
+            <a href="{% url 'main' %}"><p>Главная</p></a>
+            <img src="{% static 'svg/Arrows/Green_crumbs.svg' %}">
+            <a href="{% url 'users:author' object.username %}"><p>Страница автора</p></a>
+        </section>
+        <div class="main_content">
+            <section class="profile_header d_mobile_none">
+                <div class="content">
+                    <div class="image_wrapper">
+                        {% if object.avatar %}
+                        <img src="{{ object.avatar.url }}">
+                        {% else %}
+                        <img src="{% static 'img/Profile/author_default.png' %}">
+                        {% endif %}
+                    </div>
+                    <div class="info">
+                        <div class="name_tag_descr_achiv">
+                            <div class="name_tag_descr">
+                                <div class="name_and_tag">
+                                    {% if object.name %}
+                                    <h2>{{ object.name }}</h2>
+                                    {% endif %}
+                                    <h3>@{{ object.username }}</h3>
+                                </div>
+                                <h5>{{ object.description_profile }}</h5>
+                            </div>
+                            <img class="shadow silver_shadow" src="{% static 'svg/Achievements/Comments_Silver.svg' %}">
+                        </div>
+                        <div class="socials_and_date_joined">
+                            {% if object.socials %}
+                            <div class="socials_wrapper">
+                                <h4>Соц сети:</h4>
+                                <div class="socials">
+                                    {% if object.socials.telegram %}
+                                    <a href="{{ object.socials.telegram }}">
+                                        <img src="{% static 'svg/Socials_Colorful/TG.svg' %}">
+                                    </a>
+                                    {% endif %}
+                                    {% if object.socials.vk %}
+                                    <a href="{{ object.socials.vk }}">
+                                        <img src="{% static 'svg/Socials_Colorful/VK.svg' %}">
+                                    </a>
+                                    {% endif %}
+                                    {% if object.socials.pinterest %}
+                                    <a href="{{ object.socials.pinterest }}">
+                                        <img src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
+                                    </a>
+                                    {% endif %}
+                                    {% if object.socials.youtube %}
+                                    <a href="{{ object.socials.youtube }}">
+                                        <img src="{% static 'svg/Socials_Colorful/Youtube.svg' %}">
+                                    </a>
+                                    {% endif %}
+                                    {% if object.socials.rutube %}
+                                    <a href="{{ object.socials.rutube }}">
+                                        <img src="{% static 'svg/Socials_Colorful/Rutube.svg' %}">
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            <h4>На сайте с {{ object.date_joined }}</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings_wrapper">
+                    <h4 class="medium_font">Популярность</h4>
+                    <div class="settings">
+                        <div class="subs_wrapper">
+                            <p class="medium_font">Подписчики: {{ subscribers_count }}</p>
+                        </div>
+                        <div class="sub_action_wrapper">
+                            <p class="medium_font">Подписаться</p>
+                        </div>
+                        <div class="settings_item">
+                            <img src="{% static 'svg/Cookie/Smile_green.svg' %}">
+                            <p>Опубликовано рецептов:</p>
+                            <p class="medium_font">{{ published_recipes_count }}</p>
+                        </div>
+                        <a class="settings_item">
+                            <img src="{% static 'svg/Random_icons/Article_icon.svg' %}">
+                            <p>Опубликовано статей:</p>
+                            <p class="medium_font">{{ published_news_count }}</p>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            <section class="profile_header d_desktop_none">
+                <div class="avatar_and_settings">
+                    <div class="image_wrapper">
+                        {% if object.avatar %}
+                        <img src="{{ object.avatar.url }}">
+                        {% else %}
+                        <img src="{% static 'img/Profile/author_default.png' %}">
+                        {% endif %}
+                    </div>
+                    <div class="settings_wrapper">
+                        <h4 class="medium_font">Популярность</h4>
+                        <div class="settings">
+                            <div class="subs_wrapper">
+                                <p class="medium_font">Подписчики: {{ subscribers_count }}</p>
+                            </div>
+                            <div class="sub_action_wrapper">
+                                <p class="medium_font">Подписаться</p>
+                            </div>
+                            <div class="settings_item">
+                                <img src="{% static 'svg/Cookie/Smile_green.svg' %}">
+                                <p>Опубликовано рецептов:</p>
+                                <p class="medium_font">{{ published_recipes_count }}</p>
+                            </div>
+                            <a class="settings_item">
+                                <img src="{% static 'svg/Random_icons/Article_icon.svg' %}">
+                                <p>Опубликовано статей:</p>
+                                <p class="medium_font">{{ published_news_count }}</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="content">
+                    <div class="info">
+                        <div class="name_tag_descr_achiv">
+                            <div class="name_tag_descr">
+                                <div class="name_and_tag">
+                                    {% if object.name %}
+                                    <h2>{{ object.name }}</h2>
+                                    {% endif %}
+                                    <h3>@{{ object.username }}</h3>
+                                </div>
+                                <img class="shadow" src="{% static 'svg/Achievements/Comments_Silver.svg' %}">
+                            </div>
+                            <h5>{{ object.description_profile }}</h5>
+                        </div>
+                        <div class="socials_and_date_joined">
+                            {% if object.socials %}
+                            <div class="socials_wrapper">
+                                <h4>Соц сети:</h4>
+                                <div class="socials">
+                                    {% if object.socials.telegram %}
+                                    <a href="{{ object.socials.telegram }}">
+                                        <img src="{% static 'svg/Socials_Colorful/TG.svg' %}">
+                                    </a>
+                                    {% endif %}
+                                    {% if object.socials.vk %}
+                                    <a href="{{ object.socials.vk }}">
+                                        <img src="{% static 'svg/Socials_Colorful/VK.svg' %}">
+                                    </a>
+                                    {% endif %}
+                                    {% if object.socials.pinterest %}
+                                    <a href="{{ object.socials.pinterest }}">
+                                        <img src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
+                                    </a>
+                                    {% endif %}
+                                    {% if object.socials.youtube %}
+                                    <a href="{{ object.socials.youtube }}">
+                                        <img src="{% static 'svg/Socials_Colorful/Youtube.svg' %}">
+                                    </a>
+                                    {% endif %}
+                                    {% if object.socials.rutube %}
+                                    <a href="{{ object.socials.rutube }}">
+                                        <img src="{% static 'svg/Socials_Colorful/Rutube.svg' %}">
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            <h4>На сайте с {{ object.date_joined }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="profile_chapters">
+                <div class="chapter_wrapper">
+                    <h4>Рецепты автора</h4>
+                </div>
+                <span class="line d_mobile_none"></span>
+                <div class="chapter_wrapper">
+                    <h4>Статьи автора</h4>
+                </div>
+                <span class="line d_mobile_none"></span>
+                <div class="chapter_wrapper">
+                    <h4>Достижения автора</h4>
+                </div>
+            </section>
+            <section class="new_recipes_section">
+                <div class="cards_wrapper">
+                    {% for item in recipes %}
+                    <div class="recipe_item">
+                        <div class="recipe_item_header">
+                            <div class="image_wrapper">
+                                <a href="{% url 'recipes:detail' item.id item.slug %}">
+                                    <img class="back_image" src="{{ item.previews.preview_1.url }}">
+                                </a>
+                                {% if user.is_authenticated %}
+                                    {% if item.id in user.liked_recipes_id %}
+                                    <div class="heart_wrapper active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                                        <img src="{% static 'svg/Random_icons/Heart_fill.svg' %}">
+                                    </div>
+                                    {% else %}
+                                    <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                                        <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
+                                    </div>
+                                    {% endif %}
+                                {% else %}
+                                <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                                    <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="info">
+                                <div class="calories">
+                                    <img src="{% static 'svg/Random_icons/Callories_icon.svg' %}">
+                                    <h4>{{ item.calculate_total_calories }} ккал</h4>
+                                </div>
+                                <div class="time">
+                                    <img src="{% static 'svg/Random_icons/Clock_icon.svg' %}">
+                                    <h4>{{ item.cook_time_full|short_timedelta }}</h4>
+                                </div>
+                            </div>
+                            <a href="{% url 'recipes:detail' item.id item.slug %}">
+                                <h3 class="title medium_font">{{ item.title }}</h3>
+                            </a>
+                            <h4 class="description">{{ item.description_card }}</h4>
+                        </div>
+                        <div class="recipe_item_footer">
+                            <a href="{% url 'users:author' item.author.username %}" class="icon_title">
+                                <img src="{% static 'svg/Cookie/Smile_half_black.svg' %}">
+                                <h4>{% if item.author.name %}{{ item.author.name }}{% else %}{{ item.author.username }}{% endif %}</h4>
+                            </a>
+                            <a href="">
+                                <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            <section class="articles_section">
+                <div class="cards_wrapper">
+                    {% for item in articles %}
+                    <div class="news_item">
+                        <div class="news_item_header">
+                            <div class="image_wrapper">
+                                <a href="{% url 'news:detail' item.id item.slug %}">
+                                    <img class="back_image" src="{{ item.preview.url }}">
+                                </a>
+                                <div class="date_wrapper">
+                                    <h4>{{ item.published_date }}</h4>
+                                </div>
+                            </div>
+                            <div class="info">
+                                <div class="rating">
+                                    {% for _ in item.stars_on_count|repeat %}
+                                    <img src="{% static 'svg/Stars/Star_on.svg' %}">
+                                    {% endfor %}
+                                    {% for _ in item.stars_off_count|repeat %}
+                                    <img src="{% static 'svg/Stars/Star_off.svg' %}">
+                                    {% endfor %}
+                                    <h4 class="black_75">({{ item.reviews.count }})</h4>
+                                </div>
+                                <div class="views">
+                                    <img src="{% static 'svg/Random_icons/Eye_icon.svg' %}">
+                                    <h4 class="green">{{ item.views }}</h4>
+                                </div>
+                            </div>
+                            <a href="{% url 'news:detail' item.id item.slug %}">
+                                <h3 class="title medium_font">{{ item.title }}</h3>
+                            </a>
+                            <h4 class="description">{{ item.description_card }}</h4>
+                        </div>
+                        <div class="news_item_footer">
+                            <a href="{% url 'users:author' item.author.username %}" class="icon_title">
+                                <img src="{% static 'svg/Cookie/Smile_half_black.svg' %}">
+                                <h4 class="black_75">{% if item.author.name %}{{ item.author.name }}{% else %}{{ item.author.username }}{% endif %}</h4>
+                            </a>
+                            <a href="">
+                                <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            <section class="nothing_section">
+                <img src="{% static 'svg/Cookie/Sad_half_black.svg' %}">
+                <h3 class="black_50 medium_font">Тут пока ничего нет</h3>
+            </section>
+            <section class="achievements_section">
+                <div class="my_achiv">
+                    <h3 class="medium_font">Одноразовые</h3>
+                    <div class="achiv_list">
+                        {% for item in one_use_achivs %}
+                        <div class="achiv_item">
+                            <img class="shadow
+                            {% if item.level == 1 %}silver_shadow
+                            {% elif item.level == 2 %}gold_shadow
+                            {% elif item.level == 3 %}ruby_shadow
+                            {% else %}silver_shadow
+                            {% endif %}" src="{{ item.icon.url }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="all_achiv">
+                    <h3 class="medium_font">Многоразовые</h3>
+                    <div class="achiv_list">
+                        {% for item in multiple_use_achivs %}
+                        <div class="achiv_item">
+                            <img class="shadow
+                            {% if item.level == 1 %}silver_shadow
+                            {% elif item.level == 2 %}gold_shadow
+                            {% elif item.level == 3 %}ruby_shadow
+                            {% else %}silver_shadow
+                            {% endif %}" src="{{ item.icon.url }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+{% endblock %}
+
+{% block custom_scripts %}
+    <script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}
