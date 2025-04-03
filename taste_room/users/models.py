@@ -7,6 +7,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
 
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
+
 from additions.models import Socials
 
 def transliterate_russian_to_pseudo_english(text):
@@ -108,8 +111,20 @@ class Achievement(models.Model):
         verbose_name_plural = "Достижения"
 
 class User(AbstractUser):
-    name = models.CharField(default=DisplayNames.List[random.randint(0, 29)][1], blank=True, null=True, max_length=32, verbose_name="Отображаемое имя")
+    name = models.CharField(default=DisplayNames.List[0][1], blank=True, null=True, max_length=32, verbose_name="Отображаемое имя")
     avatar = models.ImageField(upload_to='users_avatars/', blank=True, null=True, verbose_name="Аватарка")
+    optimized_image = ImageSpecField(
+        source='avatar',
+        processors=[ResizeToFill(128, 128)],  # Размер оптимизированного изображения
+        format='WebP',
+        options={'quality': 100}
+    )
+    optimized_image_small = ImageSpecField(
+        source='avatar',
+        processors=[ResizeToFill(64, 64)],  # Размер оптимизированного изображения
+        format='WebP',
+        options={'quality': 100}
+    )
     email = models.EmailField(unique=True, verbose_name="Электронная почта")
     background_color = models.CharField(default="", max_length=64, blank=True, null=True, verbose_name="Цвет фона")
 
@@ -150,6 +165,12 @@ class User(AbstractUser):
 class Comment(models.Model):
     text = models.TextField(default="", max_length=1024, verbose_name="Текст")
     image = models.ImageField(upload_to='comments_images/', blank=True, null=True, verbose_name="Изображение")
+    optimized_image_small = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(256, 170)],  # Размер оптимизированного изображения
+        format='WebP',
+        options={'quality': 100}
+    )
     author = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name="Автор")
     published_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
     likes = models.PositiveSmallIntegerField(default=0, verbose_name="Кол-во лайков")

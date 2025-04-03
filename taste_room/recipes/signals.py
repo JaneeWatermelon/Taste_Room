@@ -6,9 +6,6 @@ def change_units(instance):
     unit = instance.unit
     quantity = instance.quantity
 
-    print(unit)
-    print(quantity)
-
     if unit == "г" and quantity >= 1000:
         instance.quantity /= 1000
         instance.unit = "кг"
@@ -33,8 +30,6 @@ def post_save_recipe(sender, instance, **kwargs):
             recipe_ingredient._post_save_triggered = True
             recipe_ingredient.save()
             delattr(recipe_ingredient, '_post_save_triggered')
-
-        instance.set_total_rating()
 
         delattr(instance, '_post_save_triggered')
 

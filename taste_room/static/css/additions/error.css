@@ -1,0 +1,115 @@
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+body {
+    background-color: var(--color-light-cream);
+}
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+a {
+    line-height: 0;
+    color: var(--color-cookie);
+}
+.cookies_images {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+}
+.cookies_images > img {
+    height: 130%;
+    transform: rotate(-15deg);
+    position: relative;
+    top: -5%;
+}
+.cookies_images > img:first-child {
+    left: -5%;
+}
+.cookies_images > img:last-child {
+    right: -5%;
+}
+
+.circle_blur {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+.circle_blur > .circle {
+    height: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: var(--color-light-cream);
+    box-shadow: 0 0 250px 300px var(--color-light-cream);
+}
+
+.title_descr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--huge);
+    position: relative;
+    z-index: 3;
+}
+.title_descr > h1 {
+    color: var(--color-cookie);
+    text-shadow: -6px 6px var(--color-black-50);
+    font-size: 200px;
+    line-height: 210px;
+    text-align: center;
+}
+.title_descr > .description {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--mid);
+}
+.title_descr > .description h2 {
+    color: var(--color-cookie);
+    text-align: center;
+}
+
+@media (max-width: 720px) {
+    .d_mobile_none {
+        display: none !important;
+    }
+    .circle_blur > .circle {
+        height: auto;
+        width: 100%;
+    }
+    .cookies_images > img:first-child {
+        left: 0;
+        top: 0;
+        transform: none;
+        height: auto;
+        width: 100%;
+    }
+    .title_descr {
+        gap: var(--mid);
+    }
+    .title_descr > .description {
+        gap: var(--small);
+    }
+    .title_descr > h1 {
+        text-shadow: -4px 4px var(--color-black-50);
+        font-size: 130px;
+        line-height: 140px;
+    }
+}

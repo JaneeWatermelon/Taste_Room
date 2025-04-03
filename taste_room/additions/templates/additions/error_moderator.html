@@ -1,0 +1,44 @@
+{% extends 'recipes/base.html' %}
+{% load static %}
+
+{% block base_styles %}
+
+{% endblock %}
+{% block custom_styles %}
+    <link rel="stylesheet" href="{% static 'css/general/vars.css' %}">
+    <link rel="stylesheet" href="{% static 'css/general/fonts.css' %}">
+    <link rel="stylesheet" href="{% static 'css/additions/error.css' %}">
+    <link rel="stylesheet" href="{% static 'css/additions/moderator.css' %}">
+{% endblock %}
+
+{% block header %}
+
+{% endblock %}
+{% block main %}
+    <main>
+        <div class="cookies_images">
+            <img src="{% static 'img/errors/a_lot_of_cookies.png' %}">
+            <img class="d_mobile_none" src="{% static 'img/errors/a_lot_of_cookies.png' %}">
+        </div>
+        <div class="circle_blur">
+            <div class="circle"></div>
+        </div>
+        <div class="title_descr">
+            <h1 class="lilita_font">Ещё чуть чуть</h1>
+            <div class="description">
+                <h2 class="h1_style lilita_font">Рецепт проверяется модератором</h2>
+                <a href="{% url 'users:author' object.author.username %}"><h2 class="lilita_font">На страницу автора</h2></a>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+{% block footer %}
+
+{% endblock %}
+
+{% block base_scripts %}
+
+{% endblock %}
+{% block custom_scripts %}
+
+{% endblock %}

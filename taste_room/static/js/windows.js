@@ -111,6 +111,7 @@ $(document).ready(function () {
     // Обработчик скроллинга
     $(window).on('scroll', function () {
         $(".pop_up_window").addClass('d_none');
+        $(".pop_up_share").addClass("d_none");
     });
     
     function setListenersMobile(popup, hoverEl) {
@@ -148,7 +149,6 @@ $(document).ready(function () {
     }
 
 
-
     const backFonEl = $(".profile_header > .settings_wrapper > .settings > .settings_item.change_fon");
     const backFonPop = $('.back_black > .profile_window.back_fon');
     setListenersWithBlackBack(backFonPop, backFonEl);
@@ -156,17 +156,75 @@ $(document).ready(function () {
 
 
     
-    const cookTimeLongEl = $('.recipe_item_long .recipe_item_body > .info > .calories_and_time > .time');
-    const cookTimeEl = $('.recipe_item > .recipe_item_header > .info > .time');
-    const cookTimePop = $('.pop_up_window.cook_time_window');
-    setListeners(cookTimePop, cookTimeLongEl);
-    setListeners(cookTimePop, cookTimeEl);
+    window.setCardIngredientAndCooktimeWindows = function() {
+        const cookTimeLongEl = $('.recipe_item_long .recipe_item_body > .info > .calories_and_time > .time');
+        const cookTimeEl = $('.recipe_item > .recipe_item_header > .info > .time');
 
-    const ingredientsLongEl = $('.recipe_item_long > .recipe_item_header > .image_wrapper .back_image');
-    const ingredientsEl = $('.recipe_item > .recipe_item_header > .image_wrapper .back_image');
-    const ingredientsPop = $('.pop_up_window.ingredients_window');
-    setListeners(ingredientsPop, ingredientsLongEl);
-    setListeners(ingredientsPop, ingredientsEl);
+        cookTimeEl.each(function() {
+            const element = $(this);
+            const data_id = element.attr("data-id");
+            const cookTimePop = $(`.pop_up_window.cook_time_window[data-id=${data_id}]`);
+            setListeners(cookTimePop, element);
+        });
+        cookTimeLongEl.each(function() {
+            const element = $(this);
+            const data_id = element.attr("data-id");
+            const cookTimeLongPop = $(`.pop_up_window.cook_time_window[data-id=${data_id}]`);
+            setListeners(cookTimeLongPop, element);
+        });
+
+        const ingredientsLongEl = $('.recipe_item_long > .recipe_item_header > .image_wrapper .back_image');
+        const ingredientsEl = $('.recipe_item > .recipe_item_header > .image_wrapper .back_image');
+
+        ingredientsEl.each(function() {
+            const element = $(this);
+            const data_id = element.attr("data-id");
+            const ingredientsPop = $(`.pop_up_window.ingredients_window[data-id=${data_id}]`);
+            setListeners(ingredientsPop, element);
+        });
+        ingredientsLongEl.each(function() {
+            const element = $(this);
+            const data_id = element.attr("data-id");
+            const ingredientsLongPop = $(`.pop_up_window.ingredients_window[data-id=${data_id}]`);
+            setListeners(ingredientsLongPop, element);
+        });
+    }
+
+    window.setCardIngredientAndCooktimeWindows();
+
+    window.setCardShareWindows = function() {
+        const shareCardNewsEl = $('.news_item > .news_item_footer .share_button');
+        const shareCardRecipeEl = $('.recipe_item > .recipe_item_footer .share_button');
+        const shareCardRecipeLongEl = $('.recipe_item_long .recipe_item_footer .share_button');
+
+        shareCardNewsEl.each(function() {
+            const element = $(this);
+            const shareCardPop = element.closest(".news_item_footer").find(".socials.pop_up_share");
+            element.on('click', function (event) {
+                event.preventDefault();
+                shareCardPop.toggleClass("d_none");
+            });
+        });
+        shareCardRecipeEl.each(function() {
+            const element = $(this);
+            const shareCardPop = element.closest(".recipe_item_footer").find(".socials.pop_up_share");
+            element.on('click', function (event) {
+                event.preventDefault();
+                shareCardPop.toggleClass("d_none");
+            });
+        });
+        shareCardRecipeLongEl.each(function() {
+            const element = $(this);
+            const shareCardPop = element.closest(".recipe_item_footer").find(".socials.pop_up_share");
+            element.on('click', function (event) {
+                event.preventDefault();
+                shareCardPop.toggleClass("d_none");
+            });
+        });
+    }
+
+    window.setCardShareWindows();
+
 
     const spicyEl = $('.recipe_section > .recipe_stats > .column > .recipe_stats_item.spicy');
     const spicyPop = $('.pop_up_window.spicy_window');

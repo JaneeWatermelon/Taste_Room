@@ -6,17 +6,25 @@ from django.urls import path, include
 from recipes.views import (PopularRecipesView, CategoryRecipesView,
                            CreateRecipeView, DetailRecipeView,
                            bluk_create_objects, recipe_like_change,
-                           change_recipe_ingredients)
+                           change_recipe_ingredients, SearchRecipesView)
+
+from users.views import create_comment
 
 app_name = "recipes"
 
 urlpatterns = [
     path('', CategoryRecipesView.as_view(), name="index"),
     path('category/<slug:slug>', CategoryRecipesView.as_view(), name="category"),
+
     path('page/<int:page>', CategoryRecipesView.as_view(), name="paginator"),
     path('page/<int:page>/category/<slug:slug>', CategoryRecipesView.as_view(), name="paginator_category"),
+
+    path('search/', SearchRecipesView.as_view(), name="search"),
+    path('page/<int:page>/search/', SearchRecipesView.as_view(), name="paginator_search"),
+
     path('popular', PopularRecipesView.as_view(), name="popular"),
     path('popular/page/<int:page>', PopularRecipesView.as_view(), name="paginator_popular"),
+
     path('create', CreateRecipeView.as_view(), name="create"),
     path('<int:pk>/<slug:slug>', DetailRecipeView.as_view(), name="detail"),
 

@@ -24,3 +24,7 @@ def round_ingredient_count(n):
         return int(n)
     return n
 
+@register.filter
+def published_date_minus(comments):
+    return comments.order_by("-published_date")
+

@@ -107,6 +107,11 @@ else {
             nextEl: '.recipe_recs > .swiper_nav.next',
             prevEl: '.recipe_recs > .swiper_nav.prev',
         },
+        on: {
+            slideChangeTransitionStart: function() {
+                $('.swiper.recipe_recs').find(".pop_up_share").addClass("d_none");
+            },
+        }
     });
     const swiper_news = new Swiper('.swiper.news_recs', {
         direction: 'horizontal',
@@ -123,29 +128,48 @@ else {
             nextEl: '.news_recs > .swiper_nav.next',
             prevEl: '.news_recs > .swiper_nav.prev',
         },
+        on: {
+            slideChangeTransitionStart: function() {
+                $('.swiper.news_recs').find(".pop_up_share").addClass("d_none");
+            },
+        }
     });
 }
 
-let recipe_image_height = $($($(".recipe_recs .recipe_item")[0]).find(".back_image")).height();
+$(document).ready(function () {
 
-$(".recipe_recs.swiper > .swiper_nav").css({
-    'top': `${8 + (recipe_image_height - $(".recipe_recs > .swiper_nav").height())/2}px`,
-})
+    const swiper_detail_recipe_preview = new Swiper('.recipe_section > .recipe_header > .image_wrapper.swiper', {
+        // direction: 'horizontal',
+        loop: true,
+        slidesPerView: 1,
+        // width: item_width,
+        autoplay: {
+            delay: 3000,
+        },
+        effect: "fade",
+        fadeEffect: {
+            crossFade: true
+        },
+    });
 
-let news_image_height = $($($(".news_recs .news_item")[0]).find(".back_image")).height();
+    let recipe_image_height = $($($(".recipe_recs .recipe_item")[0]).find(".back_image")).height();
+    $(".recipe_recs.swiper > .swiper_nav").css({
+        'top': `${8 + (recipe_image_height - $(".recipe_recs > .swiper_nav").height())/2}px`,
+    })
 
-$(".news_recs.swiper > .swiper_nav").css({
-    'top': `${8 + (news_image_height - $(".news_recs > .swiper_nav").height())/2}px`,
-})
+    let news_image_height = $($($(".news_recs .news_item")[0]).find(".back_image")).height();
+    $(".news_recs.swiper > .swiper_nav").css({
+        'top': `${8 + (news_image_height - $(".news_recs > .swiper_nav").height())/2}px`,
+    })
 
-let news_recs_section_image_height = $($($(".news_recs_section .news_item")[0]).find(".back_image")).height();
+    let news_recs_section_image_height = $($($(".news_recs_section .news_item")[0]).find(".back_image")).height();
+    $(".news_recs_section.swiper > .swiper_nav").css({
+        'top': `${8 + (news_recs_section_image_height - $(".news_recs_section > .swiper_nav").height())/2}px`,
+    })
 
-$(".news_recs_section.swiper > .swiper_nav").css({
-    'top': `${8 + (news_image_height - $(".news_recs_section > .swiper_nav").height())/2}px`,
-})
+    let new_recipes_section_image_height = $($($(".new_recipes_section.swiper .recipe_item")[0]).find(".back_image")).height();
+    $(".new_recipes_section.swiper > .swiper_nav").css({
+        'top': `${8 + (new_recipes_section_image_height - $(".new_recipes_section.swiper > .swiper_nav").height())/2}px`,
+    })
 
-let new_recipes_section_image_height = $($($(".new_recipes_section.swiper .recipe_item")[0]).find(".back_image")).height();
-
-$(".new_recipes_section.swiper > .swiper_nav").css({
-    'top': `${8 + (new_recipes_section_image_height - $(".new_recipes_section.swiper > .swiper_nav").height())/2}px`,
-})
+});

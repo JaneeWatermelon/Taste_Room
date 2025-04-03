@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-%ksj!62jxi%i=dhcbka)n8o)3&4b%(r3p+4@4x+t_$f%z#4*k&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1"]
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
 
 
 # Application definition
@@ -49,6 +53,9 @@ INSTALLED_APPS = [
 
     'ckeditor',
     'ckeditor_uploader',
+    'imagekit',
+    'debug_toolbar',
+    'rest_framework',
 
     'recipes',
     'additions',
@@ -66,6 +73,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'additions.middleware.MetaTagsMiddleware',
 ]
 
@@ -169,6 +177,11 @@ CKEDITOR_CONFIGS = {
 # static
 
 STATIC_URL = '/static/'
+
+# STATICFILES_DIRS = [
+#     BASE_DIR / 'static'
+# ]
+
 if DEBUG:
     STATICFILES_DIRS = [
         BASE_DIR / 'static'

@@ -1,7 +1,8 @@
 from decimal import Decimal
 
-from django.db.models import Case, When, Value, IntegerField
-from django.http import HttpResponseRedirect, JsonResponse
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.http import HttpResponseRedirect, JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views.generic import TemplateView, DetailView, ListView
@@ -9,9 +10,11 @@ from django.views.generic import TemplateView, DetailView, ListView
 from recipes.models import Recipe, Ingredient
 from news.models import News
 from categories.models import RecipeCategory, CategoryGroup
-from users.models import Review
+from users.forms import CreateCommentForm
 
-paginate_by = 24
+from django.db.models import prefetch_related_objects
+
+paginate_by = 34
 
 class MainView(TemplateView):
     template_name = "recipes/main.html"
@@ -19,10 +22,26 @@ class MainView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(MainView, self).get_context_data(**kwargs)
         context['ingredients'] = Ingredient.objects.all()[:12]
-        context['recipes'] = Recipe.objects.filter(visibility=1, status=1)
+        all_recipes = Recipe.objects.filter(visibility=1, status=1).select_related("previews", "author").prefetch_related("recipeingredient_set", "reviews")
+        context['recipes'] = all_recipes.order_by("-published_date")[:34]
+        context['recipes_popular'] = all_recipes.order_by('-popularity')[:34]
         for item in context['recipes']:
             item.stars_on_count = item.rating
-            item.stars_off_count = 5-item.rating
+            item.stars_off_count = 5 - item.rating
+        for item in context['recipes_popular']:
+            item.stars_on_count = item.rating
+            item.stars_off_count = 5 - item.rating
+
+        context['recipes_1'] = context['recipes'][:24]
+        context['recipes_2'] = context['recipes'][24:]
+        context['recipes_popular_1'] = context['recipes_popular'][:24]
+        context['recipes_popular_2'] = context['recipes_popular'][24:]
+
+        context['articles'] = News.objects.filter(visibility=1, status=1).select_related("author").prefetch_related("reviews")[:10]
+        for item in context['articles']:
+            item.stars_on_count = item.rating
+            item.stars_off_count = 5 - item.rating
+            item.published_date = item.published_date.strftime('%d.%m.%Y')
 
         return context
 
@@ -39,17 +58,38 @@ class CategoryRecipesView(ListView):
         for item in queryset:
             item.stars_on_count = item.rating
             item.stars_off_count = 5 - item.rating
-            item.published_date = item.published_date.strftime('%d.%m.%Y')
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super(CategoryRecipesView, self).get_context_data(**kwargs)
         context['category_groups'] = CategoryGroup.objects.all()
+        context['recipes_1'] = context["object_list"][:24]
+        context['recipes_2'] = context["object_list"][24:]
         context['active_recipes'] = True
         context["kwargs"] = self.kwargs
 
         if (self.kwargs.get("slug", None)):
             context["kwargs"]["slug_name"] = RecipeCategory.objects.get(slug=self.kwargs["slug"]).name
+
+        return context
+
+class SearchRecipesView(ListView):
+    template_name = "recipes/search_recipes.html"
+    model = Recipe
+    paginate_by = paginate_by
+
+    def get_queryset(self):
+        # decoded_prompt = iri_to_uri(self.request.GET.get("q"))
+        queryset = find_similar_recipes(self.request.GET.get("q")) + list(word_search_recipes(self.request.GET.get("q")))
+        for item in queryset:
+            item.stars_on_count = item.rating
+            item.stars_off_count = 5 - item.rating
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchRecipesView, self).get_context_data(**kwargs)
+        context['category_groups'] = CategoryGroup.objects.all()
+        context['prompt'] = self.request.GET.get("q")
 
         return context
 
@@ -59,15 +99,17 @@ class PopularRecipesView(ListView):
     paginate_by = paginate_by
 
     def get_queryset(self):
-        queryset = super(PopularRecipesView, self).get_queryset()
+        queryset = super(PopularRecipesView, self).get_queryset().order_by('-popularity')
         for item in queryset:
             item.stars_on_count = item.rating
             item.stars_off_count = 5 - item.rating
-            item.published_date = item.published_date.strftime('%d.%m.%Y')
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super(PopularRecipesView, self).get_context_data(**kwargs)
+
+        context['recipes_popular_1'] = context["object_list"][:24]
+        context['recipes_popular_2'] = context["object_list"][24:]
         context['active_popular'] = True
 
         return context
@@ -82,30 +124,79 @@ class DetailRecipeView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         user = self.request.user
-        context['category_groups'] = CategoryGroup.objects.all()
-        context['stars_on_count'] = self.object.rating
-        context['stars_off_count'] = 5 - self.object.rating
-        context['recipe_ingredients'] = self.object.recipeingredient_set.all()
-        context['articles'] = News.objects.filter(visibility=1, status=1)
-        for item in context['articles']:
-            item.stars_on_count = item.rating
-            item.stars_off_count = 5-item.rating
-            item.published_date = item.published_date.strftime('%d.%m.%Y')
 
-        context['recs_recipes'] = Recipe.objects.filter(categories__in=self.object.categories.all(), visibility=1, status=1)[:10]
-        if context['recs_recipes'].count() < 10:
-            additional_items = Recipe.objects.filter(visibility=1, status=1).exclude(categories__in=self.object.categories.all())[:10-context['recs_recipes'].count()]
-            context['recs_recipes'] = context['recs_recipes'] | additional_items
-        if context['recs_recipes'].count() < 4:
-            context['recs_recipes'] = None
-
-        if user.is_authenticated and self.object.reviews.filter(author=user).exists():
-            context["user_review_exists"] = 1
-            context["user_review_rating"] = self.object.reviews.get(author=user).rating
+        if self.object.status == 4:
+            return context
+        elif self.object.status in (2, 4):
+            raise Http404
         else:
-            context["user_review_exists"] = 0
+            context['category_groups'] = CategoryGroup.objects.prefetch_related("categories", "categories__children")
+            context['stars_on_count'] = self.object.rating
+            context['stars_off_count'] = 5 - self.object.rating
+
+            context['recipe_calories_per_100g'] = self.object.calculate_calories_per_100g()
+            context['recipe_ingredients'] = self.object.recipeingredient_set.all()
+
+            context['side_articles'] = News.objects.filter(visibility=1, status=1).select_related("author").prefetch_related("reviews").order_by("-published_date")[:10]
+            for item in context['side_articles']:
+                item.stars_on_count = item.rating
+                item.stars_off_count = 5-item.rating
+                item.published_date = item.published_date.strftime('%d.%m.%Y')
+
+            context['recs_recipes'] = list(
+                (Recipe.objects.filter(categories__in=self.object.categories.all(), visibility=1, status=1)
+                 .exclude(pk=self.object.pk))[:10].select_related("previews", "author").prefetch_related("recipeingredient_set", "recipeingredient_set__recipe", "recipeingredient_set__ingredient", "reviews")
+            )
+            if len(context['recs_recipes']) < 10:
+                additional_items = list(
+                    Recipe.objects.filter(visibility=1, status=1).exclude(categories__in=self.object.categories.all())[:10-len(context['recs_recipes'])]
+                    .select_related("previews", "author").prefetch_related("recipeingredient_set", "recipeingredient_set__recipe", "recipeingredient_set__ingredient", "reviews")
+                )
+                context['recs_recipes'] = context['recs_recipes'] + additional_items
+            if len(context['recs_recipes']) < 4:
+                context['recs_recipes'] = None
+
+            context['recs_news'] = list(
+                News.objects.filter(categories__in=self.object.categories.all(), visibility=1, status=1)[:10]
+                .select_related("author").prefetch_related("reviews")
+            )
+            if len(context['recs_news']) < 10:
+                additional_items = list(
+                    News.objects.filter(visibility=1, status=1).exclude(
+                    categories__in=self.object.categories.all())[:10 - len(context['recs_news'])]
+                    .select_related("author").prefetch_related("reviews")
+                )
+                context['recs_news'] = context['recs_news'] + additional_items
+            if len(context['recs_news']) < 4:
+                context['recs_news'] = None
+            else:
+                for item in context['recs_news']:
+                    item.stars_on_count = item.rating
+                    item.stars_off_count = 5 - item.rating
+                    item.published_date = item.published_date.strftime('%d.%m.%Y')
+
+            if user.is_authenticated and self.object.reviews.filter(author=user).exists():
+                context["user_review_exists"] = 1
+                context["user_review_rating"] = self.object.reviews.get(author=user).rating
+            else:
+                context["user_review_exists"] = 0
+
+            comments = self.object.comments.filter(parent=None).order_by('-published_date')
+            paginator = Paginator(comments, 2)  # 20 комментариев на страницу
+            page_number = 1
+            page_obj = paginator.get_page(page_number)
+
+            context["comments"] = page_obj
+            context["create_comment_form"] = CreateCommentForm()
 
         return context
+
+    def get(self, request, *args, **kwargs):
+        self.object = Recipe.objects.filter(id=self.kwargs.get("pk")).select_related("previews", "author").prefetch_related("recipeingredient_set", "reviews").get()
+        context = self.get_context_data(object=self.object)
+        if self.object.status == 4:
+            self.template_name = "additions/error_moderator.html"
+        return self.render_to_response(context)
 
 
 
@@ -166,4 +257,32 @@ def change_recipe_ingredients(request):
             'status': 'success',
             'ingredients': updated_ingredients,
         })
+
+
+from Levenshtein import distance, ratio
+
+
+def find_similar_recipes(search_prompt, threshold=10):
+    all_recipes = Recipe.objects.all().select_related("previews", "author").prefetch_related("recipeingredient_set", "reviews")
+    similar = []
+    search_prompt = search_prompt.lower()
+
+    for recipe in all_recipes:
+        my_treshold = distance(search_prompt, recipe.title.lower())
+        print(my_treshold)
+        if my_treshold <= threshold:
+            similar.append(recipe)
+
+    return similar
+
+def word_search_recipes(search_prompt):
+    # 2. Поиск по словам
+    words = search_prompt.split()
+    word_q = Q()
+    for word in words:
+        word = word.lower()
+        word_q |= Q(title__icontains=word) | Q(description_card__icontains=word) | Q(ingredients__title__icontains=word)
+    word_results = Recipe.objects.filter(word_q)
+
+    return word_results.select_related("previews", "author").prefetch_related("recipeingredient_set", "reviews")
 

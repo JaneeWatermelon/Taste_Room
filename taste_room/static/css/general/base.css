@@ -1,51 +1,12 @@
-:root {
-    --color-white: #FFFFFF;
-    --color-light-gray: #ACACAC;
-    --color-light-ghost: #F1F1F1;
-
-    --color-cookie: #F7B779;
-    --color-orange: #D68C45;
-
-    --color-green: #4C956C;
-    --color-light-green: #95CF00;
-
-    --color-pink: #FFC9B9;
-    --color-red: #FF6766;
-    --color-heart: #DB4443;
-    
-    --color-cream: #DDE5B6;
-    --color-light-cream: #FEFEE3;
-    
-    --color-yellow: #26F42D;
-    --color-link: #3161FF;
-    
-    --color-black: #000000;
-    --color-black-50: rgba(0, 0, 0, 0.5);
-    --color-black-75: rgba(0, 0, 0, 0.75);
-
-    --tiny: 4px;
-    --small: 8px;
-    --normal: 12px;
-    --mid: 16px;
-    --big: 24px;
-    --huge: 32px;
-    --mega: 48px;
-
-    --padding-window: 60px;
-}
-
-@media (max-width: 720px) {
-    :root {
-        --padding-window: var(--normal);
-    }
-}
-
 .link_color {
     color: var(--color-white);
 }
 
 .d_none {
     display: none !important;
+}
+.v_none {
+    visibility: hidden !important;
 }
 
 html, body {
@@ -85,6 +46,16 @@ textarea {
     width: 100%;
     resize: none;
     padding: 0;
+}
+
+.image_input {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
 }
 
 input[type='checkbox'] {
@@ -185,6 +156,12 @@ a {
 .anchor_hidden {
     position: absolute;
     top: -30vh;
+    visibility: hidden;
+}
+.anchor-heading {
+    position: relative;
+    padding-top: 100px;  /* Отступ сверху */
+    margin-top: -100px;   /* Поднимаем блок выше */
 }
 
 header {

@@ -21,7 +21,7 @@
                 <div class="content">
                     <div class="image_wrapper">
                         {% if object.avatar %}
-                        <img src="{{ object.avatar.url }}">
+                        <img src="{{ object.optimized_image.url }}">
                         {% else %}
                         <img src="{% static 'img/Profile/author_default.png' %}">
                         {% endif %}
@@ -72,7 +72,7 @@
                                 </div>
                             </div>
                             {% endif %}
-                            <h4>На сайте с {{ object.date_joined }}</h4>
+                            <h4>На сайте с {{ date_joined }}</h4>
                         </div>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                 <div class="avatar_and_settings">
                     <div class="image_wrapper">
                         {% if object.avatar %}
-                        <img src="{{ object.avatar.url }}">
+                        <img src="{{ object.optimized_image.url }}">
                         {% else %}
                         <img src="{% static 'img/Profile/author_default.png' %}">
                         {% endif %}
@@ -174,106 +174,143 @@
                                 </div>
                             </div>
                             {% endif %}
-                            <h4>На сайте с {{ object.date_joined }}</h4>
+                            <h4>На сайте с {{ date_joined }}</h4>
                         </div>
                     </div>
                 </div>
             </section>
             <section class="profile_chapters">
                 <div class="chapter_wrapper">
-                    <div class="add_button recipe">
+                    <a href="{% url 'recipes:create' %}" class="add_button recipe">
                         <img src="{% static 'svg/Plus_Minus/Plus_white.svg' %}">
                         <h4>Рецепт</h4>
-                    </div>
-                    <h4>Понравившиеся рецепты</h4>
-                    <h4>Мои рецепты</h4>
+                    </a>
+                    <h4 data-for="liked_recipes_section" class="active">Понравившиеся рецепты</h4>
+                    <h4 data-for="my_recipes_section">Мои рецепты</h4>
                 </div>
                 <span class="line d_mobile_none"></span>
                 <div class="chapter_wrapper">
-                    <div class="add_button news">
+                    <a href="{% url 'news:create' %}" class="add_button news">
                         <img src="{% static 'svg/Plus_Minus/Plus_white.svg' %}">
                         <h4>Статья</h4>
-                    </div>
-                    <h4>Мои статьи</h4>
+                    </a>
+                    <h4 data-for="articles_section">Мои статьи</h4>
                 </div>
                 <span class="line d_mobile_none"></span>
                 <div class="chapter_wrapper">
-                    <h4>Мои подписки</h4>
-                    <h4>Достижения</h4>
+                    <h4 data-for="subs_section">Мои подписки</h4>
+                    <h4 data-for="achievements_section">Достижения</h4>
                 </div>
             </section>
-            <section class="new_recipes_section">
+            <section id="liked_recipes_section" class="new_recipes_section possible_block">
                 <div class="cards_wrapper">
                     {% for item in liked_recipes %}
-                    <div class="recipe_item">
-                        <div class="recipe_item_header">
-                            <div class="image_wrapper">
-                                <a href="{% url 'recipes:detail' item.id item.slug %}">
-                                    <img class="back_image" src="{{ item.previews.preview_1.url }}">
-                                </a>
-                                {% if user.is_authenticated %}
-                                    {% if item.id in user.liked_recipes_id %}
-                                    <div class="heart_wrapper active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
-                                        <img src="{% static 'svg/Random_icons/Heart_fill.svg' %}">
-                                    </div>
-                                    {% else %}
-                                    <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
-                                        <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
-                                    </div>
-                                    {% endif %}
+                    <div data-id="{{ item.id }}" class="recipe_item">
+                    <div class="recipe_item_header">
+                        <div class="image_wrapper">
+                            <a href="{% url 'recipes:detail' item.id item.slug %}">
+                                <img data-id="{{ item.id }}" class="back_image" src="{{ item.previews.optimized_image_1_small.url }}">
+                            </a>
+                            {% if user.is_authenticated %}
+                                {% if item.id in user.liked_recipes_id %}
+                                <div class="heart_wrapper active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                                    <img src="{% static 'svg/Random_icons/Heart_fill.svg' %}">
+                                </div>
                                 {% else %}
                                 <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
                                     <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
                                 </div>
                                 {% endif %}
+                            {% else %}
+                            <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                                <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
                             </div>
-                            <div class="info">
-                                <div class="calories">
-                                    <img src="{% static 'svg/Random_icons/Callories_icon.svg' %}">
-                                    <h4>{{ item.calculate_total_calories }} ккал</h4>
-                                </div>
-                                <div class="time">
-                                    <img src="{% static 'svg/Random_icons/Clock_icon.svg' %}">
-                                    <h4>{{ item.cook_time_full|short_timedelta }}</h4>
-                                </div>
-                            </div>
-                            <a href="{% url 'recipes:detail' item.id item.slug %}">
-                                <h3 class="title medium_font">{{ item.title }}</h3>
-                            </a>
-                            <h4 class="description">{{ item.description_card }}</h4>
+                            {% endif %}
                         </div>
-                        <div class="recipe_item_footer">
-                            <a href="{% url 'users:author' item.author.username %}" class="icon_title">
-                                <img src="{% static 'svg/Cookie/Smile_half_black.svg' %}">
-                                <h4>{% if item.author.name %}{{ item.author.name }}{% else %}{{ item.author.username }}{% endif %}</h4>
-                            </a>
-                            <a href="">
-                                <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
-                            </a>
+                        <div class="info">
+                            <div class="calories">
+                                <img src="{% static 'svg/Random_icons/Callories_icon.svg' %}">
+                                <h4>{{ item.calculate_calories_per_100g }} ккал</h4>
+                            </div>
+                            <div data-id="{{ item.id }}" class="time">
+                                <img src="{% static 'svg/Random_icons/Clock_icon.svg' %}">
+                                <h4>{{ item.cook_time_full|short_timedelta }}</h4>
+                            </div>
+                        </div>
+                        <a href="{% url 'recipes:detail' item.id item.slug %}">
+                            <h3 class="title medium_font">{{ item.title }}</h3>
+                        </a>
+                        <h4 class="description">{{ item.description_card }}</h4>
+                    </div>
+                    <div class="recipe_item_footer">
+                        <a href="{% url 'users:author' item.author.username %}" class="icon_title">
+                            <img src="{% static 'svg/Cookie/Smile_half_black.svg' %}">
+                            <h4>{% if item.author.name %}{{ item.author.name }}{% else %}{{ item.author.username }}{% endif %}</h4>
+                        </a>
+                        <a href="">
+                            <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
+                        </a>
+
+                        <div class="socials pop_up_share d_none" data-title="{{ item.title }}" data-url="{% url 'recipes:detail' item.id item.slug %}">
+                            <img class="share_option" data-social="tg" src="{% static 'svg/Socials_Colorful/TG.svg' %}">
+                            <img class="share_option" data-social="vk" src="{% static 'svg/Socials_Colorful/VK.svg' %}">
+                            <img class="share_option" data-social="ws" src="{% static 'svg/Socials_Colorful/WS.svg' %}">
+                            <img class="share_option" data-social="pinterest" src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
+                            <div class="copy_wrapper">
+                                <img class="copy_option" data-social="copy" src="{% static 'svg/Socials_Colorful/Copy.svg' %}">
+                                <div class="copy_window">
+                                    <div class="inner_wrapper">
+                                        <h5>Ссылка скопирована!</h5>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <div data-id="{{ item.id }}" class="pop_up_window cook_time_window d_none">
+                        <p>Время приготовления</p>
+                        <div class="inner_wrapper">
+                            <img src="{% static 'svg/Random_icons/Clock_icon.svg' %}">
+                            <h5 class="green">Общее - {{ item.cook_time_full|short_timedelta }}</h5>
+                        </div>
+                        <div class="inner_wrapper">
+                            <img src="{% static 'svg/Random_icons/Clock_icon_red.svg' %}">
+                            <h5 class="red">Активное - {{ item.cook_time_active|short_timedelta }}</h5>
+                        </div>
+                    </div>
+                    <div data-id="{{ item.id }}" class="pop_up_window ingredients_window d_none">
+                        <p>Ингредиенты</p>
+                        {% for ingredient in item.recipeingredient_set.all %}
+                        <div class="inner_wrapper">
+                            <h5>{{ ingredient.ingredient.title }} - {{ ingredient.quantity|round_ingredient_count }} {{ ingredient.unit }}</h5>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
                     {% endfor %}
                 </div>
             </section>
-            <section class="new_recipes_section">
-                <div class="publish_types">
-                    <div class="publish_type_item active">
+            <section id="my_recipes_section" class="new_recipes_section possible_block d_none">
+                <div data-url="{% url 'users:load_my_recipes_ajax' %}" class="publish_types">
+                    <div data-status="1" class="publish_type_item active">
                         <h4 class="medium_font">Опубликованные</h4>
                     </div>
-                    <div class="publish_type_item">
+                    <div data-status="2" class="publish_type_item">
                         <h4 class="medium_font">Не опубликованные</h4>
                     </div>
-                    <div class="publish_type_item">
+                    <div data-status="3" class="publish_type_item">
                         <h4 class="medium_font">Черновики</h4>
+                    </div>
+                    <div data-status="4" class="publish_type_item">
+                        <h4 class="medium_font">На модерации</h4>
                     </div>
                 </div>
                 <div class="cards_wrapper">
                     {% for item in my_recipes %}
-                    <div class="recipe_item">
+                    <div data-id="{{ item.id }}" class="recipe_item">
                         <div class="recipe_item_header">
                             <div class="image_wrapper">
                                 <a href="{% url 'recipes:detail' item.id item.slug %}">
-                                    <img class="back_image" src="{{ item.previews.preview_1.url }}">
+                                    <img data-id="{{ item.id }}" class="back_image" src="{{ item.previews.optimized_image_1_small.url }}">
                                 </a>
                                 {% if user.is_authenticated %}
                                     {% if item.id in user.liked_recipes_id %}
@@ -291,30 +328,36 @@
                                 </div>
                                 {% endif %}
                                 <div class="buttons">
+                                    {% if item.status != 1 %}
                                     <div class="change">
                                         <img src="{% static 'svg/Random_icons/Edit_icon.svg' %}">
                                         <h4>Редактировать</h4>
                                     </div>
+                                    {% endif %}
+                                    {% if item.status == 2 %}
                                     <div class="public">
                                         <img src="{% static 'svg/Yes_No/Yes_no_shadow.svg' %}">
                                         <h4 class="medium_font white">Опубликовать</h4>
                                     </div>
+                                    {% elif item.status == 1 %}
                                     <div class="unpublic">
                                         <img src="{% static 'svg/Yes_No/No_no_shadow.svg' %}">
                                         <h4 class="medium_font white">Снять с публикации</h4>
                                     </div>
+                                    {% elif item.status == 4 %}
                                     <div class="moderator">
                                         <img src="{% static 'svg/Random_icons/Gear_icon_white.svg' %}">
                                         <h4 class="medium_font white">Проверяется модератором</h4>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="info">
                                 <div class="calories">
                                     <img src="{% static 'svg/Random_icons/Callories_icon.svg' %}">
-                                    <h4>{{ item.calculate_total_calories }} ккал</h4>
+                                    <h4>{{ item.calculate_calories_per_100g }} ккал</h4>
                                 </div>
-                                <div class="time">
+                                <div data-id="{{ item.id }}" class="time">
                                     <img src="{% static 'svg/Random_icons/Clock_icon.svg' %}">
                                     <h4>{{ item.cook_time_full|short_timedelta }}</h4>
                                 </div>
@@ -332,12 +375,46 @@
                             <a href="">
                                 <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
                             </a>
+
+                            <div class="socials pop_up_share d_none" data-title="{{ item.title }}" data-url="{% url 'recipes:detail' item.id item.slug %}">
+                                <img class="share_option" data-social="tg" src="{% static 'svg/Socials_Colorful/TG.svg' %}">
+                                <img class="share_option" data-social="vk" src="{% static 'svg/Socials_Colorful/VK.svg' %}">
+                                <img class="share_option" data-social="ws" src="{% static 'svg/Socials_Colorful/WS.svg' %}">
+                                <img class="share_option" data-social="pinterest" src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
+                                <div class="copy_wrapper">
+                                    <img class="copy_option" data-social="copy" src="{% static 'svg/Socials_Colorful/Copy.svg' %}">
+                                    <div class="copy_window">
+                                        <div class="inner_wrapper">
+                                            <h5>Ссылка скопирована!</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div data-id="{{ item.id }}" class="pop_up_window cook_time_window d_none">
+                            <p>Время приготовления</p>
+                            <div class="inner_wrapper">
+                                <img src="{% static 'svg/Random_icons/Clock_icon.svg' %}">
+                                <h5 class="green">Общее - {{ item.cook_time_full|short_timedelta }}</h5>
+                            </div>
+                            <div class="inner_wrapper">
+                                <img src="{% static 'svg/Random_icons/Clock_icon_red.svg' %}">
+                                <h5 class="red">Активное - {{ item.cook_time_active|short_timedelta }}</h5>
+                            </div>
+                        </div>
+                        <div data-id="{{ item.id }}" class="pop_up_window ingredients_window d_none">
+                            <p>Ингредиенты</p>
+                            {% for ingredient in item.recipeingredient_set.all %}
+                            <div class="inner_wrapper">
+                                <h5>{{ ingredient.ingredient.title }} - {{ ingredient.quantity|round_ingredient_count }} {{ ingredient.unit }}</h5>
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                     {% endfor %}
                 </div>
             </section>
-            <section class="subs_section">
+            <section id="subs_section" class="subs_section possible_block d_none">
                 <div class="input_wrapper">
                     <input placeholder="Введите тег автора">
                     <button class="input_button magnifier">
@@ -350,7 +427,7 @@
                         <div class="info">
                             <a href="{% url 'users:author' item.username %}" class="image_wrapper">
                                 {% if item.avatar %}
-                                <img src="{{ item.avatar.url }}">
+                                <img src="{{ item.optimized_image_small.url }}">
                                 {% else %}
                                 <img src="{% static 'img/Profile/author_default.png' %}">
                                 {% endif %}
@@ -370,16 +447,19 @@
                     {% endfor %}
                 </div>
             </section>
-            <section class="articles_section">
-                <div class="publish_types">
-                    <div class="publish_type_item active">
+            <section id="articles_section" class="articles_section possible_block d_none">
+                <div data-url="{% url 'users:load_my_articles_ajax' %}" class="publish_types">
+                    <div data-status="1" class="publish_type_item active">
                         <h4 class="medium_font">Опубликованные</h4>
                     </div>
-                    <div class="publish_type_item">
+                    <div data-status="2" class="publish_type_item">
                         <h4 class="medium_font">Не опубликованные</h4>
                     </div>
-                    <div class="publish_type_item">
+                    <div data-status="3" class="publish_type_item">
                         <h4 class="medium_font">Черновики</h4>
+                    </div>
+                    <div data-status="4" class="publish_type_item">
+                        <h4 class="medium_font">На модерации</h4>
                     </div>
                 </div>
                 <div class="cards_wrapper">
@@ -388,28 +468,34 @@
                         <div class="news_item_header">
                             <div class="image_wrapper">
                                 <a href="{% url 'news:detail' item.id item.slug %}">
-                                    <img class="back_image" src="{{ item.preview.url }}">
+                                    <img class="back_image" src="{{ item.optimized_image_small.url }}">
                                 </a>
                                 <div class="date_wrapper">
                                     <h4>{{ item.published_date }}</h4>
                                 </div>
                                 <div class="buttons">
+                                    {% if item.status != 1 %}
                                     <div class="change">
                                         <img src="{% static 'svg/Random_icons/Edit_icon.svg' %}">
                                         <h4>Редактировать</h4>
                                     </div>
+                                    {% endif %}
+                                    {% if item.status == 2 %}
                                     <div class="public">
                                         <img src="{% static 'svg/Yes_No/Yes_no_shadow.svg' %}">
                                         <h4 class="medium_font white">Опубликовать</h4>
                                     </div>
+                                    {% elif item.status == 1 %}
                                     <div class="unpublic">
                                         <img src="{% static 'svg/Yes_No/No_no_shadow.svg' %}">
                                         <h4 class="medium_font white">Снять с публикации</h4>
                                     </div>
+                                    {% elif item.status == 4 %}
                                     <div class="moderator">
                                         <img src="{% static 'svg/Random_icons/Gear_icon_white.svg' %}">
                                         <h4 class="medium_font white">Проверяется модератором</h4>
                                     </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             <div class="info">
@@ -440,16 +526,31 @@
                             <a href="">
                                 <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
                             </a>
+
+                            <div class="socials pop_up_share d_none" data-title="{{ item.title }}" data-url="{% url 'news:detail' item.id item.slug %}">
+                                <img class="share_option" data-social="tg" src="{% static 'svg/Socials_Colorful/TG.svg' %}">
+                                <img class="share_option" data-social="vk" src="{% static 'svg/Socials_Colorful/VK.svg' %}">
+                                <img class="share_option" data-social="ws" src="{% static 'svg/Socials_Colorful/WS.svg' %}">
+                                <img class="share_option" data-social="pinterest" src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
+                                <div class="copy_wrapper">
+                                    <img class="copy_option" data-social="copy" src="{% static 'svg/Socials_Colorful/Copy.svg' %}">
+                                    <div class="copy_window">
+                                        <div class="inner_wrapper">
+                                            <h5>Ссылка скопирована!</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
             </section>
-            <section class="nothing_section">
+            <section id="nothing_section" class="nothing_section possible_block d_none">
                 <img src="{% static 'svg/Cookie/Sad_half_black.svg' %}">
                 <h3 class="black_50 medium_font">Тут пока ничего нет</h3>
             </section>
-            <section class="settings_section">
+            <section id="settings_section" class="settings_section possible_block d_none">
                 <div class="settings">
                     <div class="background_and_avatar">
                         <div class="background">
@@ -624,7 +725,7 @@
                     <h4>Сохранить изменения</h4>
                 </div>
             </section>
-            <section class="achievements_section">
+            <section id="achievements_section" class="achievements_section possible_block d_none">
                 <div class="my_achiv">
                     <h3 class="medium_font">Полученные достижения</h3>
                     <div class="achiv_list">

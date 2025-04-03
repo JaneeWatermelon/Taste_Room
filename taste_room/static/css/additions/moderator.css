@@ -1,0 +1,13 @@
+.title_descr > h1 {
+    text-shadow: -4px 4px var(--color-black-50);
+    font-size: 100px;
+    line-height: 110px;
+}
+
+@media (max-width: 720px) {
+    .title_descr > h1 {
+        text-shadow: -3px 3px var(--color-black-50);
+        font-size: 70px;
+        line-height: 76px;
+    }
+}

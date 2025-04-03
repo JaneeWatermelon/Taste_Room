@@ -72,7 +72,7 @@
                         <div class="news_item_header">
                             <div class="image_wrapper">
                                 <a href="{% url 'news:detail' item.id item.slug %}">
-                                    <img class="back_image" src="{{ item.preview.url }}">
+                                    <img class="back_image" src="{{ item.optimized_image_small.url }}">
                                 </a>
                                 <div class="date_wrapper">
                                     <h4>{{ item.published_date }}</h4>
@@ -106,6 +106,21 @@
                             <a href="">
                                 <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
                             </a>
+
+                            <div class="socials pop_up_share d_none" data-title="{{ item.title }}" data-url="{% url 'news:detail' item.id item.slug %}">
+                                <img class="share_option" data-social="tg" src="{% static 'svg/Socials_Colorful/TG.svg' %}">
+                                <img class="share_option" data-social="vk" src="{% static 'svg/Socials_Colorful/VK.svg' %}">
+                                <img class="share_option" data-social="ws" src="{% static 'svg/Socials_Colorful/WS.svg' %}">
+                                <img class="share_option" data-social="pinterest" src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
+                                <div class="copy_wrapper">
+                                    <img class="copy_option" data-social="copy" src="{% static 'svg/Socials_Colorful/Copy.svg' %}">
+                                    <div class="copy_window">
+                                        <div class="inner_wrapper">
+                                            <h5>Ссылка скопирована!</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     {% endfor %}

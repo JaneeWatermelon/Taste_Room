@@ -58,7 +58,7 @@ class AchievementAdmin(ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(ModelAdmin):
-    list_display = ["author", "likes", "dislikes", "parent", "published_date",]
+    list_display = ["author", "likes", "dislikes", "parent", "published_date", "id"]
 
 @admin.register(Review)
 class ReviewAdmin(ModelAdmin):

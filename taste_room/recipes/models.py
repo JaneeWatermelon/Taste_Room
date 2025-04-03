@@ -2,8 +2,12 @@ import math
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.template.defaulttags import comment
 from django.utils.text import slugify
 from django.utils.timezone import timedelta, now
+
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 from users.models import User, Comment, Review
 from categories.models import RecipeCategory
@@ -103,8 +107,9 @@ class Units:
 class Ingredient(models.Model):
     title = models.CharField(max_length=64, verbose_name="Название")
     slug = models.SlugField(blank=True, default=slugify(title), verbose_name="Ссылочное название")
-    icon = models.ImageField(upload_to="ingredient_icons/", verbose_name="Иконка")
+    icon = models.FileField(upload_to="ingredient_icons/", verbose_name="Иконка")
     calory_count = models.PositiveSmallIntegerField(default=0, verbose_name="Кол-во калорий")
+    weight_per_unit = models.PositiveSmallIntegerField(default=0, verbose_name="Вес 1 штуки")
 
     def __str__(self):
         return self.title
@@ -123,6 +128,13 @@ class RecipeStep(models.Model):
     image = models.ImageField(upload_to="recipe_step_images/", verbose_name="Изображение")
     text = models.TextField(max_length=512, verbose_name="Текст")
 
+    optimized_image = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(1536, 1024)],  # Размер оптимизированного изображения
+        format='WebP',
+        options={'quality': 85}
+    )
+
     class Meta:
         verbose_name = "Шаг в рецепте"
         verbose_name_plural = "Шаги в рецептах"
@@ -134,6 +146,31 @@ class RecipePreview(models.Model):
     preview_1 = models.ImageField(upload_to="recipe_previews/", verbose_name="Превью 1")
     preview_2 = models.ImageField(upload_to="recipe_previews/", blank=True, null=True, verbose_name="Превью 2")
     preview_3 = models.ImageField(upload_to="recipe_previews/", blank=True, null=True, verbose_name="Превью 3")
+
+    optimized_image_1_small = ImageSpecField(
+        source='preview_1',
+        processors=[ResizeToFill(525, 350)],  # Размер оптимизированного изображения
+        format='WebP',
+        options={'quality': 100}
+    )
+    optimized_image_1 = ImageSpecField(
+        source='preview_1',
+        processors=[ResizeToFill(1536, 1024)],  # Размер оптимизированного изображения
+        format='WebP',
+        options={'quality': 85}
+    )
+    optimized_image_2 = ImageSpecField(
+        source='preview_2',
+        processors=[ResizeToFill(1536, 1024)],  # Размер оптимизированного изображения
+        format='WebP',
+        options={'quality': 85}
+    )
+    optimized_image_3 = ImageSpecField(
+        source='preview_3',
+        processors=[ResizeToFill(1536, 1024)],  # Размер оптимизированного изображения
+        format='WebP',
+        options={'quality': 85}
+    )
 
     class Meta:
         verbose_name = "Превью в рецепте"
@@ -164,6 +201,7 @@ class Recipe(models.Model):
     published_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
     scipy = models.PositiveSmallIntegerField(choices=Scipy.List, verbose_name="Острота")
     difficulty = models.PositiveSmallIntegerField(choices=Difficulty.List, verbose_name="Сложность")
+    popularity = models.PositiveSmallIntegerField(default=0, verbose_name="Популярность")
 
     status = models.PositiveSmallIntegerField(choices=Status.List, verbose_name="Статус")
     visibility = models.PositiveSmallIntegerField(choices=Visibility.List, verbose_name="Видимость")
@@ -197,7 +235,53 @@ class Recipe(models.Model):
             result = round(result, 0)
 
         self.rating = result
-        self.save()
+
+    def calculate_calories_per_100g(self):
+        total_calories = 0  # Общая калорийность
+        total_weight = 0  # Общий вес блюда в граммах
+
+        for recipe_ingredient in self.recipeingredient_set.all():
+            ingredient = recipe_ingredient.ingredient
+            quantity = float(recipe_ingredient.quantity)
+            unit = recipe_ingredient.unit
+
+            # Переводим количество в граммы
+            if unit == 'г':
+                weight = quantity
+            elif unit == 'кг':
+                weight = quantity * 1000
+            elif unit == 'мл':
+                weight = quantity
+            elif unit == 'л':
+                weight = quantity * 1000
+            elif unit == 'ст':
+                weight = quantity * 250
+            elif unit == 'ст.л.':
+                weight = quantity * 15
+            elif unit == 'ч.л.':
+                weight = quantity * 5
+            elif unit == 'шт':
+                weight = quantity * ingredient.weight_per_unit  # Вес одной штуки
+            else:
+                weight = 0
+
+            # Рассчитываем калорийность для текущего ингредиента
+            ingredient_calories = (ingredient.calory_count / 100) * weight if weight != 0 else ingredient.calory_count * quantity
+            total_calories += ingredient_calories
+            total_weight += weight
+
+        # Рассчитываем калорийность на 100 грамм
+        if total_weight == 0:
+            return 0  # Чтобы избежать деления на ноль
+
+        calories_per_100g = int((total_calories / total_weight) * 100)
+        return calories_per_100g
+
+    def set_popularity(self):
+        result = 0
+        result += self.reviews.all().count() * self.rating
+        result += self.comments.all().count() * 20
+        self.popularity = int(result)
 
     class Meta:
         ordering = ["title"]
@@ -210,6 +294,8 @@ class Recipe(models.Model):
     def save(self, *args, **kwargs):
         old_slug = slugify(transliterate_russian_to_pseudo_english(self.title))
         self.slug = get_unique_slug(self, Recipe, old_slug)
+        self.set_total_rating()
+        self.set_popularity()
         super().save(*args, **kwargs)
 
 class RecipeIngredient(models.Model):

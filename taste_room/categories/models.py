@@ -59,18 +59,3 @@ class CategoryGroup(models.Model):
 
     def __str__(self):
         return self.title
-
-# def categories_dict():
-#     categories = {}
-#     for category_group in CategoryGroup.objects.all():
-#         category_group_list = [category_group.title, category_group.slug]
-#         categories[category_group_list] = {}
-#         for category in category_group.categories.all():
-#             category_list = [category.name, category.slug]
-#             if category.children:
-#                 children_dict = {}
-#                 for category_children in category.children:
-#                     category_children_list = [category_children.name, category_children.slug]
-#                 children_dict[] = [for category.children]
-#             else:
-#                 categories[category_group_list][category_list] = None

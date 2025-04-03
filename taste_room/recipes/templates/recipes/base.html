@@ -6,10 +6,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Document</title>
+    <title>{{ request.meta_title }}</title>
+    <meta name="description" content="{{ request.meta_description }}">
+
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{ request.meta_og_title }}" />
+    <meta property="og:description" content="{{ request.meta_og_description }}" />
+    <meta property="og:url" content="{% block og_url %}{{ request.path }}{% endblock %}" />
+    <meta property="og:site_name" content="TasteRoom" />
+
+    <meta property="og:image" content="{% static 'img/recipe_and_article/noodles.jpg' %}" />
+    <meta property="og:image:type" content="image/png" />
+
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
+    <link rel="shortcut icon" href="{% static 'favicon/favicon.ico' %}" />
+    <link rel="apple-touch-icon" href="{% static 'favicon/favicon.ico' %}" />
 
     <meta name="csrf-token" content="{{ csrf_token }}">
 
+    {% block base_styles %}
     <link rel="stylesheet" href="{% static 'css/general/vars.css' %}">
     <link rel="stylesheet" href="{% static 'css/general/fonts.css' %}">
     <link rel="stylesheet" href="{% static 'css/general/base.css' %}">
@@ -17,12 +33,14 @@
     <link rel="stylesheet" href="{% static 'css/general/swiper.css' %}">
     <link rel="stylesheet" href="{% static 'css/general/inputs.css' %}">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" >
+    {% endblock %}
 
     {% block custom_styles %}
     {% endblock %}
 </head>
 <body id="body">
+    {% block header %}
     <header>
         <div class="header_wrapper">
             <a href="{% url 'main' %}">
@@ -38,7 +56,7 @@
                 <a href="{% url 'recipes:create' %}"><img id="add_recipe" src="{% static 'svg/Plus_Minus/Plus_fill.svg' %}"></a>
                 <a href="{% url 'recipes:create' %}"><img id="tg_notif" src="{% static 'svg/Socials_WB/Notif.svg' %}"></a>
                 {% if user.is_authenticated %}
-                <a class="profile_icon_wrapper" href="{% url 'users:profile' %}"><img class="d_mobile_none" id="profile" src="{{ user.avatar.url }}"></a>
+                <a class="profile_icon_wrapper" href="{% url 'users:profile' %}"><img class="d_mobile_none" id="profile" src="{{ user.optimized_image_small.url }}"></a>
                 {% else %}
                 <a href="{% url 'users:profile' %}"><img class="d_mobile_none" id="profile" src="{% static 'svg/Cookie/Cookie_with_hat.svg' %}"></a>
                 {% endif %}
@@ -54,8 +72,10 @@
             <img class="d_desktop_none" id="top_waves" src="{% static 'svg/Shapes/Waves_header_mobile.svg' %}">
         </div>
     </header>
+    {% endblock %}
     {% block main %}
     {% endblock %}
+    {% block footer %}
     <a href="#body" id="go_up_wrapper">
             <img src="{% static 'svg/Random_icons/Show_Hide_icon_gray.svg' %}">
         </a>
@@ -115,7 +135,9 @@
             <img class="d_desktop_none" src="{% static 'svg/Shapes/Chocolates_footer_mobile.svg' %}">
         </div>
     </footer>
+    {% endblock %}
 
+    {% block base_scripts %}
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="{% static 'js/swiper.js' %}"></script>
@@ -125,11 +147,13 @@
     <script src="{% static 'js/category.js' %}"></script>
     <script src="{% static 'js/windows.js' %}"></script>
     <script src="{% static 'js/set_image_height.js' %}"></script>
+    <script src="{% static 'js/share_socials.js' %}"></script>
 
     <script>
         const heart_blank_icon = "{% static 'svg/Random_icons/Heart_blank.svg' %}";
         const heart_fill_icon = "{% static 'svg/Random_icons/Heart_fill.svg' %}";
     </script>
+    {% endblock %}
 
     {% block custom_scripts %}
     {% endblock %}

@@ -37,7 +37,7 @@ class CsvImportForm(forms.Form):
 
 @admin.register(Ingredient)
 class IngredientAdmin(ModelAdmin):
-    list_display = ["title", "slug", "calory_count", "icon",]
+    list_display = ["title", "slug", "calory_count", "weight_per_unit", "icon",]
     list_editable = ["icon",]
     change_list_template = "admin/ingredient_change_list.html"
 
@@ -60,6 +60,7 @@ class IngredientAdmin(ModelAdmin):
                         Ingredient.objects.create(
                             title=row['title'],
                             calory_count=row['calory_count'],
+                            weight_per_unit=row['weight_per_unit'],
                         )
                         done_titles += [row['title']]
                 self.message_user(request, "Ингредиенты успешно импортированы.")

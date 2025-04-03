@@ -51,7 +51,7 @@ $(".edit_section > .categories > .categories_list > .title_and_list > .category_
 $(".edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper > .delete_and_change > .delete").on("click", function() {
 
   const item = $(`.edit_section > .ready_dish_photo > .photo_list > .photo_item`);
-  
+
   item.remove();
 })
 

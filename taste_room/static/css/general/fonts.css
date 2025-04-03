@@ -49,61 +49,61 @@ html {
         margin: 0;
     }
 }
-html h1 {
+html h1, .h1_style {
     font-size: 3rem; /*48px*/
     line-height: 3.25rem; /*52px*/
 }
-html h2 {
+html h2, .h2_style {
     font-size: 2rem; /*32px*/
     line-height: 2.25rem; /*36px*/
 }
-html h3 {
+html h3, .h3_style {
     font-size: 1.5rem; /*24px*/
     line-height: 1.75rem; /*28px*/
 }
-html h4 {
+html h4, .h4_style {
     font-size: 1rem; /*16px*/
     line-height: 1.125rem; /*18px*/
 }
-html h5 {
+html h5, .h5_style {
     font-size: 0.75rem; /*12px*/
     line-height: 0.875rem; /*14px*/
 }
-html h6 {
+html h6, .h6_style {
     font-size: 0.5rem; /*8px*/
     line-height: 0.625rem; /*10px*/
 }
-html p, html input, html li, html textarea {
+html p, .p_style, html input, html li, html textarea {
     font-size: 0.875rem; /*14px*/
     line-height: 1rem; /*16px*/
 }
 
 @media (max-width: 720px) {
-    html h1 {
+    html h1, .h1_style {
         font-size: 2rem; /*32px*/
         line-height: 2.25rem; /*36px*/
     }
-    html h2 {
+    html h2, .h2_style {
         font-size: 1.5rem; /*24px*/
         line-height: 1.75rem; /*28px*/
     }
-    html h3 {
+    html h3, .h3_style {
         font-size: 1.125rem; /*18px*/
         line-height: 1.25rem; /*20px*/
     }
-    html h4 {
+    html h4, .h4_style {
         font-size: 0.875rem; /*14px*/
         line-height: 1rem; /*16px*/
     }
-    html h5 {
+    html h5, .h5_style {
         font-size: 0.625rem; /*10px*/
         line-height: 0.75rem; /*12px*/
     }
-    html h6 {
+    html h6, .h6_style {
         font-size: 0.5rem; /*8px*/
         line-height: 0.625rem; /*10px*/
     }
-    html p, html input, html li, html textarea {
+    html p, .p_style, html input, html li, html textarea {
         font-size: 0.75rem; /*12px*/
         line-height: 0.875rem; /*14px*/
     }

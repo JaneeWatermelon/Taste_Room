@@ -8,3 +8,4 @@ function set_image_height(container, image) {
 set_image_height($(".recipe_section > .recipe_warning"), $(".recipe_section > .recipe_warning > img"));
 set_image_height($(".profile_header > .content > .info > .name_tag_descr_achiv > .name_tag_descr"), $(".profile_header > .content > .info > .name_tag_descr_achiv > .name_tag_descr > img"));
 set_image_height($(".subs_section > .subs_wrapper > .subs_item > .info > .image_wrapper"), $(".subs_section > .subs_wrapper > .subs_item > .info > .image_wrapper > img"));
+set_image_height($(".recipe_section > .recipe_comments > .comment_wrapper .comment_item > .author_info"), $(".recipe_section > .recipe_comments > .comment_wrapper .comment_item > .author_info > .comment_actions"));

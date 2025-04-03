@@ -1,45 +1,3 @@
-:root {
-    --color-white: #FFFFFF;
-    --color-light-gray: #ACACAC;
-    --color-light-ghost: #F1F1F1;
-
-    --color-cookie: #F7B779;
-    --color-orange: #D68C45;
-
-    --color-green: #4C956C;
-    --color-light-green: #95CF00;
-
-    --color-pink: #FFC9B9;
-    --color-red: #FF6766;
-    --color-heart: #DB4443;
-    
-    --color-cream: #DDE5B6;
-    --color-light-cream: #FEFEE3;
-    
-    --color-yellow: #26F42D;
-    --color-link: #3161FF;
-    
-    --color-black: #000000;
-    --color-black-50: rgba(0, 0, 0, 0.5);
-    --color-black-75: rgba(0, 0, 0, 0.75);
-
-    --tiny: 4px;
-    --small: 8px;
-    --normal: 12px;
-    --mid: 16px;
-    --big: 24px;
-    --huge: 32px;
-    --mega: 48px;
-
-    --padding-window: 60px;
-}
-
-@media (max-width: 720px) {
-    :root {
-        --padding-window: var(--normal);
-    }
-}
-
 .main_content {
     display: flex;
     flex-direction: column;
@@ -210,8 +168,13 @@
     gap: var(--mid);
     align-items: center;
 }
+.profile_chapters > .chapter_wrapper > h4.active {
+    text-decoration: underline;
+    text-underline-offset: var(--tiny);
+}
 .profile_chapters h4 {
     font-family: "NTSomic_Medium";
+    cursor: pointer;
 }
 .profile_chapters > .chapter_wrapper > .add_button {
     display: flex;
@@ -287,7 +250,7 @@
     width: 100%;
 }
 .subs_section > .subs_wrapper > .subs_item > .sub_button {
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     padding: var(--small);
@@ -300,6 +263,7 @@
     color: var(--color-black-50);
 }
 .subs_section > .subs_wrapper > .subs_item > .sub_button.active {
+    display: flex;
     background-color: var(--color-red);
 }
 .subs_section > .subs_wrapper > .subs_item > .sub_button.active > h4 {
