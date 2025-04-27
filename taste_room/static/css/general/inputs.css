@@ -9,7 +9,7 @@
     outline: 1px solid var(--color-light-ghost);
 }
 
-.input_wrapper input {
+.input_wrapper input, .input_wrapper select {
     width: 100%;
     padding: 0;
 }

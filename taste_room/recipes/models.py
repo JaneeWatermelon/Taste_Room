@@ -1,39 +1,16 @@
-import math
+import os
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.template.defaulttags import comment
 from django.utils.text import slugify
-from django.utils.timezone import timedelta, now
-
+from django.utils.timezone import now, timedelta
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
-from users.models import User, Comment, Review
+from additions.views import get_unique_slug, Status, Visibility
 from categories.models import RecipeCategory
+from users.models import User
 
-def transliterate_russian_to_pseudo_english(text):
-    transliteration_table = {
-        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g',
-        'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
-        'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k',
-        'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
-        'п': 'p', 'р': 'r', 'с': 's', 'т': 't',
-        'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'ts',
-        'ч': 'ch', 'ш': 'sh', 'щ': 'shch', 'ъ': '',
-        'ь': '', 'э': 'e', 'ы': 'y', 'ю': 'yu', 'я': 'ya',
-    }
-
-    # Заменяем каждую букву на соответствующую
-    transliterated_text = ''.join(transliteration_table.get(char.lower(), char.lower()) for char in text)
-    return transliterated_text
-
-def get_unique_slug(instance, model_class, old_slug):
-    new_slug = old_slug
-    all_slug_models = model_class.objects.filter(slug=new_slug)
-    if all_slug_models.exists() and all_slug_models.first().id != instance.id:
-        new_slug = f"{old_slug}-{instance.id}"
-    return new_slug
 
 class Difficulty:
     NEWBIE = 1
@@ -65,32 +42,6 @@ class Scipy:
         (PROFESSIONAL, "Очень остро!"),
     )
 
-class Status:
-    PUBLISHED = 1
-    UNPUBLISHED = 2
-    DRAFT = 3
-    MODERATION = 4
-
-    List = (
-        (PUBLISHED, "Опубликовано"),
-        (UNPUBLISHED, "Не опубликовано"),
-        (DRAFT, "Черновик"),
-        (MODERATION, "На проверке"),
-    )
-
-class Visibility:
-    ALL = 1
-    PROFILE = 2
-    SUBS = 3
-    ME = 4
-
-    List = (
-        (ALL, "Все"),
-        (PROFILE, "Только в профиле"),
-        (SUBS, "Только подписчики"),
-        (ME, "Только я"),
-    )
-
 class Units:
     List = (
         ("г", "Граммы"),
@@ -120,27 +71,8 @@ class Ingredient(models.Model):
         verbose_name_plural = "Ингредиенты"
 
     def save(self, *args, **kwargs):
-        old_slug = slugify(transliterate_russian_to_pseudo_english(self.title))
-        self.slug = get_unique_slug(self, Ingredient, old_slug)
+        self.slug = get_unique_slug(self, self.__class__, self.title)
         super().save(*args, **kwargs)
-
-class RecipeStep(models.Model):
-    image = models.ImageField(upload_to="recipe_step_images/", verbose_name="Изображение")
-    text = models.TextField(max_length=512, verbose_name="Текст")
-
-    optimized_image = ImageSpecField(
-        source='image',
-        processors=[ResizeToFill(1536, 1024)],  # Размер оптимизированного изображения
-        format='WebP',
-        options={'quality': 85}
-    )
-
-    class Meta:
-        verbose_name = "Шаг в рецепте"
-        verbose_name_plural = "Шаги в рецептах"
-
-    def __str__(self):
-        return self.image.url
 
 class RecipePreview(models.Model):
     preview_1 = models.ImageField(upload_to="recipe_previews/", verbose_name="Превью 1")
@@ -182,9 +114,9 @@ class RecipePreview(models.Model):
 class Recipe(models.Model):
     title = models.CharField(max_length=128, verbose_name="Название")
     slug = models.SlugField(blank=True, default=slugify(title), verbose_name="Ссылочное название")
-    previews = models.ForeignKey(to=RecipePreview, on_delete=models.CASCADE, verbose_name="Превью")
-    description_inner = models.TextField(max_length=1024, verbose_name="Описание внутри")
-    description_card = models.CharField(max_length=64, verbose_name="Описание для карточки")
+    previews = models.ForeignKey(to=RecipePreview, on_delete=models.PROTECT, verbose_name="Превью")
+    description_inner = models.TextField(max_length=1024, null=True, verbose_name="Описание внутри")
+    description_card = models.CharField(max_length=64, null=True, verbose_name="Описание для карточки")
 
     video_url_first = models.URLField(blank=True, null=True, verbose_name="Основная ссылка на видео")
     video_url_second = models.URLField(blank=True, null=True, verbose_name="Запасная ссылка на видео")
@@ -209,10 +141,14 @@ class Recipe(models.Model):
     categories = models.ManyToManyField(to=RecipeCategory, blank=True, verbose_name="Категории")
 
     author = models.ForeignKey(to=User, blank=True, null=True, on_delete=models.CASCADE, verbose_name="Автор")
-    comments = models.ManyToManyField(to=Comment, blank=True, verbose_name="Комментарии")
-    ingredients = models.ManyToManyField(to=Ingredient, through='RecipeIngredient', verbose_name="Ингредиенты")
-    steps = models.ManyToManyField(to=RecipeStep, verbose_name="Шаги")
-    reviews = models.ManyToManyField(to=Review, blank=True, verbose_name="Оценки")
+
+    @property
+    def stars_on_count(self):
+        return self.rating
+
+    @property
+    def stars_off_count(self):
+        return 5 - self.rating
 
     def calculate_total_calories(self):
         total_calories = 0
@@ -226,21 +162,24 @@ class Recipe(models.Model):
 
     def set_total_rating(self):
         result = 0
-        all_reviews = self.reviews.all()
+        if self.pk:
+            all_reviews = RecipeReview.objects.filter(recipe=self)
 
-        if all_reviews.exists():
-            for item in all_reviews:
-                result += item.rating
-            result /= all_reviews.count()
-            result = round(result, 0)
+            if all_reviews.exists():
+                for item in all_reviews:
+                    result += item.rating
+                result /= all_reviews.count()
+                result = round(result, 0)
 
-        self.rating = result
+            self.rating = result
 
     def calculate_calories_per_100g(self):
         total_calories = 0  # Общая калорийность
         total_weight = 0  # Общий вес блюда в граммах
 
-        for recipe_ingredient in self.recipeingredient_set.all():
+        recipe_ingredients = self.recipeingredient_set.all()
+
+        for recipe_ingredient in recipe_ingredients:
             ingredient = recipe_ingredient.ingredient
             quantity = float(recipe_ingredient.quantity)
             unit = recipe_ingredient.unit
@@ -279,9 +218,10 @@ class Recipe(models.Model):
 
     def set_popularity(self):
         result = 0
-        result += self.reviews.all().count() * self.rating
-        result += self.comments.all().count() * 20
-        self.popularity = int(result)
+        if self.pk:
+            result += RecipeReview.objects.filter(recipe=self).count() * self.rating
+            result += RecipeComment.objects.filter(recipe=self).count() * 20
+            self.popularity = int(result)
 
     class Meta:
         ordering = ["title"]
@@ -292,17 +232,58 @@ class Recipe(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        old_slug = slugify(transliterate_russian_to_pseudo_english(self.title))
-        self.slug = get_unique_slug(self, Recipe, old_slug)
+        self.slug = get_unique_slug(self, self.__class__, self.title)
         self.set_total_rating()
         self.set_popularity()
         super().save(*args, **kwargs)
+
+def recipe_step_image_path(instance, filename):
+    # Генерируем уникальное имя файла: steps/рецепт_id/шаг_id_uuid4.расширение
+    ext = filename.split('.')[-1]
+    filename = f"step_{instance.id}.{ext}"
+    return os.path.join('recipe_step_images', f'recipe_{instance.recipe.id}', filename)
+
+class RecipeStep(models.Model):
+    recipe = models.ForeignKey(to=Recipe, on_delete=models.CASCADE, verbose_name="Рецепт")
+    image = models.ImageField(upload_to=recipe_step_image_path, verbose_name="Изображение")
+    text = models.TextField(max_length=512, verbose_name="Текст")
+    sort_order = models.PositiveSmallIntegerField(default=0, verbose_name="Позиция")
+
+    optimized_image = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(1536, 1024)],  # Размер оптимизированного изображения
+        format='WebP',
+        options={'quality': 85}
+    )
+
+    class Meta:
+        verbose_name = "Шаг в рецепте"
+        verbose_name_plural = "Шаги в рецептах"
+        ordering = ["sort_order"]
+
+    def save(self, *args, **kwargs):
+        # Удаляем старое изображение при обновлении
+        if self.pk:
+            old_step = RecipeStep.objects.get(pk=self.pk)
+            if old_step.image and old_step.image != self.image:
+                old_step.image.delete(save=False)
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Удаляем файл изображения при удалении шага
+        if self.image:
+            self.image.delete(save=False)
+        super().delete(*args, **kwargs)
+
+    def __str__(self):
+        return f"Для рецепта '{self.recipe}'"
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, verbose_name="Рецепт")
     ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE, verbose_name="Ингредиент")
     quantity = models.DecimalField(max_digits=6, decimal_places=2, verbose_name="Количество")
     unit = models.CharField(choices=Units.List, max_length=64, verbose_name="Размерность")
+    can_exclude = models.BooleanField(default=False, verbose_name="Можно убрать")
 
     class Meta:
         verbose_name = "Ингредиент в рецепте"
@@ -310,3 +291,44 @@ class RecipeIngredient(models.Model):
 
     def __str__(self):
         return f"{self.quantity} {self.unit} {self.ingredient.title} для {self.recipe.title}"
+
+class RecipeReview(models.Model):
+    recipe = models.ForeignKey(to=Recipe, on_delete=models.CASCADE, verbose_name="Рецепт")
+    author = models.ForeignKey(to=User, blank=True, null=True, on_delete=models.CASCADE, verbose_name="Автор")
+    rating = models.PositiveSmallIntegerField(default=0,
+                                              validators=[
+                                                  MaxValueValidator(5),
+                                                  MinValueValidator(1)
+                                              ], verbose_name="Рейтинг")
+
+    class Meta:
+        verbose_name = "Оценка рецепта"
+        verbose_name_plural = "Оценки рецептов"
+
+    def __str__(self):
+        return f"От {self.author} для '{self.recipe}'"
+
+class RecipeComment(models.Model):
+    text = models.TextField(default="", max_length=1024, verbose_name="Текст")
+    image = models.ImageField(upload_to='comments_images/', blank=True, null=True, verbose_name="Изображение")
+    optimized_image_small = ImageSpecField(
+        source='image',
+        processors=[ResizeToFill(256, 170)],  # Размер оптимизированного изображения
+        format='WebP',
+        options={'quality': 100}
+    )
+    recipe = models.ForeignKey(to=Recipe, on_delete=models.CASCADE, verbose_name="Рецепт")
+    author = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name="Автор")
+    published_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
+    likes = models.PositiveSmallIntegerField(default=0, verbose_name="Кол-во лайков")
+    dislikes = models.PositiveSmallIntegerField(default=0, verbose_name="Кол-во дизлайков")
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children',
+                               verbose_name="Ответный комментарий")
+
+    def __str__(self):
+        return f"От {self.author} для '{self.recipe}'"
+
+    class Meta:
+        ordering = ['author']
+        verbose_name = "Комментарий к рецепту"
+        verbose_name_plural = "Комментарии к рецептам"

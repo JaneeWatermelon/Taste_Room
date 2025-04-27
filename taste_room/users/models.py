@@ -1,40 +1,11 @@
 import random
 
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
-from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.utils.text import slugify
-
+from django.db import models
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
 from additions.models import Socials
-
-def transliterate_russian_to_pseudo_english(text):
-    transliteration_table = {
-        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g',
-        'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
-        'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k',
-        'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
-        'п': 'p', 'р': 'r', 'с': 's', 'т': 't',
-        'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'ts',
-        'ч': 'ch', 'ш': 'sh', 'щ': 'shch', 'ъ': '',
-        'ь': '', 'э': 'e', 'ы': 'y', 'ю': 'yu', 'я': 'ya',
-    }
-
-    # Заменяем каждую букву на соответствующую
-    transliterated_text = ''.join(transliteration_table.get(char.lower(), char.lower()) for char in text)
-    return transliterated_text
-
-def get_unique_slug(instance, model_class, old_slug):
-    new_slug = old_slug
-    all_slug_models = model_class.objects.filter(slug=new_slug)
-    if all_slug_models.exists() and all_slug_models.first().id != instance.id:
-        new_slug = f"{old_slug}-{instance.id}"
-    return new_slug
-
 
 class AchivLevels:
     List = [
@@ -78,6 +49,9 @@ class DisplayNames:
         (30, "Сырный фондю 🧀"),
     ]
 
+    def get_random_display_name(self):
+        return self.List[random.randint(0, len(self.List)-1)][1]
+
 class CategoryAchievement(models.Model):
     title = models.CharField(max_length=64, verbose_name="Название")
 
@@ -110,6 +84,20 @@ class Achievement(models.Model):
         verbose_name = "Достижение"
         verbose_name_plural = "Достижения"
 
+class Color(models.Model):
+    title = models.CharField(default="", blank=True, null=True, max_length=64, verbose_name="Название")
+    hash = models.CharField(max_length=64, verbose_name="Цвет фона")
+    text_hash = models.CharField(default="#000000", max_length=64, verbose_name="Цвет текста")
+    sort_order = models.PositiveSmallIntegerField(default=0, verbose_name="Поле сортировки")
+
+    def __str__(self):
+        return self.title if self.title else self.hash
+
+    class Meta:
+        verbose_name = "Цвет фона"
+        verbose_name_plural = "Цвета фона"
+        ordering = ['sort_order']
+
 class User(AbstractUser):
     name = models.CharField(default=DisplayNames.List[0][1], blank=True, null=True, max_length=32, verbose_name="Отображаемое имя")
     avatar = models.ImageField(upload_to='users_avatars/', blank=True, null=True, verbose_name="Аватарка")
@@ -126,7 +114,7 @@ class User(AbstractUser):
         options={'quality': 100}
     )
     email = models.EmailField(unique=True, verbose_name="Электронная почта")
-    background_color = models.CharField(default="", max_length=64, blank=True, null=True, verbose_name="Цвет фона")
+    background_color = models.ForeignKey(to=Color, blank=True, null=True, on_delete=models.SET_NULL, verbose_name="Цвет фона")
 
     description_profile = models.TextField(default="Добро пожаловать в мой профиль! Я увлечен(а) кулинарией и верю, "
                                                    "что вкусная еда делает жизнь ярче. Надеюсь, мои рецепты и "
@@ -144,14 +132,23 @@ class User(AbstractUser):
 
     socials = models.ForeignKey(to=Socials, blank=True, null=True, on_delete=models.CASCADE, verbose_name="Соцсети")
 
-    liked_recipes_id = models.JSONField(default=list, blank=True, null=True, verbose_name="Понравившиеся рецепты")
-    liked_comments_id = models.JSONField(default=list, blank=True, null=True, verbose_name="Лайкнутые комментарии")
-    disliked_comments_id = models.JSONField(default=list, blank=True, null=True, verbose_name="Дизлайкнутые комментарии")
-    subscribers_id = models.JSONField(default=list, blank=True, null=True, verbose_name="Подписчики")
-    subscriptions_id = models.JSONField(default=list, blank=True, null=True, verbose_name="Подписки")
+    liked_recipes = models.ManyToManyField(to='recipes.Recipe', blank=True, verbose_name="Понравившиеся рецепты")
 
-    choosed_achiv = models.PositiveSmallIntegerField(blank=True, null=True, verbose_name="Выбранное достижение")
-    achivs = models.ManyToManyField(to=Achievement, blank=True, verbose_name="Полученные достижения")
+    liked_recipe_comments = models.ManyToManyField(to='recipes.RecipeComment', blank=True, related_name='liked_recipe_comments_set', verbose_name="Лайкнутые комментарии рецепта")
+    disliked_recipe_comments = models.ManyToManyField(to='recipes.RecipeComment', blank=True, related_name='disliked_recipe_comments_set', verbose_name="Дизлайкнутые комментарии рецептов")
+
+    liked_news_comments = models.ManyToManyField(to='news.NewsComment', blank=True, related_name='liked_news_comments_set', verbose_name="Лайкнутые комментарии статьи")
+    disliked_news_comments = models.ManyToManyField(to='news.NewsComment', blank=True, related_name='disliked_news_comments_set', verbose_name="Дизлайкнутые комментарии статей")
+
+    subscribers = models.ManyToManyField(to='self', blank=True, related_name='subscribers_set', verbose_name="Подписчики")
+    subscriptions = models.ManyToManyField(to='self', blank=True, related_name='subscriptions_set', verbose_name="Подписки")
+
+    choosed_achiv = models.ForeignKey(to=Achievement, blank=True, null=True, on_delete=models.SET_NULL, related_name="choosed_achiv_set", verbose_name="Выбранное достижение")
+    achivs = models.ManyToManyField(to=Achievement, blank=True, related_name="achivs_set", verbose_name="Полученные достижения")
+
+    @property
+    def formated_date_joined(self):
+        return self.date_joined.strftime('%d.%m.%Y')
 
     def __str__(self):
         return self.username
@@ -160,43 +157,3 @@ class User(AbstractUser):
         ordering = ['username']
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
-
-
-class Comment(models.Model):
-    text = models.TextField(default="", max_length=1024, verbose_name="Текст")
-    image = models.ImageField(upload_to='comments_images/', blank=True, null=True, verbose_name="Изображение")
-    optimized_image_small = ImageSpecField(
-        source='image',
-        processors=[ResizeToFill(256, 170)],  # Размер оптимизированного изображения
-        format='WebP',
-        options={'quality': 100}
-    )
-    author = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name="Автор")
-    published_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
-    likes = models.PositiveSmallIntegerField(default=0, verbose_name="Кол-во лайков")
-    dislikes = models.PositiveSmallIntegerField(default=0, verbose_name="Кол-во дизлайков")
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children',
-                               verbose_name="Ответный комментарий")
-
-    def __str__(self):
-        return f"Комментарий автора: {self.author}"
-
-    class Meta:
-        ordering = ['author']
-        verbose_name = "Комментарий"
-        verbose_name_plural = "Комментарии"
-
-class Review(models.Model):
-    author = models.ForeignKey(to=User, blank=True, null=True, on_delete=models.CASCADE, verbose_name="Автор")
-    rating = models.PositiveSmallIntegerField(default=0,
-                                              validators=[
-                                                  MaxValueValidator(5),
-                                                  MinValueValidator(1)
-                                              ], verbose_name="Рейтинг")
-
-    class Meta:
-        verbose_name = "Оценка"
-        verbose_name_plural = "Оценки"
-
-    def __str__(self):
-        return f"От {self.author}"

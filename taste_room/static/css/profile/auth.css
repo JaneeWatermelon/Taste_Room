@@ -1,0 +1,17 @@
+.sub_action_href {
+    cursor: pointer;
+}
+
+.profile_window .messages_wrapper, .profile_window .warning_wrapper {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--small);
+}
+.profile_window .messages_wrapper > li, .profile_window .warning_wrapper > li {
+    display: flex;
+    gap: var(--small);
+    align-items: center;
+}

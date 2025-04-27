@@ -1,0 +1,40 @@
+{% load static %}
+
+{% for item in steps %}
+<div class="step_item" data-id="{{ item.id }}" data-order="{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}">
+    <label for="id_text_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}"><h3>Шаг {% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}</h3></label>
+    <div class="content">
+        <div class="photo_wrapper">
+            <div class="move_bar">
+                <img src="{% static 'svg/Arrows/Up_Down.svg' %}">
+            </div>
+            <div class="image_wrapper">
+                <img class="back_image" src="{% if item.image %}{{ item.image.url }}{% else %}{% static 'img/Default/Load_image.jpg' %}{% endif %}">
+                <div class="delete_and_change">
+                    <div class="action_item delete" data-order="{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}">
+                        <img src="{% static 'svg/Random_icons/Trash_icon.svg' %}">
+                    </div>
+                    <div class="action_item change" data-order="{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}">
+                        <img src="{% static 'svg/Random_icons/Edit_icon.svg' %}">
+                    </div>
+                </div>
+                <input class="image_input" name="step_image_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}" type="file" accept="image/png,image/jpeg">
+                {% if first_start %}
+                <input hidden="hidden" name="existing_step_image_name_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}" type="text" value="{{ item.image.name }}">
+                {% endif %}
+            </div>
+        </div>
+        <div class="field_wrapper">
+            <div class="input_wrapper">
+                <textarea id="id_text_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}" name="text_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}" class="fixed" minlength="100" maxlength="512" placeholder="Опишите этап">{{ item.text }}</textarea>
+            </div>
+            <div class="marks_limits">
+                <h4>Мин. знаков: <span class="orange">100</span></h4>
+                <h4>Макс. знаков: <span class="orange">512</span></h4>
+                <h4>Ваши знаки: <span class="my_symbols heart">0</span></h4>
+            </div>
+        </div>
+    </div>
+    <input class="step_id_input" hidden="hidden" type="text" name="step_id_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}" value="{{ item.id }}">
+</div>
+{% endfor %}

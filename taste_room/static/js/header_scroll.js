@@ -20,12 +20,11 @@ $(".navigation_section").css({
   "top": `${header_height}px`,
 });
 
-
-window.onload = function() {
+$(window).on('load', function() {
   $("main").css({
     "opacity": "1",
   });
-};
+});
 
 let scrollTimeoutId;
 let settedTimeout = false;

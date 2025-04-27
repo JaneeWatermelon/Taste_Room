@@ -1,4 +1,3 @@
-const CSRF_TOKEN = $('meta[name="csrf-token"]').attr("content");
 const objectId = $("#object_info").attr("data-id"); // ID рецепта
 const object_type = $("#object_info").attr("data-type");
 
@@ -11,7 +10,6 @@ $("form.add_comment").on("submit", function(event) {
     const formData = new FormData(this);
     formData.append('item_id', objectId); // Добавляем item_id в FormData
     formData.append('is_answer', false);
-    formData.append('item_type', object_type);
 
     $.ajax({
         url: data_url,
@@ -64,7 +62,13 @@ function setAddCommentEventHandler() {
         let loader;
 
         if (page) {
-            const window_url = window.location.origin + `/users/comments_partial_view?recipe_id=${objectId}&page=${page}`;
+            let window_url;
+            if (object_type == "recipe") {
+                window_url = window.location.origin + `/recipes/comments_partial_view?object_id=${objectId}&page=${page}`;
+            }
+            else {
+                window_url = window.location.origin + `/news/comments_partial_view?object_id=${objectId}&page=${page}`;
+            }
             loader = window_url + ` .comment_wrapper[data-parent-id=${data_parent_id}] > *`;
         }
         else {
@@ -113,7 +117,6 @@ function setShowMoreEventHandler() {
             data: {
                 page: page,
                 object_id: objectId,
-                object_type: object_type,
             },
             success: function(data) {
                 // Добавляем новые комментарии в конец списка
@@ -207,6 +210,9 @@ function setAuthorInfoEventHandler() {
         element.on("click", function(event) {
 
             element.toggleClass("active");
+            author_info.not(element).removeClass("active");
+
+            author_info.find(".comment_actions").addClass("d_none");
 
             if (element.hasClass("active")) {
                 element.find(".comment_actions").removeClass("d_none");
@@ -218,11 +224,13 @@ function setAuthorInfoEventHandler() {
             console.log(event.target);
 
             if ($(event.target).closest(".answer").length > 0) {
-                all_add_answer_comment.each(function() {
-                    if (!$(this).is(add_answer_comment)) {
-                        $(this).addClass("d_none");
-                    }
-                });
+                // all_add_answer_comment.each(function() {
+                //     if (!$(this).is(add_answer_comment)) {
+                //         $(this).addClass("d_none");
+                //     }
+                // });
+
+                all_add_answer_comment.not(add_answer_comment).addClass("d_none");
 
                 add_answer_comment.toggleClass("d_none");
             }
@@ -240,7 +248,13 @@ function setAuthorInfoEventHandler() {
                 let loader;
 
                 if (page) {
-                    const window_url = window.location.origin + `/users/comments_partial_view?recipe_id=${objectId}&page=${page}`;
+                    let window_url;
+                    if (object_type == "recipe") {
+                        window_url = window.location.origin + `/recipes/comments_partial_view?object_id=${objectId}&page=${page}`;
+                    }
+                    else {
+                        window_url = window.location.origin + `/news/comments_partial_view?object_id=${objectId}&page=${page}`;
+                    }
                     loader = window_url + ` .comment_wrapper[data-parent-id=${data_parent_id}] > *`;
                 }
                 else {
@@ -345,12 +359,21 @@ function setLikeDislikeCommentEventHandler() {
         let loader;
 
         if (page) {
-            const window_url = window.location.origin + `/users/comments_partial_view?recipe_id=${objectId}&page=${page}`;
+            let window_url;
+            if (object_type == "recipe") {
+                window_url = window.location.origin + `/recipes/comments_partial_view?object_id=${objectId}&page=${page}`;
+            }
+            else {
+                window_url = window.location.origin + `/news/comments_partial_view?object_id=${objectId}&page=${page}`;
+            }
             loader = window_url + ` .comment_wrapper[data-parent-id=${data_id}] .comment_item[data-comment-id=${data_comment_id}] > .rating > *`;
         }
         else {
             loader = window.location.href + ` .comments > .comment_wrapper[data-parent-id=${data_id}] .comment_item[data-comment-id=${data_comment_id}] > .rating > *`;
         }
+
+        console.log(data_comment_id);
+        console.log(reaction_type);
     
         $.ajax({
             url: data_url,

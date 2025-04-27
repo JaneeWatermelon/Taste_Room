@@ -1,40 +1,46 @@
-function setListenersWithBlackBack(popup, hoverEl) {
+window.showHideBackBlack = function(event, popup) {
+    event.stopPropagation(); // Останавливаем всплытие события, чтобы оно не достигло document
+    if (popup.hasClass('d_none')) {
+        popup.removeClass('d_none');
+        $(".back_black").removeClass('d_none');
+        setTimeout(function() {
+            $(".back_black").css({
+                "opacity": 1,
+            });
+        }, 1);
+    } else {
+        $(".back_black").css({
+            "opacity": 0,
+        });
+        setTimeout(function() {
+            $(".back_black").addClass('d_none');
+            popup.addClass('d_none');
+        }, 300);
+    }
+}
+window.HideBackBlackOverWindowClick = function(event, popup, hoverEl = null) {
+    if (!$(event.target).closest(popup).length && !$(event.target).closest(hoverEl).length) {
+        $(".back_black").css({
+            "opacity": 0,
+        });
+        setTimeout(function() {
+            $(".back_black").addClass('d_none');
+            popup.addClass('d_none');
+        }, 300);
+    }
+}
+
+window.setListenersWithBlackBack = function(popup, hoverEl) {
     // Обработчик клика на элемент, который открывает окно
     hoverEl.on('click', function (event) {
-        event.stopPropagation(); // Останавливаем всплытие события, чтобы оно не достигло document
-        if (popup.hasClass('d_none')) {
-            popup.removeClass('d_none');
-            $(".back_black").removeClass('d_none');
-            setTimeout(function() {
-                $(".back_black").css({
-                    "opacity": 1,
-                });
-            }, 1);
-        } else {
-            $(".back_black").css({
-                "opacity": 0,
-            });
-            setTimeout(function() {
-                $(".back_black").addClass('d_none');
-                popup.addClass('d_none');
-            }, 300);
-        }
+        showHideBackBlack(event, popup);
     });
   
     // Обработчик клика вне окна
     $(document).on('click', function (event) {
-        if (!$(event.target).closest(popup).length && !$(event.target).closest(hoverEl).length) {
-            $(".back_black").css({
-                "opacity": 0,
-            });
-            setTimeout(function() {
-                $(".back_black").addClass('d_none');
-                popup.addClass('d_none');
-            }, 300);
-        }
+        HideBackBlackOverWindowClick(event, popup, hoverEl);
     });
   
-    // Обработчик клика внутри окна (чтобы окно не закрывалось при клике внутри него)
     popup.on('click', function (event) {
         event.stopPropagation(); // Останавливаем всплытие события
     });
@@ -255,5 +261,15 @@ $(document).ready(function () {
     const part_2El = $('.edit_section .title > .sub_title_and_mark > .part_2');
     const part_2Pop = $('.pop_up_window.part_2_window');
     setListeners(part_2Pop, part_2El);
+
+    const profile_pop_ids = [
+        "profile_description",
+        "recipe_description",
+        "news_description",
+    ]
+
+    profile_pop_ids.forEach(element => {
+        setListeners($(`.pop_up_window#${element}`), $(`.settings_section > .settings > .fields_form > .fields_wrapper > .fields_part > .fields > .field_item > .title_and_mark[data-popup-id=${element}] > img`));
+    });
 
 });

@@ -1,40 +1,66 @@
-from django.contrib.auth import logout
+from django.conf import settings
+from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import render, get_object_or_404
-from django.template.context_processors import csrf
+from django.http import (Http404, HttpResponseForbidden, HttpResponseRedirect,
+                         JsonResponse)
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.views.generic import TemplateView, DetailView
+from django.utils.timezone import now, timedelta
+from django.views.decorators.http import require_POST, require_GET
+from django.views.generic import DetailView, TemplateView
 
-from recipes.models import Recipe
-from users.models import User, Achievement, GeneralAchievementCondition, CategoryAchievement, Review, Comment
+from additions.models import EmailCode
 from news.models import News
+from recipes.models import Recipe
+from users.forms import ChangeUserForm, UserLoginForm, UserRegistrationForm, ChangePasswordForm
+from users.models import (Achievement, CategoryAchievement, Color,
+                          GeneralAchievementCondition, User)
 
-per_page = 34
+per_page = 100
+
+html_errors_template = "users/auth_errors_partial.html"
+
+def format_form_errors(form_errors, form):
+    formatted_errors = []
+
+    for field, errors in form_errors.items():
+        # Получаем человекочитаемое название поля
+        field_name = form.fields[field].label or field
+
+        for error in errors:
+            if error['code'] == 'required':
+                formatted_errors += [{"message": f"Поле {field_name} является обязательным"}]
+            elif error['code'] == 'unique':
+                formatted_errors += [error]
+            else:
+                formatted_errors += [error]
+
+    return formatted_errors
 
 class ProfileView(TemplateView):
     template_name = "users/profile.html"
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.extra_context = {}  # Гарантированная инициализация при создании view
+    def post(self, request, *args, **kwargs):
+        form = ChangeUserForm(self.request.POST, instance=self.request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('users:profile')
+        return render(request, 'users/profile.html', {'settings_form': form})
+
 
     def get_context_data(self, **kwargs):
         context = super(ProfileView, self).get_context_data(**kwargs)
 
         user = self.request.user
-        context["subscribers_count"] = len(user.subscribers_id)
-        context["liked_recipes"] = Recipe.objects.filter(id__in=user.liked_recipes_id, status=1, visibility=1).select_related("previews", "author").prefetch_related("recipeingredient_set", "reviews")
-        context["my_achivs"] = user.achivs
-        context["my_recipes"] = Recipe.objects.filter(author=user, status=1, visibility=1).select_related("previews", "author").prefetch_related("recipeingredient_set", "reviews")
-        context["my_articles"] = News.objects.filter(author=user, status=1, visibility=1).select_related("author").prefetch_related("reviews")
-        for item in context['my_articles']:
-            item.stars_on_count = item.rating
-            item.stars_off_count = 5-item.rating
-            item.published_date = item.published_date.strftime('%d.%m.%Y')
-        context["subscriptions"] = User.objects.filter(id__in=user.subscriptions_id)
+        context["liked_recipes"] = user.liked_recipes.filter(status=1, visibility=1).select_related("previews", "author").prefetch_related("recipereview_set", "recipeingredient_set", "recipeingredient_set__ingredient",)
+
+        context["my_recipes"] = Recipe.objects.filter(author=user, status=1).select_related("previews", "author").prefetch_related("recipereview_set", "recipeingredient_set", "recipeingredient_set__ingredient",)
+        context["my_articles"] = News.objects.filter(author=user, status=1).select_related("author").prefetch_related("newsreview_set")
+
+        context["fon_colors"] = Color.objects.all()
 
         context["multiple_use_achivs"] = {}
         for achiv_condition in GeneralAchievementCondition.objects.all():
@@ -42,22 +68,10 @@ class ProfileView(TemplateView):
             if achivs.exists():
                 context["multiple_use_achivs"][achiv_condition.title] = [achivs, achivs.count(), 3-achivs.count()]
 
-        context["date_joined"] = user.date_joined.strftime('%d.%m.%Y')
         context["object"] = user
-
-        if 'my_recipes' not in self.extra_context:
-            self.extra_context['my_recipes'] = context["my_recipes"]
-
-        context.update(self.extra_context)
+        context["settings_form"] = ChangeUserForm(instance=user)
 
         return context
-
-    def reload_my_recipes(self, user_id, status):
-        queryset = Recipe.objects.filter(author__id=user_id, status=status).select_related("previews", "author").prefetch_related("recipeingredient_set", "reviews")
-
-        self.extra_context['my_recipes'] = queryset
-
-        return queryset
 
 class AuthorPageView(DetailView):
     template_name = "users/author_page.html"
@@ -65,81 +79,25 @@ class AuthorPageView(DetailView):
 
     def get_object(self, queryset=None):
         object = get_object_or_404(User, username=self.kwargs["username"])
-        object.date_joined = object.date_joined.strftime('%d.%m.%Y')
         return object
 
     def get_context_data(self, **kwargs):
         context = super(AuthorPageView, self).get_context_data(**kwargs)
         user = self.object
-        context["subscribers_count"] = len(user.subscribers_id)
-        context["recipes"] = Recipe.objects.filter(id__in=user.liked_recipes_id, status=1, visibility=1).select_related("previews", "author").prefetch_related("recipeingredient_set", "reviews")
+        context["recipes"] = Recipe.objects.filter(author=user, status=1, visibility=1).select_related("previews", "author").prefetch_related("recipereview_set", "recipeingredient_set", "recipeingredient_set__ingredient",)
         context["published_recipes_count"] = context["recipes"].count()
+
+        context["articles"] = News.objects.filter(author=user, status=1, visibility=1).select_related("author").prefetch_related("newsreview_set")
+        context["published_news_count"] = context["articles"].count()
 
         mult_use_category = get_object_or_404(CategoryAchievement, pk=1)
         one_use_category = get_object_or_404(CategoryAchievement, pk=2)
         context["one_use_achivs"] = user.achivs.filter(category=one_use_category)
         context["multiple_use_achivs"] = user.achivs.filter(category=mult_use_category)
 
-        context["articles"] = News.objects.filter(author=user, status=1, visibility=1).select_related("author").prefetch_related("reviews")
-        for item in context['articles']:
-            item.stars_on_count = item.rating
-            item.stars_off_count = 5 - item.rating
-            item.published_date = item.published_date.strftime('%d.%m.%Y')
-        context["published_news_count"] = context["articles"].count()
+        context["user"] = self.request.user
 
         return context
-
-def change_rating(request):
-    if request.method == "POST":
-        if request.user.is_authenticated:
-            user = request.user
-            item_type = request.POST.get("item_type")
-            new_rating = int(request.POST.get("new_rating"))
-            item_id = int(request.POST.get("item_id"))
-            if item_type == "recipe":
-                item = Recipe.objects.get(id=item_id)
-            else:
-                item = News.objects.get(id=item_id)
-
-            review = item.reviews.filter(author=user)
-            if review.exists():
-                review = review.first()
-                review.rating = new_rating
-                review.save()
-            else:
-                review = Review.objects.create(author=user, rating=new_rating)
-                item.reviews.add(review)
-                item.save()
-            return JsonResponse({
-                "answer": "Отзыв успешно создан или изменён"
-            })
-        else:
-            return JsonResponse({
-                "answer": "Пользователь не авторизован"
-            })
-
-def delete_rating(request):
-    if request.method == "POST":
-        if request.user.is_authenticated:
-            user = request.user
-            item_type = request.POST.get("item_type")
-            item_id = int(request.POST.get("item_id"))
-            if item_type == "recipe":
-                item = Recipe.objects.get(id=item_id)
-            else:
-                item = News.objects.get(id=item_id)
-
-            review = item.reviews.filter(author=user)
-            if review.exists():
-                review = review.first()
-                review.delete()
-            return JsonResponse({
-                "answer": "Отзыв успешно удалён"
-            })
-        else:
-            return JsonResponse({
-                "answer": "Пользователь не авторизован"
-            })
 
 def user_logout(request):
     logout(request)
@@ -151,192 +109,403 @@ def validate_image_extension(value):
     if not ext in valid_extensions:
         raise ValidationError('Разрешены только файлы с расширениями .png, .jpeg или .jpg.')
 
-def create_comment(request):
-    if request.method == "POST":
-        print(request.POST)
+def _prepare_pagination_data(user, data_status, model=Recipe, page=1):
+    recipes = model.objects.filter(author=user, status=data_status)
 
-        item_id = request.POST.get("item_id")
-
-        text = request.POST.get("text")
-        data_parent_id = request.POST.get("data_parent_id")
-
-        if data_parent_id:
-            parent = Comment.objects.get(id=data_parent_id)
-            comment = Comment.objects.create(text=text, parent=parent, author=request.user)
-        else:
-            image = request.FILES.get("image")
-            if image:
-                validate_image_extension(image)
-                comment = Comment.objects.create(text=text, image=image, author=request.user)
-            else:
-                comment = Comment.objects.create(text=text, author=request.user)
-
-        item_type = request.POST.get("item_type", "recipe")
-        if (item_type == "recipe"):
-            item = Recipe.objects.get(id=item_id)
-        else:
-            item = News.objects.get(id=item_id)
-        item.comments.add(comment)
-        item.save()
-
-        return JsonResponse({
-            'answer': "Комментарий успешно создан",
-        })
-
-def delete_comment(request):
-    if request.method == "POST":
-        print(request.POST)
-
-        comment_id = request.POST.get("comment_id")
-
-        comment = Comment.objects.get(id=comment_id)
-
-        comment.delete()
-
-        return JsonResponse({
-            'answer': "Комментарий успешно удалён",
-        })
-
-def comment_reaction_change(request):
-    if request.method == "POST":
-        comment_id = int(request.POST.get("comment_id"))
-        reaction_type = request.POST.get("reaction_type")
-        user = request.user
-
-        comment = Comment.objects.get(id=comment_id)
-
-        response = dict()
-
-        if user.is_authenticated:
-            if reaction_type == 'like':
-                if comment_id in user.liked_comments_id:
-                    user.liked_comments_id.remove(comment_id)
-                    comment.likes -= 1
-
-                    response["answer"] = "Комментарий удалён из понравившихся"
-                else:
-                    user.liked_comments_id.append(comment_id)
-                    comment.likes += 1
-                    try:
-                        user.disliked_comments_id.remove(comment_id)
-                        comment.dislikes -= 1
-                    except:
-                        pass
-
-                    response["answer"] = "Комментарий добавлен в понравившиеся"
-            elif reaction_type == 'dislike':
-                if comment_id in user.disliked_comments_id:
-                    user.disliked_comments_id.remove(comment_id)
-                    comment.dislikes -= 1
-
-                    response["answer"] = "Комментарий удалён из непонравившихся"
-                else:
-                    user.disliked_comments_id.append(comment_id)
-                    comment.dislikes += 1
-                    try:
-                        user.liked_comments_id.remove(comment_id)
-                        comment.likes -= 1
-                    except:
-                        pass
-
-                    response["answer"] = "Комментарий добавлен в непонравившиеся"
-
-            user.save()
-            comment.save()
-            return JsonResponse(response)
-        else:
-            return JsonResponse({"answer": "Пользователь не авторизован"})
-
-
-def load_more_comments(request):
-    object_id = request.GET.get('object_id')
-    object_type = request.GET.get('object_type')
-    page = request.GET.get('page')
-
-    if object_type == 'recipe':
-        item = get_object_or_404(Recipe, id=object_id)
-    else:
-        item = get_object_or_404(News, id=object_id)
-
-    comments = item.comments.filter(parent=None).order_by('-published_date')
-
-    paginator = Paginator(comments, 2)  # 20 комментариев на страницу
+    paginator = Paginator(recipes, per_page)
     page_obj = paginator.get_page(page)
 
-    # Добавляем CSRF-токен в контекст
     context = {
-        'comments': page_obj,
-        'object': item,  # Передаем объект рецепта, если он используется в шаблоне
+        'page_obj': page_obj,
+        'object': user,
+        'user': user,
+        'is_paginated': page_obj.has_other_pages(),
+        'paginator': paginator,
     }
-    context.update(csrf(request))  # Добавляем CSRF-токен
 
     # Рендерим HTML для новых комментариев
-    comments_html = render_to_string('users/comments_partial.html', context)
+    html = render_to_string('users/pagination_partial.html', context)
 
-    return JsonResponse({
-        'comments_html': comments_html,
+    return {
+        'html': html,
+        'answer': "Данные успешно обновлены",
+    }
+
+def _prepare_recipes_data(user, data_status, page=1):
+    recipes = Recipe.objects.filter(author=user, status=data_status).select_related("previews", "author")
+
+    paginator = Paginator(recipes, per_page)
+    page_obj = paginator.get_page(page)
+
+    context = {
+        'my_recipes': page_obj,
+        'object': user,
+        'user': user,
+        # 'my_recipes_is_paginated': page_obj.has_other_pages(),
+        # 'paginator': paginator,
+    }
+
+    # Рендерим HTML для новых комментариев
+    html = render_to_string('users/my_recipes_partial.html', context)
+
+    return {
+        'html': html,
         'has_next': page_obj.has_next(),
         'next_page': page_obj.next_page_number() if page_obj.has_next() else None,
+        'answer': "Данные успешно обновлены",
+    }
+
+@require_GET
+def load_my_recipes(request):
+    data_status = request.GET.get("data_status")
+    user = request.user
+    page = request.GET.get('page', 1)
+
+    return JsonResponse(_prepare_recipes_data(user, data_status, page))
+
+
+def _prepare_articles_data(user, data_status, page=1):
+    articles = News.objects.filter(author=user, status=data_status).select_related("author")
+
+    paginator = Paginator(articles, per_page)
+    page_obj = paginator.get_page(page)
+
+    context = {
+        'my_articles': page_obj,
+        'object': user,
+        'user': user,
+    }
+
+    html = render_to_string('users/my_articles_partial.html', context)
+
+    return {
+        'html': html,
+        'has_next': page_obj.has_next(),
+        'next_page': page_obj.next_page_number() if page_obj.has_next() else None,
+        'answer': "Данные успешно обновлены",
+    }
+
+@require_GET
+def load_my_articles(request):
+    data_status = request.GET.get("data_status")
+    user = request.user
+    page = request.GET.get('page', 1)
+
+    return JsonResponse(_prepare_articles_data(user, data_status, page))
+
+@require_POST
+def sub_unsub(request):
+    user = request.user
+    data_id = request.POST.get("data_id")
+    data_type = request.POST.get("data_type")
+
+    sub_user = get_object_or_404(User, id=data_id)
+
+    user_subscriptions_exists = user.subscriptions.filter(id=data_id).exists()
+    sub_user_subscribers_exists = sub_user.subscribers.filter(id=data_id).exists()
+
+    if data_type == 'sub':
+        if not user_subscriptions_exists:
+            user.subscriptions.add(sub_user)
+        if not sub_user_subscribers_exists:
+            sub_user.subscribers_id.append(user)
+    elif data_type == 'unsub':
+        if user_subscriptions_exists:
+            user.subscriptions_id.remove(sub_user)
+        if sub_user_subscribers_exists:
+            sub_user.subscribers_id.remove(user)
+
+    user.save()
+    sub_user.save()
+
+    return JsonResponse({
+        "answer": "Подписки успешно изменены",
+        "subs_count": sub_user.subscribers.count(),
     })
 
+@require_GET
+def get_search_subs(request):
+    user = request.user
+    tag = request.GET.get("tag")
+    query = User.objects.filter(username__icontains=tag).exclude(id=user.id)
 
-def load_my_recipes(request):
-    if request.method == "GET":
-        data_status = request.GET.get("data_status")
-        user = request.user
+    context = {
+        'tag_users': query,
+        'object': user,
+        'user': user,
+    }
 
-        page = request.GET.get('page')
+    # Рендерим HTML для новых комментариев
+    html = render_to_string('users/search_subs_partial.html', context)
 
-        recipes = Recipe.objects.filter(author=user, status=data_status).select_related("previews", "author").prefetch_related("recipeingredient_set", "reviews")
+    return JsonResponse({
+        "answer": "Пользователи содержащие указанный тег получены",
+        "html": html,
+    })
 
-        paginator = Paginator(recipes, per_page)
-        page_obj = paginator.get_page(page)
+@require_POST
+def change_back_fon(request):
+    color_id = request.POST.get("data_id")
+    user = request.user
 
-        context = {
-            'my_recipes': page_obj,
-            'object': user,
-            'user': user,
-        }
+    color = get_object_or_404(Color, id=color_id)
 
-        # Рендерим HTML для новых комментариев
-        html = render_to_string('users/my_recipes_partial.html', context)
+    user.background_color = color
+    user.save()
 
+    return JsonResponse({
+        'answer': "Цвет фона успешно изменён",
+        'background_hash': color.hash,
+        'text_hash': color.text_hash,
+    })
+
+@require_POST
+def change_profile_image(request):
+    image = request.FILES.get("image")
+    user = request.user
+    if image:
+        user.avatar = image
+        user.save()
         return JsonResponse({
-            'html': html,
-            'has_next': page_obj.has_next(),
-            'next_page': page_obj.next_page_number() if page_obj.has_next() else None,
-            'answer': "Данные успешно обновлены",
+            "answer": "Аватар пользователя успешно изменён"
+        })
+    else:
+        user.avatar = None
+        user.save()
+        return JsonResponse({
+            "answer": "Аватар пользователя сброшен"
         })
 
-def load_my_articles(request):
-    if request.method == "GET":
-        data_status = request.GET.get("data_status")
-        user = request.user
+@require_POST
+def change_profile_current_achiv(request):
+    item_id = request.POST.get("item_id")
+    active = request.POST.get("active")
+    user = request.user
 
-        page = request.GET.get('page')
+    achiv = get_object_or_404(Achievement, id=item_id)
 
-        articles = News.objects.filter(author=user, status=data_status).select_related("author").prefetch_related("reviews")
-        for item in articles:
-            item.stars_on_count = item.rating
-            item.stars_off_count = 5-item.rating
-            item.published_date = item.published_date.strftime('%d.%m.%Y')
+    if active == "true" and user.achivs.filter(id=item_id).exists():
+        user.choosed_achiv = achiv
+    else:
+        user.choosed_achiv = None
+    user.save()
 
-        paginator = Paginator(articles, per_page)
-        page_obj = paginator.get_page(page)
+    return JsonResponse({
+        "answer": "Текущее достижение пользователя успешно изменено"
+    })
 
-        context = {
-            'my_articles': page_obj,
-            'object': user,
-            'user': user,
-        }
+@require_POST
+def user_registration(request):
+    form = UserRegistrationForm(request.POST)
 
-        # Рендерим HTML для новых комментариев
-        html = render_to_string('users/my_articles_partial.html', context)
+    if form.is_valid():
+        username = form.cleaned_data.get('username')
+        email = form.cleaned_data.get('email')
+        password = form.cleaned_data.get('password')
+
+        user = User.objects.create(username=username, email=email)
+
+        user.set_password(password)
+        user.save()
+        return JsonResponse({
+            "answer": "Пользователь успешно создан",
+        })
+    else:
+        formatted_errors = format_form_errors(form.errors.get_json_data(), form)
+        return JsonResponse({
+            "html_errors": render_to_string(html_errors_template, context={
+                "errors": list(
+                    {"message": error.get('message', 'Неверные данные формы')} for error in formatted_errors
+                ),
+            }),
+        }, status=400)
+
+@require_POST
+def user_login(request):
+    form = UserLoginForm(request.POST)
+
+    if form.is_valid():
+        username_or_email = form.cleaned_data.get('username_or_email')
+        password = form.cleaned_data.get('password')
+
+        if User.objects.filter(username=username_or_email).exists():
+            user = authenticate(request, username=username_or_email, password=password)
+        elif User.objects.filter(email=username_or_email).exists():
+            user = User.objects.get(email=username_or_email)
+            user = authenticate(request, username=user.username, password=password)
+        else:
+            user = None
+
+        if user is not None:
+            login(request, user)
+            return JsonResponse({
+                "answer": "Пользователь успешно авторизован",
+            })
+        else:
+            return JsonResponse({
+                "html_errors": render_to_string(html_errors_template, context={
+                    "errors": [
+                        {"message": "Неверные Имя пользователя(почта) или Пароль"},
+                    ]
+                }),
+            }, status=401)
+    else:
+        formatted_errors = format_form_errors(form.errors.get_json_data(), form)
+        return JsonResponse({
+            "html_errors": render_to_string(html_errors_template, context={
+                "errors": list(
+                    {"message": error.get('message', 'Неверные данные формы')} for error in formatted_errors
+                ),
+            }),
+        }, status=400)
+
+@require_POST
+def send_email_code(request):
+    email = request.POST.get("email")
+
+    for item in EmailCode.objects.filter(email=email):
+        item.delete()
+
+    email_code_obj = EmailCode.objects.create(email=email)
+
+    try:
+        mail = send_mail(
+            "Код восстановления пароля",
+            f"Ваш код для смены пароля: {email_code_obj.code}",
+            settings.EMAIL_HOST_USER,
+            [email],
+            fail_silently=False,
+        )
 
         return JsonResponse({
-            'html': html,
-            'has_next': page_obj.has_next(),
-            'next_page': page_obj.next_page_number() if page_obj.has_next() else None,
-            'answer': "Данные успешно обновлены",
+            "answer": "Письмо успешно отправлено",
         })
+    except Exception as e:
+        return JsonResponse({
+            "html_errors": render_to_string(html_errors_template, context={
+                "errors": [
+                    {"message": "Почта указана неверно"}
+                ],
+            }),
+        }, status=400)
+
+@require_POST
+def continue_reset_password(request):
+    email = request.POST.get("email")
+    code = request.POST.get("code")
+
+    email_code_obj = EmailCode.objects.filter(email=email)
+    if email_code_obj.exists():
+        email_code_obj = email_code_obj.last()
+        if str(email_code_obj.code) == code and email_code_obj.is_expired() == False:
+            email_code_obj.accepted = True
+            email_code_obj.save()
+
+            request.session['reset_password_email'] = email
+            request.session.modified = True
+
+            return JsonResponse({
+                "answer": "Почта успешно подтверждена",
+            })
+        else:
+            if email_code_obj.is_expired():
+                return JsonResponse({
+                    "html_errors": render_to_string(html_errors_template, context={
+                        "errors": [
+                            {"message": "Cрок действия кода подтверждения был истечён"}
+                        ],
+                    }),
+                }, status=400)
+            else:
+                return JsonResponse({
+                    "html_errors": render_to_string(html_errors_template, context={
+                        "errors": [
+                            {"message": "Неправильный код доступа"}
+                        ],
+                    }),
+                }, status=400)
+    else:
+        print("in else continue_reset_password")
+        return JsonResponse({
+            "html_errors": render_to_string(html_errors_template, context={
+                "errors": [
+                    {"message": "Код подтверждения ещё ни разу не был отправлен"}
+                ],
+            }),
+        }, status=400)
+
+@require_POST
+def final_change_password(request):
+
+    form = ChangePasswordForm(request.POST)
+
+    email = request.session.get('reset_password_email')
+
+    if form.is_valid():
+        if email != None:
+            email_code_obj = EmailCode.objects.filter(email=email)
+            if email_code_obj.exists():
+                email_code_obj = email_code_obj.last()
+
+                password1 = form.cleaned_data.get('password1')
+                password2 = form.cleaned_data.get('password2')
+
+                if password1 == password2 and email_code_obj.accepted:
+                    user = get_object_or_404(User, email=email)
+
+                    user.set_password(password1)
+                    user.save()
+
+                    email_code_obj.delete()
+
+                    del request.session['reset_password_email']
+
+                    return JsonResponse({
+                        "success": "True",
+                        "answer": "Пароль успешно изменён",
+                    })
+                else:
+                    if not email_code_obj.accepted:
+                        return JsonResponse({
+                            "html_errors": render_to_string(html_errors_template, context={
+                                "errors": [
+                                    {"message": "Почта не была подтверждена"}
+                                ],
+                            }),
+                        }, status=400)
+                    else:
+                        return JsonResponse({
+                            "html_errors": render_to_string(html_errors_template, context={
+                                "errors": [
+                                    {"message": "Пароли не совпадают"}
+                                ],
+                            }),
+                        }, status=400)
+            else:
+                return JsonResponse({
+                    "html_errors": render_to_string(html_errors_template, context={
+                        "errors": [
+                            {"message": "Код подтверждения ещё ни разу не был отправлен"}
+                        ],
+                    }),
+                }, status=400)
+        else:
+            return JsonResponse({
+                "html_errors": render_to_string(html_errors_template, context={
+                    "errors": [
+                        {"message": "Почта не была подтверждена"}
+                    ],
+                }),
+            }, status=400)
+    else:
+        formatted_errors = format_form_errors(form.errors.get_json_data(), form)
+        return JsonResponse({
+            "html_errors": render_to_string(html_errors_template, context={
+                "errors": list(
+                    {"message": error.get('message', 'Неверные данные формы')} for error in formatted_errors
+                ),
+            }),
+        }, status=400)
+
+
 

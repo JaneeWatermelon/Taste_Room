@@ -1,26 +1,16 @@
+from adminsortable2.admin import SortableAdminMixin
 from django.contrib import admin
-from unfold.admin import ModelAdmin
 from django.contrib.auth.admin import UserAdmin
-
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 
-from django.contrib.auth.models import Group
-
-from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
-
-from users.models import User, Achievement, CategoryAchievement, Comment, GeneralAchievementCondition, Review
-
-admin.site.unregister(Group)
-
-admin.site.register(CategoryAchievement)
-admin.site.register(GeneralAchievementCondition)
+from users.models import (Achievement, CategoryAchievement, Color,
+                          GeneralAchievementCondition, User)
 
 @admin.register(User)
-class UserAdmin(BaseUserAdmin, ModelAdmin):
-    form = UserChangeForm
-    add_form = UserCreationForm
-    change_password_form = AdminPasswordChangeForm
+class UserAdmin(BaseUserAdmin, admin.ModelAdmin):
+    # form = UserChangeForm
+    # add_form = UserCreationForm
+    # change_password_form = AdminPasswordChangeForm
 
     list_display = ["username", "email", "date_joined"]
 
@@ -30,8 +20,9 @@ class UserAdmin(BaseUserAdmin, ModelAdmin):
                     ('name', 'avatar', 'background_color'),
                     ('description_profile', 'description_recipe', 'description_news'),
                     'socials',
-                    ('liked_recipes_id', 'liked_comments_id', 'disliked_comments_id',),
-                    ('subscribers_id', 'subscriptions_id'),
+                    ('liked_recipes', 'liked_recipe_comments', 'disliked_recipe_comments',),
+                    ('liked_news_comments', 'disliked_news_comments',),
+                    ('subscribers', 'subscriptions'),
                     ('choosed_achiv', 'achivs'),
                 )
             }
@@ -44,8 +35,9 @@ class UserAdmin(BaseUserAdmin, ModelAdmin):
                     ('name', 'avatar', 'background_color'),
                     ('description_profile', 'description_recipe', 'description_news'),
                     'socials',
-                    ('liked_recipes_id', 'liked_comments_id', 'disliked_comments_id',),
-                    ('subscribers_id', 'subscriptions_id'),
+                    ('liked_recipes', 'liked_recipe_comments', 'disliked_recipe_comments',),
+                    ('liked_news_comments', 'disliked_news_comments',),
+                    ('subscribers', 'subscriptions'),
                     ('choosed_achiv', 'achivs'),
                 )
             }
@@ -53,17 +45,18 @@ class UserAdmin(BaseUserAdmin, ModelAdmin):
     )
 
 @admin.register(Achievement)
-class AchievementAdmin(ModelAdmin):
+class AchievementAdmin(admin.ModelAdmin):
     list_display = ["title", "category", "condition_general", "condition_self", "level",]
 
-@admin.register(Comment)
-class CommentAdmin(ModelAdmin):
-    list_display = ["author", "likes", "dislikes", "parent", "published_date", "id"]
-
-@admin.register(Review)
-class ReviewAdmin(ModelAdmin):
-    list_display = ["author", "rating",]
-
-@admin.register(Group)
-class GroupAdmin(BaseGroupAdmin, ModelAdmin):
+@admin.register(CategoryAchievement)
+class CategoryAchievementAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(GeneralAchievementCondition)
+class GeneralAchievementConditionAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Color)
+class ColorAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ["title", "hash", "sort_order"]
+    list_editable = ["sort_order"]

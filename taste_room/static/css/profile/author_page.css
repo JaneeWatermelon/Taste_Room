@@ -1,6 +1,25 @@
+.profile_header > .content > .image_wrapper {
+    cursor: auto;
+}
+
+.profile_header .settings_wrapper > .settings > .sub_action_wrapper {
+    display: flex;
+    justify-content: center;
+    gap: var(--small);
+    background-color: var(--color-light-ghost);
+    border-radius: var(--small);
+    padding: var(--tiny) var(--small);
+}
+.profile_header .settings_wrapper > .settings > .sub_action_wrapper.active {
+    background-color: var(--color-red);
+}
+.profile_header .settings_wrapper > .settings > .sub_action_wrapper > p {
+    color: var(--color-black);
+}
+.profile_header .settings_wrapper > .settings > .sub_action_wrapper.active > p {
+    color: var(--color-white);
+}
+
 @media (max-width: 720px) {
-    .profile_chapters {
-        flex-direction: row;
-        justify-content: space-between;
-    }
+    
 }

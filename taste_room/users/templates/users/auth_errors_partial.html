@@ -1,0 +1,8 @@
+{% load static %}
+
+{% for item in errors %}
+<li>
+    <img src="{% static 'svg/Random_icons/Warning.svg' %}">
+    <h4 class="black_50">{{ item.message }}</h4>
+</li>
+{% endfor %}

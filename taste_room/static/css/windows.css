@@ -22,8 +22,9 @@
     border-radius: var(--huge);
     padding: var(--huge);
     background-color: var(--color-light-cream);
-    position: relative;
+    position: absolute;
     width: 40vw;
+    transition: all 0.3s ease;
 }
 .profile_window > .overflow_icon {
     position: absolute;
@@ -50,12 +51,6 @@
     gap: var(--mid);
     padding: 0 var(--mega);
     width: 100%;
-}
-.profile_window > .info_form > .messages_wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: var(--small);
 }
 .profile_window > .info_form > .field_item {
     display: flex;
@@ -163,6 +158,42 @@
     padding: var(--small);
     border-radius: var(--small);
     background-color: var(--color-cookie);
+}
+
+.profile_window.unpublic_warning {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--normal);
+    justify-content: center;
+    background-color: var(--color-white);
+    border-radius: var(--small);
+    padding: var(--big);
+}
+.profile_window.unpublic_warning > .buttons {
+    display: flex;
+    align-items: center;
+    gap: var(--normal);
+    justify-content: center;
+    width: 100%;
+}
+.profile_window.unpublic_warning > .buttons > .button_item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--small);
+    padding: var(--small) var(--huge);
+    flex-basis: 50%;
+    cursor: pointer;
+}
+.profile_window.unpublic_warning > .buttons > .button_item.unpublic {
+    background-color: var(--color-red);
+}
+.profile_window.unpublic_warning > .buttons > .button_item.save_public {
+    background-color: var(--color-cookie);
+}
+.profile_window.unpublic_warning > .buttons > .button_item > h4 {
+    color: var(--color-white);
 }
 
 .burger_menu {

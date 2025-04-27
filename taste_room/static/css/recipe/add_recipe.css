@@ -254,18 +254,19 @@ input[type='checkbox'] {
 
 .edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper {
     display: flex;
+    justify-content: center;
+    align-items: center;
     height: 200px;
     aspect-ratio: 1.5;
     position: relative;
+    overflow: hidden;
+    border-radius: var(--small);
 }
 .edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper .back_image {
     border-radius: var(--small);
-    height: 200px;
-    aspect-ratio: 1.5;
+    height: 100%;
     object-fit: cover;
     position: absolute;
-    top: 0;
-    left: 0;
 }
 .edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper > .delete_and_change {
     display: flex;
@@ -275,6 +276,7 @@ input[type='checkbox'] {
     right: 0;
     width: fit-content;
     height: 100%;
+    z-index: 1;
 }
 .edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper > .delete_and_change > .action_item {
     display: flex;
@@ -345,18 +347,19 @@ input[type='checkbox'] {
 
 .edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper {
     display: flex;
+    justify-content: center;
+    align-items: center;
     height: 200px;
     aspect-ratio: 1.5;
     position: relative;
+    overflow: hidden;
+    border-radius: var(--small);
 }
 .edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper .back_image {
     border-radius: var(--small);
-    height: 200px;
-    aspect-ratio: 1.5;
+    height: 100%;
     object-fit: cover;
     position: absolute;
-    top: 0;
-    left: 0;
 }
 .edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper > .delete_and_change {
     display: flex;
@@ -366,6 +369,7 @@ input[type='checkbox'] {
     right: 0;
     width: fit-content;
     height: 100%;
+    z-index: 1;
 }
 .edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper > .delete_and_change > .action_item {
     display: flex;
@@ -426,6 +430,7 @@ input[type='checkbox'] {
     gap: var(--mid);
     padding: var(--small) var(--mid);
     border-radius: var(--small);
+    flex-grow: 1;
 }
 .edit_section > .continue_and_drafts > .continue_button {
     background-color: var(--color-cookie);

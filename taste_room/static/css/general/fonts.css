@@ -43,10 +43,22 @@ html {
     input,
     textarea,
     select,
-    li {
+    li,
+    button {
         font-family: "NTSomic_Regular";
         font-weight: inherit;
         margin: 0;
+    }
+}
+html {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p {
+        word-break: break-word;
     }
 }
 html h1, .h1_style {

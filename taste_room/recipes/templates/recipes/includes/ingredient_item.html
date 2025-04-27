@@ -1,0 +1,22 @@
+{% load static %}
+{% load custom_filters %}
+
+{% for item in ingredients %}
+<div class="ingredient_item" data-id="{{ item.id }}">
+    <input class="ingredient_id_input" hidden="hidden" name="ingredient_id_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}" value="{{ item.id }}">
+    <h4 class="order lilita_font">{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}.</h4>
+    <h4 class="title">{{ item.title }}</h4>
+    <div class="input_wrapper">
+        <input type="number" min="0" max="100000" name="ingredient_count_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}" placeholder="Кол-во">
+    </div>
+    <div class="input_wrapper">
+        <select name="ingredient_measurement_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}">
+            {% for choice in choices %}
+            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <input class="ingredient_checkbox_input" type="checkbox" name="ingredient_checkbox_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}">
+    <img class="trash_icon" src="{% static 'svg/Random_icons/Trash_icon.svg' %}">
+</div>
+{% endfor %}

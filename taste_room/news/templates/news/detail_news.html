@@ -71,14 +71,14 @@
                             <a href="#news_reviews" class="rating">
                                 <h4 class="black_75">Рейтинг:</h4>
                                 <div class="stars">
-                                    {% for _ in stars_on_count|repeat %}
+                                    {% for _ in object.stars_on_count|repeat %}
                                     <img src="{% static 'svg/Stars/Star_on.svg' %}">
                                     {% endfor %}
-                                    {% for _ in stars_off_count|repeat %}
+                                    {% for _ in object.stars_off_count|repeat %}
                                     <img src="{% static 'svg/Stars/Star_off.svg' %}">
                                     {% endfor %}
                                 </div>
-                                <h4 class="black_75">({{ object.reviews.count }})</h4>
+                                <h4 class="black_75">({{ object.newsreview_set.count }})</h4>
                             </a>
                             <div class="date_and_views">
                                 <h4 class="black_75 d_mobile_none">Опубликована: {{ published_date }}</h4>
@@ -131,17 +131,17 @@
                     <span class="anchor_hidden" id="news_reviews"></span>
                     <div class="rating_wrapper">
                         <h4 class="medium_font">Оцени статью “{{ object.title }}”</h4>
-                        <div data-id="{{ object.id }}" data-type="news" data-url="{% url 'users:change_rating_ajax' %}" data-url-delete="{% url 'users:delete_rating_ajax' %}" class="stars">
-                            {% for _ in stars_on_count|repeat %}
+                        <div data-id="{{ object.id }}" data-type="news" data-url="{% url 'news:change_rating_ajax' %}" data-url-delete="{% url 'news:delete_rating_ajax' %}" class="stars">
+                            {% for _ in object.stars_on_count|repeat %}
                             <img src="{% static 'svg/Stars/Star_half_on.svg' %}">
                             {% endfor %}
-                            {% for _ in stars_off_count|repeat %}
+                            {% for _ in object.stars_off_count|repeat %}
                             <img src="{% static 'svg/Stars/Star_off.svg' %}">
                             {% endfor %}
                         </div>
                         <div class="info">
                             <h4>Средняя оценка: <span class="medium_font cookie">{{ object.rating }}</span></h4>
-                            <h4>Голосов: <span class="medium_font cookie">{{ object.reviews.count }}</span></h4>
+                            <h4>Голосов: <span class="medium_font cookie">{{ object.newsreview_set.count }}</span></h4>
                         </div>
                     </div>
                     <div class="share_wrapper">
@@ -170,70 +170,7 @@
                 </div>
                 <div class="recipe_recs swiper">
                     <div class="recipe_recs_wrapper swiper-wrapper">
-                        {% for item in recs_recipes %}
-                        <div data-id="{{ item.id }}" class="recipe_item swiper-slide">
-                            <div class="recipe_item_header">
-                                <div class="image_wrapper">
-                                    <a href="{% url 'recipes:detail' item.id item.slug %}">
-                                        <img data-id="{{ item.id }}" class="back_image" src="{{ item.previews.optimized_image_1_small.url }}">
-                                    </a>
-                                    {% if user.is_authenticated %}
-                                        {% if item.id in user.liked_recipes_id %}
-                                        <div class="heart_wrapper active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
-                                            <img src="{% static 'svg/Random_icons/Heart_fill.svg' %}">
-                                        </div>
-                                        {% else %}
-                                        <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
-                                            <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
-                                        </div>
-                                        {% endif %}
-                                    {% else %}
-                                    <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
-                                        <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
-                                    </div>
-                                    {% endif %}
-                                </div>
-                                <div class="info">
-                                    <div class="calories">
-                                        <img src="{% static 'svg/Random_icons/Callories_icon.svg' %}">
-                                        <h4>{{ item.calculate_calories_per_100g }} ккал</h4>
-                                    </div>
-                                    <div data-id="{{ item.id }}" class="time">
-                                        <img src="{% static 'svg/Random_icons/Clock_icon.svg' %}">
-                                        <h4>{{ item.cook_time_full|short_timedelta }}</h4>
-                                    </div>
-                                </div>
-                                <a href="{% url 'recipes:detail' item.id item.slug %}">
-                                    <h3 class="title medium_font">{{ item.title }}</h3>
-                                </a>
-                                <h4 class="description">{{ item.description_card }}</h4>
-                            </div>
-                            <div class="recipe_item_footer">
-                                <a href="{% url 'users:author' item.author.username %}" class="icon_title">
-                                    <img src="{% static 'svg/Cookie/Smile_half_black.svg' %}">
-                                    <h4>{% if item.author.name %}{{ item.author.name }}{% else %}{{ item.author.username }}{% endif %}</h4>
-                                </a>
-                                <a href="">
-                                    <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
-                                </a>
-
-                                <div class="socials pop_up_share d_none" data-title="{{ item.title }}" data-url="{% url 'recipes:detail' item.id item.slug %}">
-                                    <img class="share_option" data-social="tg" src="{% static 'svg/Socials_Colorful/TG.svg' %}">
-                                    <img class="share_option" data-social="vk" src="{% static 'svg/Socials_Colorful/VK.svg' %}">
-                                    <img class="share_option" data-social="ws" src="{% static 'svg/Socials_Colorful/WS.svg' %}">
-                                    <img class="share_option" data-social="pinterest" src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
-                                    <div class="copy_wrapper">
-                                        <img class="copy_option" data-social="copy" src="{% static 'svg/Socials_Colorful/Copy.svg' %}">
-                                        <div class="copy_window">
-                                            <div class="inner_wrapper">
-                                                <h5>Ссылка скопирована!</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
+                        {% include "recipes/includes/recipe_cards.html" with recipes_list=recs_recipes swiper_slide=True %}
                     </div>
                     <img class="swiper_nav prev" style="transform: rotate(180deg);" src="{% static 'svg/Arrows/Slider_right.svg' %}">
                     <img class="swiper_nav next" src="{% static 'svg/Arrows/Slider_right.svg' %}">
@@ -268,63 +205,7 @@
                 </div>
                 <div class="news_recs swiper">
                     <div class="news_recs_wrapper swiper-wrapper">
-                        {% for item in recs_news %}
-                        <div class="news_item swiper-slide">
-                            <div class="news_item_header">
-                                <div class="image_wrapper">
-                                    <a href="{% url 'news:detail' item.id item.slug %}">
-                                        <img class="back_image" src="{{ item.optimized_image_small.url }}">
-                                    </a>
-                                    <div class="date_wrapper">
-                                        <h4>{{ item.published_date }}</h4>
-                                    </div>
-                                </div>
-                                <div class="info">
-                                    <div class="rating">
-                                        {% for _ in item.stars_on_count|repeat %}
-                                        <img src="{% static 'svg/Stars/Star_on.svg' %}">
-                                        {% endfor %}
-                                        {% for _ in item.stars_off_count|repeat %}
-                                        <img src="{% static 'svg/Stars/Star_off.svg' %}">
-                                        {% endfor %}
-                                        <h4 class="black_75">({{ item.reviews.count }})</h4>
-                                    </div>
-                                    <div class="views">
-                                        <img src="{% static 'svg/Random_icons/Eye_icon.svg' %}">
-                                        <h4 class="green">{{ item.views }}</h4>
-                                    </div>
-                                </div>
-                                <a href="{% url 'news:detail' item.id item.slug %}">
-                                    <h3 class="title medium_font">{{ item.title }}</h3>
-                                </a>
-                                <h4 class="description">{{ item.description_card }}</h4>
-                            </div>
-                            <div class="news_item_footer">
-                                <a href="{% url 'users:author' item.author.username %}" class="icon_title">
-                                    <img src="{% static 'svg/Cookie/Smile_half_black.svg' %}">
-                                    <h4 class="black_75">{% if item.author.name %}{{ item.author.name }}{% else %}{{ item.author.username }}{% endif %}</h4>
-                                </a>
-                                <a href="">
-                                    <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
-                                </a>
-
-                                <div class="socials pop_up_share d_none" data-title="{{ item.title }}" data-url="{% url 'news:detail' item.id item.slug %}">
-                                    <img class="share_option" data-social="tg" src="{% static 'svg/Socials_Colorful/TG.svg' %}">
-                                    <img class="share_option" data-social="vk" src="{% static 'svg/Socials_Colorful/VK.svg' %}">
-                                    <img class="share_option" data-social="ws" src="{% static 'svg/Socials_Colorful/WS.svg' %}">
-                                    <img class="share_option" data-social="pinterest" src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
-                                    <div class="copy_wrapper">
-                                        <img class="copy_option" data-social="copy" src="{% static 'svg/Socials_Colorful/Copy.svg' %}">
-                                        <div class="copy_window">
-                                            <div class="inner_wrapper">
-                                                <h5>Ссылка скопирована!</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
+                        {% include "news/includes/news_cards.html" with news_list=recs_news swiper_slide=True %}
                     </div>
                     <img class="swiper_nav prev" style="transform: rotate(180deg);" src="{% static 'svg/Arrows/Slider_right.svg' %}">
                     <img class="swiper_nav next" src="{% static 'svg/Arrows/Slider_right.svg' %}">
@@ -335,7 +216,7 @@
                     <h2 class="lilita_font">Оставь комментарий!</h2>
                     <span class="line"></span>
                 </div>
-                <form action="{% url 'users:add_comment_ajax' %}" method="post" enctype="multipart/form-data" class="news_add_comment add_comment">
+                <form action="{% url 'news:add_comment_ajax' %}" method="post" enctype="multipart/form-data" class="news_add_comment add_comment">
                     {% csrf_token %}
                     <div class="input_wrapper">
                         <textarea required="required" name="text" placeholder="Поделитесь своими мыслями"></textarea>
@@ -365,7 +246,7 @@
                                         <h5 class="medium_font black_50">Ответить</h5>
                                     </div>
                                     {% if item.author == user %}
-                                    <div data-url="{% url 'users:delete_comment_ajax' %}" class="action delete">
+                                    <div data-url="{% url 'news:delete_comment_ajax' %}" class="action delete">
                                         <h5 class="medium_font black_50">Удалить</h5>
                                     </div>
                                     {% endif %}
@@ -379,9 +260,9 @@
                                 {% endif %}
                                 <h5>{{ item.text }}</h5>
                             </div>
-                            <div data-url="{% url 'users:comment_reaction_change_ajax' %}" class="rating">
+                            <div data-url="{% url 'news:comment_reaction_change_ajax' %}" class="rating">
                                 <div class="likes">
-                                    {% if item.id in request.user.liked_comments_id %}
+                                    {% if item in request.user.liked_news_comments.all %}
                                     <img class="active" src="{% static 'svg/Likes_Dislikes/Like_fill.svg' %}">
                                     {% else %}
                                     <img src="{% static 'svg/Likes_Dislikes/Like_blank.svg' %}">
@@ -392,7 +273,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="dislikes">
-                                    {% if item.id in request.user.disliked_comments_id %}
+                                    {% if item in request.user.disliked_news_comments.all %}
                                     <img class="active" src="{% static 'svg/Likes_Dislikes/Dislike_fill.svg' %}">
                                     {% else %}
                                     <img src="{% static 'svg/Likes_Dislikes/Dislike_blank.svg' %}">
@@ -424,7 +305,7 @@
                                         </div>
                                         <div class="comment_actions d_none">
                                             {% if item.author == user %}
-                                            <div data-url="{% url 'users:delete_comment_ajax' %}" class="action delete">
+                                            <div data-url="{% url 'news:delete_comment_ajax' %}" class="action delete">
                                                 <h5 class="medium_font black_50">Удалить</h5>
                                             </div>
                                             {% endif %}
@@ -438,9 +319,9 @@
                                         {% endif %}
                                         <h5>{{ answer.text }}</h5>
                                     </div>
-                                    <div data-url="{% url 'users:comment_reaction_change_ajax' %}" class="rating">
+                                    <div data-url="{% url 'news:comment_reaction_change_ajax' %}" class="rating">
                                         <div class="likes">
-                                            {% if answer.id in request.user.liked_comments_id %}
+                                            {% if answer in request.user.liked_news_comments.all %}
                                             <img class="active" src="{% static 'svg/Likes_Dislikes/Like_fill.svg' %}">
                                             {% else %}
                                             <img src="{% static 'svg/Likes_Dislikes/Like_blank.svg' %}">
@@ -451,7 +332,7 @@
                                             {% endif %}
                                         </div>
                                         <div class="dislikes">
-                                            {% if answer.id in request.user.disliked_comments_id %}
+                                            {% if answer in request.user.disliked_news_comments.all %}
                                             <img class="active" src="{% static 'svg/Likes_Dislikes/Dislike_fill.svg' %}">
                                             {% else %}
                                             <img src="{% static 'svg/Likes_Dislikes/Dislike_blank.svg' %}">
@@ -473,7 +354,7 @@
                             <h5 class="black_75">Показать ответы ({{ item.children.count }})</h5>
                         </div>
                         {% endif %}
-                        <form data-parent-id="{{ item.id }}" action="{% url 'users:add_comment_ajax' %}" method="post" enctype="multipart/form-data" class="add_answer_comment d_none">
+                        <form data-parent-id="{{ item.id }}" action="{% url 'news:add_comment_ajax' %}" method="post" enctype="multipart/form-data" class="add_answer_comment d_none">
                             {% csrf_token %}
                             <div class="input_wrapper">
                                 <textarea required="required" name="text" placeholder="Ответьте на комментарий"></textarea>
@@ -485,70 +366,14 @@
                     </div>
                     {% endfor %}
                     {% if comments.has_next %}
-                    <div data-page="{{ comments.next_page_number }}" data-url="{% url 'users:load_more_comments_ajax' %}" class="show_more">
+                    <div data-page="{{ comments.next_page_number }}" data-url="{% url 'news:load_more_comments_ajax' %}" class="show_more">
                         <h5 class="black_75">Показать ещё</h5>
                     </div>
                     {% endif %}
                 </div>
             </section>
             <section class="art_section d_mobile_none">
-                {% for item in news_side %}
-                <div class="news_item">
-                    <div class="news_item_header">
-                        <div class="image_wrapper">
-                            <a href="{% url 'news:detail' item.id item.slug %}">
-                                <img class="back_image" src="{{ item.optimized_image_small.url }}">
-                            </a>
-                            <div class="date_wrapper">
-                                <h4>{{ item.published_date }}</h4>
-                            </div>
-                        </div>
-                        <div class="info">
-                            <div class="rating">
-                                {% for _ in item.stars_on_count|repeat %}
-                                <img src="{% static 'svg/Stars/Star_on.svg' %}">
-                                {% endfor %}
-                                {% for _ in item.stars_off_count|repeat %}
-                                <img src="{% static 'svg/Stars/Star_off.svg' %}">
-                                {% endfor %}
-                                <h4 class="black_75">({{ item.reviews.count }})</h4>
-                            </div>
-                            <div class="views">
-                                <img src="{% static 'svg/Random_icons/Eye_icon.svg' %}">
-                                <h4 class="green">{{ item.views }}</h4>
-                            </div>
-                        </div>
-                        <a href="{% url 'news:detail' item.id item.slug %}">
-                            <h3 class="title medium_font">{{ item.title }}</h3>
-                        </a>
-                        <h4 class="description">{{ item.description_card }}</h4>
-                    </div>
-                    <div class="news_item_footer">
-                        <a href="{% url 'users:author' item.author.username %}" class="icon_title">
-                            <img src="{% static 'svg/Cookie/Smile_half_black.svg' %}">
-                            <h4 class="black_75">{% if item.author.name %}{{ item.author.name }}{% else %}{{ item.author.username }}{% endif %}</h4>
-                        </a>
-                        <a href="">
-                            <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
-                        </a>
-
-                        <div class="socials pop_up_share d_none" data-title="{{ item.title }}" data-url="{% url 'news:detail' item.id item.slug %}">
-                            <img class="share_option" data-social="tg" src="{% static 'svg/Socials_Colorful/TG.svg' %}">
-                            <img class="share_option" data-social="vk" src="{% static 'svg/Socials_Colorful/VK.svg' %}">
-                            <img class="share_option" data-social="ws" src="{% static 'svg/Socials_Colorful/WS.svg' %}">
-                            <img class="share_option" data-social="pinterest" src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
-                            <div class="copy_wrapper">
-                                <img class="copy_option" data-social="copy" src="{% static 'svg/Socials_Colorful/Copy.svg' %}">
-                                <div class="copy_window">
-                                    <div class="inner_wrapper">
-                                        <h5>Ссылка скопирована!</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
+                {% include "news/includes/news_cards.html" with news_list=news_side %}
             </section>
         </div>
     </main>

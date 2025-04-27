@@ -7,6 +7,13 @@
     <link rel="stylesheet" href="{% static 'css/news/news_card.css' %}">
     <link rel="stylesheet" href="{% static 'css/profile/profile.css' %}">
     <link rel="stylesheet" href="{% static 'css/general/achiv_shadows.css' %}">
+    {% if object.background_color %}
+    <style>
+        .text_hash {
+            color: {{ object.background_color.text_hash }};
+        }
+    </style>
+    {% endif %}
 {% endblock %}
 
 {% block main %}
@@ -17,9 +24,12 @@
             <a href="{% url 'users:profile' %}"><p>Профиль</p></a>
         </section>
         <div class="main_content">
-            <section class="profile_header d_mobile_none">
+            <section class="profile_header d_mobile_none" {% if object.background_color %}style="background-color: {{ object.background_color.hash }};"{% endif %}>
                 <div class="content">
                     <div class="image_wrapper">
+                        <span class="change_image_hover">
+                            <img src="{% static 'svg/Random_icons/Edit_icon.svg' %}">
+                        </span>
                         {% if object.avatar %}
                         <img src="{{ object.optimized_image.url }}">
                         {% else %}
@@ -31,18 +41,25 @@
                             <div class="name_tag_descr">
                                 <div class="name_and_tag">
                                     {% if object.name %}
-                                    <h2>{{ object.name }}</h2>
+                                    <h2 class="text_hash">{{ object.name }}</h2>
                                     {% endif %}
-                                    <h3>@{{ object.username }}</h3>
+                                    <h3 class="text_hash">@{{ object.username }}</h3>
                                 </div>
-                                <h5>{{ object.description_profile }}</h5>
+                                <h5 class="text_hash">{{ object.description_profile }}</h5>
                             </div>
-                            <img class="shadow silver_shadow" src="{% static 'svg/Achievements/Comments_Silver.svg' %}">
+                            {% if object.choosed_achiv %}
+                            <img class="shadow
+                            {% if object.choosed_achiv.level == 1 %}silver_shadow
+                            {% elif object.choosed_achiv.level == 2 %}gold_shadow
+                            {% elif object.choosed_achiv.level == 3 %}ruby_shadow
+                            {% else %}silver_shadow
+                            {% endif %}" src="{{ object.choosed_achiv.icon.url }}">
+                            {% endif %}
                         </div>
                         <div class="socials_and_date_joined">
                             {% if object.socials %}
                             <div class="socials_wrapper">
-                                <h4>Соц сети:</h4>
+                                <h4 class="text_hash">Соц сети:</h4>
                                 <div class="socials">
                                     {% if object.socials.telegram %}
                                     <a href="{{ object.socials.telegram }}">
@@ -72,17 +89,17 @@
                                 </div>
                             </div>
                             {% endif %}
-                            <h4>На сайте с {{ date_joined }}</h4>
+                            <h4 class="text_hash">На сайте с {{ object.formated_date_joined }}</h4>
                         </div>
                     </div>
                 </div>
                 <div class="settings_wrapper">
-                    <h4 class="medium_font">Настройки профиля</h4>
+                    <h4 class="medium_font text_hash">Настройки профиля</h4>
                     <div class="settings">
                         <div class="subs_wrapper">
-                            <p class="medium_font">Подписчики: {{ subscribers_count }}</p>
+                            <p id="subs_count" class="medium_font">Подписчики: {{ object.subscribers.count }}</p>
                         </div>
-                        <div class="settings_item">
+                        <div data-for="settings_section" class="settings_item change_settings">
                             <img src="{% static 'svg/Random_icons/Gear_icon.svg' %}">
                             <p>Расширенные настройки</p>
                         </div>
@@ -97,7 +114,7 @@
                     </div>
                 </div>
             </section>
-            <section class="profile_header d_desktop_none">
+            <section class="profile_header d_desktop_none" {% if object.background_color %}style="background-color: {{ object.background_color.hash }};"{% endif %}>
                 <div class="avatar_and_settings">
                     <div class="image_wrapper">
                         {% if object.avatar %}
@@ -107,10 +124,10 @@
                         {% endif %}
                     </div>
                     <div class="settings_wrapper">
-                        <h4 class="medium_font">Настройки профиля</h4>
+                        <h4 class="medium_font text_hash">Настройки профиля</h4>
                         <div class="settings">
                             <div class="subs_wrapper">
-                                <p class="medium_font">Подписчики: {{ subscribers_count }}</p>
+                                <p id="subs_count" class="medium_font">Подписчики: {{ object.subscribers.count }}</p>
                             </div>
                             <div class="settings_item">
                                 <img src="{% static 'svg/Random_icons/Gear_icon.svg' %}">
@@ -133,18 +150,25 @@
                             <div class="name_tag_descr">
                                 <div class="name_and_tag">
                                     {% if object.name %}
-                                    <h2>{{ object.name }}</h2>
+                                    <h2 class="text_hash">{{ object.name }}</h2>
                                     {% endif %}
-                                    <h3>@{{ object.username }}</h3>
+                                    <h3 class="text_hash">@{{ object.username }}</h3>
                                 </div>
-                                <img class="shadow" src="{% static 'svg/Achievements/Comments_Silver.svg' %}">
+                                {% if object.choosed_achiv %}
+                                <img class="shadow
+                                {% if object.choosed_achiv.level == 1 %}silver_shadow
+                                {% elif object.choosed_achiv.level == 2 %}gold_shadow
+                                {% elif object.choosed_achiv.level == 3 %}ruby_shadow
+                                {% else %}silver_shadow
+                                {% endif %}" src="{{ object.choosed_achiv.icon.url }}">
+                                {% endif %}
                             </div>
-                            <h5>{{ object.description_profile }}</h5>
+                            <h5 class="text_hash">{{ object.description_profile }}</h5>
                         </div>
                         <div class="socials_and_date_joined">
                             {% if object.socials %}
                             <div class="socials_wrapper">
-                                <h4>Соц сети:</h4>
+                                <h4 class="text_hash">Соц сети:</h4>
                                 <div class="socials">
                                     {% if object.socials.telegram %}
                                     <a href="{{ object.socials.telegram }}">
@@ -174,122 +198,77 @@
                                 </div>
                             </div>
                             {% endif %}
-                            <h4>На сайте с {{ date_joined }}</h4>
+                            <h4 class="text_hash">На сайте с {{ object.formated_date_joined }}</h4>
                         </div>
                     </div>
                 </div>
             </section>
             <section class="profile_chapters">
                 <div class="chapter_wrapper">
-                    <a href="{% url 'recipes:create' %}" class="add_button recipe">
-                        <img src="{% static 'svg/Plus_Minus/Plus_white.svg' %}">
-                        <h4>Рецепт</h4>
-                    </a>
-                    <h4 data-for="liked_recipes_section" class="active">Понравившиеся рецепты</h4>
-                    <h4 data-for="my_recipes_section">Мои рецепты</h4>
+                    <div class="chapter add_button">
+                        <a href="{% url 'recipes:create' %}" class="chapter_item">
+                            <img src="{% static 'svg/Plus_Minus/Plus_white.svg' %}">
+                            <h4>Рецепт</h4>
+                        </a>
+                    </div>
+                    <div class="chapter">
+                        <div class="chapter_item active" data-for="liked_recipes_section">
+                            <svg class="fill_svg" width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.0827 3.50486C13.2904 1.5668 16.5585 1.09179 19.1704 3.1984C22.0038 5.48375 22.3513 9.39751 20.1611 12.1325C19.3251 13.1766 17.69 14.7485 16.1144 16.1917C14.5215 17.6507 12.9323 19.0295 12.1484 19.7032L12.1335 19.716C12.0593 19.7798 11.97 19.8565 11.8851 19.9187C11.7837 19.9928 11.6428 20.0812 11.4572 20.1348C11.2096 20.2064 10.9437 20.2065 10.6958 20.1348C10.5104 20.0811 10.3696 19.9928 10.2682 19.9187C10.1828 19.8564 10.0933 19.7794 10.019 19.7154L10.0048 19.7032C10.0048 19.7032 10.0047 19.7032 10.0048 19.7032C9.22088 19.0295 7.63156 17.6507 6.0388 16.1917C4.46315 14.7485 2.82807 13.1766 1.99199 12.1325C-0.206242 9.38748 0.202813 5.50328 2.97358 3.2059C5.55508 1.06544 8.87026 1.56732 11.0827 3.50486ZM10.4267 5.3168C8.74479 3.40855 6.06084 2.91938 4.09057 4.55304C2.03913 6.254 1.76929 9.05478 3.35797 11.0387C4.09617 11.9604 5.63038 13.4445 7.22083 14.9013C8.74899 16.3011 10.2775 17.6293 11.0766 18.3168C11.8756 17.6293 13.4041 16.3011 14.9323 14.9013C16.5227 13.4445 18.0569 11.9605 18.7952 11.0387C20.3919 9.04475 20.1434 6.23147 18.0716 4.56054C16.0515 2.93119 13.4153 3.41562 11.7396 5.3168C11.5735 5.50525 11.3343 5.61322 11.0831 5.61322C10.8319 5.61322 10.5929 5.50525 10.4267 5.3168Z" fill="black" fill-opacity="0.5"/>
+                            </svg>
+                            <h4 class="active">Любимое</h4>
+                        </div>
+                        <div class="chapter_item" data-for="my_recipes_section">
+                            <svg class="fill_svg" width="203" height="203" viewBox="0 0 203 203" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M134.81 23.4717L134.761 23.7578C132.817 35.2044 133.215 42.8724 136.769 47.471C138.234 49.3665 140.02 50.7342 143.141 51.8091C149.783 54.0969 158.27 52.3388 168.708 47.7595L173.529 58.7485C162.659 63.5172 150.456 67.0204 139.233 63.155C134.096 61.3855 130.294 58.7152 127.275 54.8097C120.235 45.7015 121.003 33.0971 122.931 21.7478L122.979 21.4617C123.014 21.2557 122.92 21.0491 122.742 20.9404L116.037 16.8559C107.109 11.4169 95.8909 11.4169 86.9625 16.8559C82.3919 19.6403 77.1178 21.0535 71.7673 20.9275C61.3156 20.6813 51.6007 26.2901 46.5881 35.4647L36.0574 29.7111C43.2227 16.5965 57.1097 8.57888 72.0499 8.93079C75.1026 9.00269 78.1117 8.1964 80.7195 6.60778C93.4821 -1.16709 109.517 -1.16709 122.28 6.60778L128.985 10.6923C133.36 13.3576 135.668 18.4212 134.81 23.4717ZM35.4644 46.5883C40.1611 44.0223 44.022 40.1613 46.5881 35.4647L36.0574 29.7111C34.5933 32.3907 32.3905 34.5936 29.7108 36.0576L35.4644 46.5883ZM35.4644 156.412C40.1611 158.978 44.022 162.839 46.5881 167.535C51.6007 176.71 61.3156 182.319 71.7673 182.073C77.1178 181.947 82.3919 183.36 86.9625 186.144C95.8909 191.583 107.109 191.583 116.037 186.144C120.608 183.36 125.882 181.947 131.232 182.073C141.684 182.319 151.399 176.71 156.411 167.535C158.977 162.839 162.838 158.978 167.535 156.412C176.71 151.399 182.318 141.684 182.072 131.232C181.946 125.882 183.359 120.608 186.144 116.037C191.583 107.109 191.583 95.8911 186.144 86.9628L183.874 83.2366C182.548 81.0602 181.463 78.746 180.638 76.3348L174.816 59.3139C174.635 58.7851 174.041 58.5239 173.529 58.7485L168.708 47.7595C175.652 44.7132 183.716 48.2555 186.17 55.4301L191.993 72.451C192.535 74.038 193.249 75.5611 194.122 76.9935L196.392 80.7197C204.167 93.4824 204.167 109.518 196.392 122.28C194.803 124.888 193.997 127.897 194.069 130.95C194.421 145.89 186.403 159.777 173.289 166.942C170.609 168.406 168.406 170.609 166.942 173.289C159.777 186.404 145.89 194.421 130.95 194.069C127.897 193.997 124.888 194.804 122.28 196.392C109.517 204.167 93.4821 204.167 80.7195 196.392C78.1117 194.804 75.1026 193.997 72.0499 194.069C57.1097 194.421 43.2227 186.404 36.0574 173.289C34.5933 170.609 32.3905 168.406 29.7108 166.942L35.4644 156.412ZM35.4644 156.412C26.2899 151.399 20.681 141.684 20.9272 131.232C21.0532 125.882 19.64 120.608 16.8557 116.037C11.4166 107.109 11.4166 95.8911 16.8557 86.9628C19.64 82.3921 21.0532 77.118 20.9272 71.7676C20.681 61.3159 26.2899 51.601 35.4644 46.5883L29.7108 36.0576C16.5962 43.223 8.57862 57.1099 8.93053 72.0501C9.00243 75.1028 8.19614 78.112 6.60752 80.7197C-1.16735 93.4824 -1.16735 109.518 6.60752 122.28C8.19614 124.888 9.00243 127.897 8.93053 130.95C8.57862 145.89 16.5963 159.777 29.7108 166.942L35.4644 156.412Z" fill="black" fill-opacity="0.5"/>
+                                <path d="M84.9315 157.917C79.4828 164.157 67.216 162.362 57.5328 153.907C47.8496 145.452 44.4167 133.539 49.8654 127.299C55.314 121.059 67.5808 122.854 77.2641 131.309C86.9473 139.764 90.3801 151.676 84.9315 157.917Z" fill="black" fill-opacity="0.5"/>
+                                <path d="M151.617 100.45C158.462 105.117 158.14 117.51 150.899 128.131C143.657 138.752 132.238 143.579 125.393 138.913C118.549 134.246 118.87 121.852 126.112 111.231C133.353 100.61 144.772 95.7831 151.617 100.45Z" fill="black" fill-opacity="0.5"/>
+                                <path d="M86.1255 45.2406C93.8878 48.1348 96.5827 60.1297 92.1448 72.0318C87.7069 83.9339 77.8167 91.2361 70.0545 88.3419C62.2923 85.4476 59.5974 73.4527 64.0353 61.5506C68.4731 49.6486 78.3633 42.3463 86.1255 45.2406Z" fill="black" fill-opacity="0.5"/>
+                            </svg>
+                            <h4>Мои рецепты</h4>
+                        </div>
+                    </div>
                 </div>
-                <span class="line d_mobile_none"></span>
                 <div class="chapter_wrapper">
-                    <a href="{% url 'news:create' %}" class="add_button news">
-                        <img src="{% static 'svg/Plus_Minus/Plus_white.svg' %}">
-                        <h4>Статья</h4>
-                    </a>
-                    <h4 data-for="articles_section">Мои статьи</h4>
+                    <div class="chapter add_button">
+                        <a href="{% url 'news:create' %}" class="chapter_item">
+                            <img src="{% static 'svg/Plus_Minus/Plus_white.svg' %}">
+                            <h4>Статья</h4>
+                        </a>
+                    </div>
+                    <div class="chapter">
+                        <div class="chapter_item" data-for="articles_section">
+                            <svg class="fill_svg" width="26" height="25" viewBox="0 0 26 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M7.60594 4.86111C7.60594 4.09405 8.22942 3.47222 8.99852 3.47222H17.354C18.1231 3.47222 18.7465 4.09405 18.7465 4.86111V7.63889C18.7465 8.40595 18.1231 9.02778 17.354 9.02778H8.99852C8.22942 9.02778 7.60594 8.40595 7.60594 7.63889V4.86111ZM17.354 4.86111H8.99852V7.63889H17.354V4.86111ZM7.60594 12.5C7.60594 12.1165 7.91768 11.8056 8.30223 11.8056H13.8725C14.2571 11.8056 14.5688 12.1165 14.5688 12.5C14.5688 12.8835 14.2571 13.1944 13.8725 13.1944H8.30223C7.91768 13.1944 7.60594 12.8835 7.60594 12.5ZM15.9614 12.5C15.9614 12.1165 16.2731 11.8056 16.6577 11.8056H18.0502C18.4348 11.8056 18.7465 12.1165 18.7465 12.5C18.7465 12.8835 18.4348 13.1944 18.0502 13.1944H16.6577C16.2731 13.1944 15.9614 12.8835 15.9614 12.5ZM7.60594 16.6667C7.60594 16.2831 7.91768 15.9722 8.30223 15.9722H18.0502C18.4348 15.9722 18.7465 16.2831 18.7465 16.6667C18.7465 17.0502 18.4348 17.3611 18.0502 17.3611H8.30223C7.91768 17.3611 7.60594 17.0502 7.60594 16.6667ZM7.60594 20.8333C7.60594 20.4498 7.91768 20.1389 8.30223 20.1389H9.6948C10.0794 20.1389 10.3911 20.4498 10.3911 20.8333C10.3911 21.2169 10.0794 21.5278 9.6948 21.5278H8.30223C7.91768 21.5278 7.60594 21.2169 7.60594 20.8333ZM11.7837 20.8333C11.7837 20.4498 12.0954 20.1389 12.4799 20.1389H18.0502C18.4348 20.1389 18.7465 20.4498 18.7465 20.8333C18.7465 21.2169 18.4348 21.5278 18.0502 21.5278H12.4799C12.0954 21.5278 11.7837 21.2169 11.7837 20.8333Z" fill="black" fill-opacity="0.5"/>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M6.90966 0H19.4428C20.981 0 22.228 1.24365 22.228 2.77778V22.2222C22.228 23.7563 20.981 25 19.4428 25H6.90966C5.37146 25 4.12451 23.7563 4.12451 22.2222V2.77778C4.12451 1.24365 5.37146 0 6.90966 0ZM6.90966 1.38889C6.14056 1.38889 5.51708 2.01072 5.51708 2.77778V22.2222C5.51708 22.9893 6.14056 23.6111 6.90966 23.6111H19.4428C20.2119 23.6111 20.8354 22.9893 20.8354 22.2222V2.77778C20.8354 2.01072 20.2119 1.38889 19.4428 1.38889H6.90966Z" fill="black" fill-opacity="0.5"/>
+                            </svg>
+                            <h4 class="active">Мои статьи</h4>
+                        </div>
+                    </div>
                 </div>
-                <span class="line d_mobile_none"></span>
                 <div class="chapter_wrapper">
-                    <h4 data-for="subs_section">Мои подписки</h4>
-                    <h4 data-for="achievements_section">Достижения</h4>
+                    <div class="chapter">
+                        <div class="chapter_item" data-for="subs_section">
+                            <svg class="fill_svg" width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M13.6816 1.76804C13.1475 1.6361 12.5841 1.81384 12.2259 2.22719L6.39486 8.95601V19.2749H16.4062C17.099 19.2749 17.6955 18.7913 17.8314 18.1192L19.2266 11.2189C19.4065 10.3294 18.7186 9.49945 17.8014 9.49945H12.4991C12.1775 9.49945 11.882 9.32437 11.7302 9.0439C11.5785 8.76344 11.5951 8.42313 11.7735 8.15845L14.5939 3.97388C14.594 3.97387 14.594 3.97385 14.594 3.97384C15.1514 3.14665 14.7121 2.02289 13.7371 1.78178L13.6819 1.76811C13.6819 1.76811 13.6819 1.7681 13.6818 1.7681C13.6818 1.76808 13.6817 1.76806 13.6816 1.76804ZM4.65081 19.2749V9.49947L1.74405 9.49946V19.2749H4.65081ZM5.12176 7.77439L10.9017 1.10453C11.6899 0.194989 12.9298 -0.195995 14.1048 0.0945279L14.1601 0.108207C16.3053 0.638664 17.2715 3.11099 16.0451 4.93071L16.0451 4.93075L14.1285 7.77437H17.8014C19.8192 7.77437 21.3325 9.60019 20.9368 11.5572L19.5416 18.4576C19.2426 19.9359 17.9304 21 16.4062 21H0.872027C0.39042 21 0 20.6138 0 20.1375V8.63691C0 8.40815 0.0918746 8.18876 0.255412 8.027C0.41895 7.86524 0.640755 7.77437 0.872031 7.77437L5.12176 7.77439Z" fill="black" fill-opacity="0.5"/>
+                            </svg>
+                            <h4 class="active">Подписки</h4>
+                        </div>
+                        <div class="chapter_item" data-for="achievements_section">
+                            <svg class="stroke_svg" width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10.0963 0.944749C10.2805 0.351751 11.0534 0.35175 11.2377 0.944749L12.9608 6.49078C13.1697 7.16284 13.7778 7.63882 14.4865 7.63882H20.0628C20.3412 7.63882 20.5505 7.81651 20.6335 8.08357C20.7169 8.35198 20.6488 8.64281 20.4081 8.82568L15.8968 12.2533C15.3375 12.6783 15.1136 13.4195 15.3214 14.0884L17.0446 19.6344C17.1423 19.9489 17.0224 20.2221 16.8192 20.3765C16.6193 20.5284 16.3611 20.5532 16.1286 20.3765L11.6173 16.9489C11.0522 16.5196 10.2818 16.5196 9.7167 16.9489L5.20541 20.3765C4.97284 20.5532 4.71464 20.5284 4.51477 20.3765C4.31157 20.2222 4.19168 19.9489 4.2894 19.6344L6.01256 14.0884C6.2204 13.4195 5.9965 12.6783 5.43719 12.2533L0.925902 8.82568C0.685213 8.64281 0.617135 8.35198 0.70053 8.08357C0.783504 7.81651 0.992797 7.63882 1.27122 7.63882H6.84748C7.55621 7.63882 8.16433 7.16284 8.37314 6.49078L10.0963 0.944749Z" stroke="black" stroke-opacity="0.5"/>
+                            </svg>
+                            <h4 class="active">Достижения</h4>
+                        </div>
+                    </div>
                 </div>
             </section>
             <section id="liked_recipes_section" class="new_recipes_section possible_block">
                 <div class="cards_wrapper">
-                    {% for item in liked_recipes %}
-                    <div data-id="{{ item.id }}" class="recipe_item">
-                    <div class="recipe_item_header">
-                        <div class="image_wrapper">
-                            <a href="{% url 'recipes:detail' item.id item.slug %}">
-                                <img data-id="{{ item.id }}" class="back_image" src="{{ item.previews.optimized_image_1_small.url }}">
-                            </a>
-                            {% if user.is_authenticated %}
-                                {% if item.id in user.liked_recipes_id %}
-                                <div class="heart_wrapper active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
-                                    <img src="{% static 'svg/Random_icons/Heart_fill.svg' %}">
-                                </div>
-                                {% else %}
-                                <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
-                                    <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
-                                </div>
-                                {% endif %}
-                            {% else %}
-                            <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
-                                <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
-                            </div>
-                            {% endif %}
-                        </div>
-                        <div class="info">
-                            <div class="calories">
-                                <img src="{% static 'svg/Random_icons/Callories_icon.svg' %}">
-                                <h4>{{ item.calculate_calories_per_100g }} ккал</h4>
-                            </div>
-                            <div data-id="{{ item.id }}" class="time">
-                                <img src="{% static 'svg/Random_icons/Clock_icon.svg' %}">
-                                <h4>{{ item.cook_time_full|short_timedelta }}</h4>
-                            </div>
-                        </div>
-                        <a href="{% url 'recipes:detail' item.id item.slug %}">
-                            <h3 class="title medium_font">{{ item.title }}</h3>
-                        </a>
-                        <h4 class="description">{{ item.description_card }}</h4>
-                    </div>
-                    <div class="recipe_item_footer">
-                        <a href="{% url 'users:author' item.author.username %}" class="icon_title">
-                            <img src="{% static 'svg/Cookie/Smile_half_black.svg' %}">
-                            <h4>{% if item.author.name %}{{ item.author.name }}{% else %}{{ item.author.username }}{% endif %}</h4>
-                        </a>
-                        <a href="">
-                            <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
-                        </a>
-
-                        <div class="socials pop_up_share d_none" data-title="{{ item.title }}" data-url="{% url 'recipes:detail' item.id item.slug %}">
-                            <img class="share_option" data-social="tg" src="{% static 'svg/Socials_Colorful/TG.svg' %}">
-                            <img class="share_option" data-social="vk" src="{% static 'svg/Socials_Colorful/VK.svg' %}">
-                            <img class="share_option" data-social="ws" src="{% static 'svg/Socials_Colorful/WS.svg' %}">
-                            <img class="share_option" data-social="pinterest" src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
-                            <div class="copy_wrapper">
-                                <img class="copy_option" data-social="copy" src="{% static 'svg/Socials_Colorful/Copy.svg' %}">
-                                <div class="copy_window">
-                                    <div class="inner_wrapper">
-                                        <h5>Ссылка скопирована!</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div data-id="{{ item.id }}" class="pop_up_window cook_time_window d_none">
-                        <p>Время приготовления</p>
-                        <div class="inner_wrapper">
-                            <img src="{% static 'svg/Random_icons/Clock_icon.svg' %}">
-                            <h5 class="green">Общее - {{ item.cook_time_full|short_timedelta }}</h5>
-                        </div>
-                        <div class="inner_wrapper">
-                            <img src="{% static 'svg/Random_icons/Clock_icon_red.svg' %}">
-                            <h5 class="red">Активное - {{ item.cook_time_active|short_timedelta }}</h5>
-                        </div>
-                    </div>
-                    <div data-id="{{ item.id }}" class="pop_up_window ingredients_window d_none">
-                        <p>Ингредиенты</p>
-                        {% for ingredient in item.recipeingredient_set.all %}
-                        <div class="inner_wrapper">
-                            <h5>{{ ingredient.ingredient.title }} - {{ ingredient.quantity|round_ingredient_count }} {{ ingredient.unit }}</h5>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                    {% endfor %}
+                    {% include "recipes/includes/recipe_cards.html" with recipes_list=liked_recipes %}
                 </div>
             </section>
-            <section id="my_recipes_section" class="new_recipes_section possible_block d_none">
+            <section data-type="my_recipes" id="my_recipes_section" class="new_recipes_section possible_block d_none">
                 <div data-url="{% url 'users:load_my_recipes_ajax' %}" class="publish_types">
                     <div data-status="1" class="publish_type_item active">
                         <h4 class="medium_font">Опубликованные</h4>
@@ -305,125 +284,23 @@
                     </div>
                 </div>
                 <div class="cards_wrapper">
-                    {% for item in my_recipes %}
-                    <div data-id="{{ item.id }}" class="recipe_item">
-                        <div class="recipe_item_header">
-                            <div class="image_wrapper">
-                                <a href="{% url 'recipes:detail' item.id item.slug %}">
-                                    <img data-id="{{ item.id }}" class="back_image" src="{{ item.previews.optimized_image_1_small.url }}">
-                                </a>
-                                {% if user.is_authenticated %}
-                                    {% if item.id in user.liked_recipes_id %}
-                                    <div class="heart_wrapper active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
-                                        <img src="{% static 'svg/Random_icons/Heart_fill.svg' %}">
-                                    </div>
-                                    {% else %}
-                                    <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
-                                        <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
-                                    </div>
-                                    {% endif %}
-                                {% else %}
-                                <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
-                                    <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
-                                </div>
-                                {% endif %}
-                                <div class="buttons">
-                                    {% if item.status != 1 %}
-                                    <div class="change">
-                                        <img src="{% static 'svg/Random_icons/Edit_icon.svg' %}">
-                                        <h4>Редактировать</h4>
-                                    </div>
-                                    {% endif %}
-                                    {% if item.status == 2 %}
-                                    <div class="public">
-                                        <img src="{% static 'svg/Yes_No/Yes_no_shadow.svg' %}">
-                                        <h4 class="medium_font white">Опубликовать</h4>
-                                    </div>
-                                    {% elif item.status == 1 %}
-                                    <div class="unpublic">
-                                        <img src="{% static 'svg/Yes_No/No_no_shadow.svg' %}">
-                                        <h4 class="medium_font white">Снять с публикации</h4>
-                                    </div>
-                                    {% elif item.status == 4 %}
-                                    <div class="moderator">
-                                        <img src="{% static 'svg/Random_icons/Gear_icon_white.svg' %}">
-                                        <h4 class="medium_font white">Проверяется модератором</h4>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="info">
-                                <div class="calories">
-                                    <img src="{% static 'svg/Random_icons/Callories_icon.svg' %}">
-                                    <h4>{{ item.calculate_calories_per_100g }} ккал</h4>
-                                </div>
-                                <div data-id="{{ item.id }}" class="time">
-                                    <img src="{% static 'svg/Random_icons/Clock_icon.svg' %}">
-                                    <h4>{{ item.cook_time_full|short_timedelta }}</h4>
-                                </div>
-                            </div>
-                            <a href="{% url 'recipes:detail' item.id item.slug %}">
-                                <h3 class="title medium_font">{{ item.title }}</h3>
-                            </a>
-                            <h4 class="description">{{ item.description_card }}</h4>
-                        </div>
-                        <div class="recipe_item_footer">
-                            <a href="{% url 'users:author' item.author.username %}" class="icon_title">
-                                <img src="{% static 'svg/Cookie/Smile_half_black.svg' %}">
-                                <h4>{% if item.author.name %}{{ item.author.name }}{% else %}{{ item.author.username }}{% endif %}</h4>
-                            </a>
-                            <a href="">
-                                <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
-                            </a>
-
-                            <div class="socials pop_up_share d_none" data-title="{{ item.title }}" data-url="{% url 'recipes:detail' item.id item.slug %}">
-                                <img class="share_option" data-social="tg" src="{% static 'svg/Socials_Colorful/TG.svg' %}">
-                                <img class="share_option" data-social="vk" src="{% static 'svg/Socials_Colorful/VK.svg' %}">
-                                <img class="share_option" data-social="ws" src="{% static 'svg/Socials_Colorful/WS.svg' %}">
-                                <img class="share_option" data-social="pinterest" src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
-                                <div class="copy_wrapper">
-                                    <img class="copy_option" data-social="copy" src="{% static 'svg/Socials_Colorful/Copy.svg' %}">
-                                    <div class="copy_window">
-                                        <div class="inner_wrapper">
-                                            <h5>Ссылка скопирована!</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div data-id="{{ item.id }}" class="pop_up_window cook_time_window d_none">
-                            <p>Время приготовления</p>
-                            <div class="inner_wrapper">
-                                <img src="{% static 'svg/Random_icons/Clock_icon.svg' %}">
-                                <h5 class="green">Общее - {{ item.cook_time_full|short_timedelta }}</h5>
-                            </div>
-                            <div class="inner_wrapper">
-                                <img src="{% static 'svg/Random_icons/Clock_icon_red.svg' %}">
-                                <h5 class="red">Активное - {{ item.cook_time_active|short_timedelta }}</h5>
-                            </div>
-                        </div>
-                        <div data-id="{{ item.id }}" class="pop_up_window ingredients_window d_none">
-                            <p>Ингредиенты</p>
-                            {% for ingredient in item.recipeingredient_set.all %}
-                            <div class="inner_wrapper">
-                                <h5>{{ ingredient.ingredient.title }} - {{ ingredient.quantity|round_ingredient_count }} {{ ingredient.unit }}</h5>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endfor %}
+                    {% include "recipes/includes/recipe_cards_with_buttons.html" with recipes_list=my_recipes %}
                 </div>
             </section>
             <section id="subs_section" class="subs_section possible_block d_none">
-                <div class="input_wrapper">
-                    <input placeholder="Введите тег автора">
-                    <button class="input_button magnifier">
+                <form action="{% url 'users:get_search_subs_ajax' %}" method="get" id="sub_search_form" class="input_wrapper">
+                    <input required="required" name="tag" type="text" placeholder="Введите тег автора">
+                    <button type="submit" class="input_button magnifier">
                         <img src="{% static 'svg/Shapes/Magnifier.svg' %}">
                     </button>
+                </form>
+                <div class="remove_filters d_none">
+                    <p>Сбросить фильтры</p>
+                    <img src="{% static 'svg/Yes_No/No_no_shadow.svg' %}">
                 </div>
                 <div class="subs_wrapper">
                     {% for item in subscriptions.all %}
-                    <div class="subs_item">
+                    <div data-url="{% url 'users:sub_unsub_ajax' %}" data-id="{{ item.id }}" class="subs_item">
                         <div class="info">
                             <a href="{% url 'users:author' item.username %}" class="image_wrapper">
                                 {% if item.avatar %}
@@ -432,17 +309,26 @@
                                 <img src="{% static 'img/Profile/author_default.png' %}">
                                 {% endif %}
                             </a>
-                            <div class="name_and_tag">
+                            <a href="{% url 'users:author' item.username %}" class="name_and_tag">
                                 <h4>{{ item.name }}</h4>
                                 <h4 class="black_50">@{{ item.username }}</h4>
-                            </div>
+                            </a>
                         </div>
-                        <div class="sub_button active">
+                        {% if item.id in user.subscriptions_id %}
+                        <div data-type="sub" class="sub_button d_none active">
                             <h4>Подписаться</h4>
                         </div>
-                        <div class="sub_button">
+                        <div data-type="unsub" class="sub_button">
                             <h4>Отписаться</h4>
                         </div>
+                        {% else %}
+                        <div data-type="sub" class="sub_button active">
+                            <h4>Подписаться</h4>
+                        </div>
+                        <div data-type="unsub" class="sub_button d_none">
+                            <h4>Отписаться</h4>
+                        </div>
+                        {% endif %}
                     </div>
                     {% endfor %}
                 </div>
@@ -463,87 +349,7 @@
                     </div>
                 </div>
                 <div class="cards_wrapper">
-                    {% for item in my_articles %}
-                    <div class="news_item">
-                        <div class="news_item_header">
-                            <div class="image_wrapper">
-                                <a href="{% url 'news:detail' item.id item.slug %}">
-                                    <img class="back_image" src="{{ item.optimized_image_small.url }}">
-                                </a>
-                                <div class="date_wrapper">
-                                    <h4>{{ item.published_date }}</h4>
-                                </div>
-                                <div class="buttons">
-                                    {% if item.status != 1 %}
-                                    <div class="change">
-                                        <img src="{% static 'svg/Random_icons/Edit_icon.svg' %}">
-                                        <h4>Редактировать</h4>
-                                    </div>
-                                    {% endif %}
-                                    {% if item.status == 2 %}
-                                    <div class="public">
-                                        <img src="{% static 'svg/Yes_No/Yes_no_shadow.svg' %}">
-                                        <h4 class="medium_font white">Опубликовать</h4>
-                                    </div>
-                                    {% elif item.status == 1 %}
-                                    <div class="unpublic">
-                                        <img src="{% static 'svg/Yes_No/No_no_shadow.svg' %}">
-                                        <h4 class="medium_font white">Снять с публикации</h4>
-                                    </div>
-                                    {% elif item.status == 4 %}
-                                    <div class="moderator">
-                                        <img src="{% static 'svg/Random_icons/Gear_icon_white.svg' %}">
-                                        <h4 class="medium_font white">Проверяется модератором</h4>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="info">
-                                <div class="rating">
-                                    {% for _ in item.stars_on_count|repeat %}
-                                    <img src="{% static 'svg/Stars/Star_on.svg' %}">
-                                    {% endfor %}
-                                    {% for _ in item.stars_off_count|repeat %}
-                                    <img src="{% static 'svg/Stars/Star_off.svg' %}">
-                                    {% endfor %}
-                                    <h4 class="black_75">({{ item.reviews.count }})</h4>
-                                </div>
-                                <div class="views">
-                                    <img src="{% static 'svg/Random_icons/Eye_icon.svg' %}">
-                                    <h4 class="green">{{ item.views }}</h4>
-                                </div>
-                            </div>
-                            <a href="{% url 'news:detail' item.id item.slug %}">
-                                <h3 class="title medium_font">{{ item.title }}</h3>
-                            </a>
-                            <h4 class="description">{{ item.description_card }}</h4>
-                        </div>
-                        <div class="news_item_footer">
-                            <a href="{% url 'users:author' item.author.username %}" class="icon_title">
-                                <img src="{% static 'svg/Cookie/Smile_half_black.svg' %}">
-                                <h4 class="black_75">{% if item.author.name %}{{ item.author.name }}{% else %}{{ item.author.username }}{% endif %}</h4>
-                            </a>
-                            <a href="">
-                                <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
-                            </a>
-
-                            <div class="socials pop_up_share d_none" data-title="{{ item.title }}" data-url="{% url 'news:detail' item.id item.slug %}">
-                                <img class="share_option" data-social="tg" src="{% static 'svg/Socials_Colorful/TG.svg' %}">
-                                <img class="share_option" data-social="vk" src="{% static 'svg/Socials_Colorful/VK.svg' %}">
-                                <img class="share_option" data-social="ws" src="{% static 'svg/Socials_Colorful/WS.svg' %}">
-                                <img class="share_option" data-social="pinterest" src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
-                                <div class="copy_wrapper">
-                                    <img class="copy_option" data-social="copy" src="{% static 'svg/Socials_Colorful/Copy.svg' %}">
-                                    <div class="copy_window">
-                                        <div class="inner_wrapper">
-                                            <h5>Ссылка скопирована!</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
+                    {% include "news/includes/news_cards.html" with news_list=my_articles %}
                 </div>
             </section>
             <section id="nothing_section" class="nothing_section possible_block d_none">
@@ -553,47 +359,28 @@
             <section id="settings_section" class="settings_section possible_block d_none">
                 <div class="settings">
                     <div class="background_and_avatar">
-                        <div class="background">
+                        <form action="{% url 'users:change_back_fon_ajax' %}" method="post" class="background">
+                            {% csrf_token %}
                             <div class="title">
                                 <img src="{% static 'svg/Random_icons/Brush_icon.svg' %}">
                                 <h4>Изменить фон профиля</h4>
                             </div>
                             <div class="colors">
-                                <div class="color_item">
+                                {% for color in fon_colors %}
+                                <button name="{{ color.id }}" type="submit" data-id="{{ color.id }}" class="color_item {% if object.background_color == color %}active{% endif %}" style="background-color: {{ color.hash }};">
                                     <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                                </div>
-                                <div class="color_item">
-                                    <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                                </div>
-                                <div class="color_item">
-                                    <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                                </div>
-                                <div class="color_item">
-                                    <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                                </div>
-                                <div class="color_item">
-                                    <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                                </div>
-                                <div class="color_item">
-                                    <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                                </div>
-                                <div class="color_item active">
-                                    <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                                </div>
-                                <div class="color_item">
-                                    <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                                </div>
-                                <div class="color_item">
-                                    <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                                </div>
+                                </button>
+                                {% endfor %}
                             </div>
-                        </div>
-                        <div class="avatar">
+                        </form>
+                        <form action="{% url 'users:change_profile_image_ajax' %}" method="post" class="avatar">
+                            {% csrf_token %}
+                            <input type="file" accept="image/png,image/jpeg" name="image" id="hidden_profile_image_input">
                             <div class="title">
                                 <img src="{% static 'svg/Cookie/Smile_green.svg' %}">
                                 <h4>Изменить аватар</h4>
                             </div>
-                            <div class="image_item add_image">
+                            <button type="button" class="image_item add_image">
                                 <div class="content">
                                     <img src="{% static 'svg/Cookie/Add_image_green.svg' %}">
                                     <p class="green">Загрузите своё изображение</p>
@@ -603,8 +390,8 @@
                                     <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
                                 </div>
                                 {% endif %}
-                            </div>
-                            <div class="image_item default_image">
+                            </button>
+                            <button type="submit" class="image_item default_image">
                                 <div class="content">
                                     <img src="{% static 'svg/Cookie/TR_avatar.svg' %}">
                                     <p>Или установите стандартное</p>
@@ -614,19 +401,21 @@
                                     <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
                                 </div>
                                 {% endif %}
-                            </div>
-                        </div>
+                            </button>
+                        </form>
                     </div>
-                    <div class="fields_wrapper">
-                        <div class="fields_part">
+                    <form action="" method="post" class="fields_form">
+                        {% csrf_token %}
+                        <div class="fields_wrapper">
+                            <div class="fields_part">
                             <h3 class="medium_font">Основная информация</h3>
                             <div class="fields">
                                 <div class="field_item">
-                                    <div class="title_and_mark">
+                                    <label for="{{ settings_form.name.id_for_label }}" class="title_and_mark">
                                         <h4>Отображаемое имя</h4>
-                                    </div>
+                                    </label>
                                     <div class="input_wrapper">
-                                        <input placeholder="Введите отображаемое имя">
+                                        {{ settings_form.name }}
                                     </div>
                                 </div>
                                 <div class="field_item">
@@ -646,92 +435,93 @@
                                     </div>
                                 </div>
                                 <div class="field_item">
-                                    <div class="title_and_mark">
+                                    <label data-popup-id="profile_description" for="{{ settings_form.description_profile.id_for_label }}" class="title_and_mark">
                                         <h4>Описание для профиля</h4>
                                         <img src="{% static 'svg/Random_icons/Question_mark.svg' %}">
-                                    </div>
+                                    </label>
                                     <div class="input_wrapper">
-                                        <input placeholder="Введите описание профиля">
+                                        {{ settings_form.description_profile }}
                                     </div>
                                 </div>
                                 <div class="field_item">
-                                    <div class="title_and_mark">
+                                    <label data-popup-id="recipe_description" for="{{ settings_form.description_recipe.id_for_label }}" class="title_and_mark">
                                         <h4>Описание в рецепте</h4>
                                         <img src="{% static 'svg/Random_icons/Question_mark.svg' %}">
-                                    </div>
+                                    </label>
                                     <div class="input_wrapper">
-                                        <input placeholder="Введите описание в рецепте">
+                                        {{ settings_form.description_recipe }}
                                     </div>
                                 </div>
                                 <div class="field_item">
-                                    <div class="title_and_mark">
+                                    <label data-popup-id="news_description" for="{{ settings_form.description_news.id_for_label }}" class="title_and_mark">
                                         <h4>Описание в статье</h4>
                                         <img src="{% static 'svg/Random_icons/Question_mark.svg' %}">
-                                    </div>
+                                    </label>
                                     <div class="input_wrapper">
-                                        <input placeholder="Введите описание в статье">
+                                        {{ settings_form.description_news }}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="fields_part">
-                            <h3 class="medium_font">Ссылки на соц. сети</h3>
-                            <div class="fields">
-                                <div class="field_item">
-                                    <div class="title_and_mark">
-                                        <h4>Telegram</h4>
+                            <div class="fields_part">
+                                <h3 class="medium_font">Ссылки на соц. сети</h3>
+                                <div class="fields">
+                                    <div class="field_item">
+                                        <label for="{{ settings_form.telegram.id_for_label }}" class="title_and_mark">
+                                            <h4>Telegram</h4>
+                                        </label>
+                                        <div class="input_wrapper">
+                                            {{ settings_form.telegram }}
+                                        </div>
                                     </div>
-                                    <div class="input_wrapper">
-                                        <input placeholder="https://t.me/your_user">
+                                    <div class="field_item">
+                                        <label for="{{ settings_form.vk.id_for_label }}" class="title_and_mark">
+                                            <h4>ВКонтакте</h4>
+                                        </label>
+                                        <div class="input_wrapper">
+                                            {{ settings_form.vk }}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="field_item">
-                                    <div class="title_and_mark">
-                                        <h4>ВКонтакте</h4>
+                                    <div class="field_item">
+                                        <label for="{{ settings_form.pinterest.id_for_label }}" class="title_and_mark">
+                                            <h4>Pinterest</h4>
+                                        </label>
+                                        <div class="input_wrapper">
+                                            {{ settings_form.pinterest }}
+                                        </div>
                                     </div>
-                                    <div class="input_wrapper">
-                                        <input placeholder="https://vk.com/your_user">
+                                    <div class="field_item">
+                                        <label for="{{ settings_form.youtube.id_for_label }}" class="title_and_mark">
+                                            <h4>YouTube</h4>
+                                        </label>
+                                        <div class="input_wrapper">
+                                            {{ settings_form.youtube }}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="field_item">
-                                    <div class="title_and_mark">
-                                        <h4>Pinterest</h4>
-                                    </div>
-                                    <div class="input_wrapper">
-                                        <input placeholder="https://pinterest.com/your_user">
-                                    </div>
-                                </div>
-                                <div class="field_item">
-                                    <div class="title_and_mark">
-                                        <h4>YouTube</h4>
-                                    </div>
-                                    <div class="input_wrapper">
-                                        <input placeholder="https://youtube.com/your_channel">
-                                    </div>
-                                </div>
-                                <div class="field_item">
-                                    <div class="title_and_mark">
-                                        <h4>RuTube</h4>
-                                    </div>
-                                    <div class="input_wrapper">
-                                        <input placeholder="https://rutube.ru/channel/your_channel">
+                                    <div class="field_item">
+                                        <label for="{{ settings_form.rutube.id_for_label }}" class="title_and_mark">
+                                            <h4>RuTube</h4>
+                                        </label>
+                                        <div class="input_wrapper">
+                                            {{ settings_form.rutube }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="save_button">
-                    <h4>Сохранить изменения</h4>
+                        <button type="submit" class="save_button">
+                            <h4>Сохранить изменения</h4>
+                        </button>
+                    </form>
                 </div>
             </section>
-            <section id="achievements_section" class="achievements_section possible_block d_none">
+            <section data-url="{% url 'users:change_profile_current_achiv_ajax' %}" id="achievements_section" class="achievements_section possible_block d_none">
                 <div class="my_achiv">
                     <h3 class="medium_font">Полученные достижения</h3>
                     <div class="achiv_list">
                         {% for item in object.achivs.all %}
-                        <div class="achiv_item">
-                            <img class="shadow
+                        <div data-id="{{ item.id }}" class="achiv_item">
+                            <img class="shadow {% if object.choosed_achiv %}{% if object.choosed_achiv.id == item.id %}active{% endif %}{% endif %}
                             {% if item.level == 1 %}silver_shadow
                             {% elif item.level == 2 %}gold_shadow
                             {% elif item.level == 3 %}ruby_shadow
@@ -743,12 +533,13 @@
                 </div>
                 <div class="all_achiv">
                     <h3 class="medium_font">Все достижения</h3>
+                    {% if one_use_achivs %}
                     <div class="one_time type">
                         <h4>Одноразовые</h4>
                         <div class="achiv_list">
                             {% for item in one_use_achivs %}
-                            <div class="achiv_item">
-                                <img class="shadow
+                            <div data-id="{{ item.id }}" class="achiv_item {% if item not in object.achivs.all %}disabled{% endif %}">
+                                <img class="shadow {% if object.choosed_achiv %}{% if object.choosed_achiv.id == item.id %}active{% endif %}{% endif %}
                                 {% if item.level == 1 %}silver_shadow
                                 {% elif item.level == 2 %}gold_shadow
                                 {% elif item.level == 3 %}ruby_shadow
@@ -758,6 +549,8 @@
                             {% endfor %}
                         </div>
                     </div>
+                    {% endif %}
+                    {% if multiple_use_achivs %}
                     <div class="multiple_time type">
                         <h4>Многоразовые</h4>
                         <div class="multiple_achiv_list">
@@ -765,8 +558,8 @@
                             <div class="multiple_achiv_item">
                                 <div class="achiv_list">
                                     {% for item in achiv_item.1.0.all %}
-                                    <div class="achiv_item">
-                                        <img class="shadow
+                                    <div data-id="{{ item.id }}" class="achiv_item {% if item not in object.achivs.all %}disabled{% endif %}">
+                                        <img class="shadow {% if object.choosed_achiv %}{% if object.choosed_achiv.id == item.id %}active{% endif %}{% endif %}
                                         {% if item.level == 1 %}silver_shadow
                                         {% elif item.level == 2 %}gold_shadow
                                         {% elif item.level == 3 %}ruby_shadow
@@ -775,7 +568,7 @@
                                     </div>
                                     {% endfor %}
                                     {% for _ in achiv_item.1.2|repeat %}
-                                    <div class="achiv_item disabled">
+                                    <div data-id="{{ item.id }}" class="achiv_item disabled">
                                         <img class="shadow silver_shadow" src="{% static 'svg/Achievements/Comments_Silver.svg' %}">
                                     </div>
                                     {% endfor %}
@@ -785,170 +578,66 @@
                             {% endfor %}
                         </div>
                     </div>
+                    {% endif %}
                 </div>
             </section>
         </div>
-        <div class="back_black d_none">
-            <div class="profile_window d_none">
-                <div class="title">
-                    <h2 class="cookie lilita_font">Регистрация</h2>
-                    <h3 class="cookie lilita_font">Открой ещё одну комнату вкусов в нашем домике!</h3>
-                </div>
-                <form class="info_form">
-                    <div class="field_item">
-                        <h4>Имя пользователя</h4>
-                        <div class="input_wrapper">
-                            <input placeholder="Введите имя пользователя">
-                        </div>
-                    </div>
-                    <div class="field_item">
-                        <h4>Адрес электронной почты</h4>
-                        <div class="input_wrapper">
-                            <input placeholder="Введите адрес электронной почты">
-                        </div>
-                    </div>
-                    <div class="field_item">
-                        <h4>Пароль</h4>
-                        <div class="input_wrapper">
-                            <input placeholder="Введите пароль">
-                        </div>
-                    </div>
-                    <button class="success_button">
-                        <h4 class="medium_font white">Зарегистрироваться</h4>
-                    </button>
-                </form>
-                <div class="foot">
-                    <h4>Уже есть аккаунт? <a href="" class="black_50">Войти</a></h4>
-                </div>
-                <img class="overflow_icon" src="{% static 'svg/Cookie/TR_avatar.svg' %}">
-            </div>
-            <div class="profile_window d_none">
-                <div class="title">
-                    <h2 class="cookie lilita_font">Вход</h2>
-                    <h3 class="cookie lilita_font">Ваша комната вкусов уже ждёт вас!</h3>
-                </div>
-                <form class="info_form">
-                    <div class="field_item">
-                        <h4>Почта или Имя пользователя</h4>
-                        <div class="input_wrapper">
-                            <input placeholder="Введите почту или имя пользователя">
-                        </div>
-                    </div>
-                    <div class="field_item">
-                        <h4>Пароль</h4>
-                        <div class="input_wrapper">
-                            <input placeholder="Введите пароль">
-                        </div>
-                    </div>
-                    <button class="success_button">
-                        <h4 class="medium_font white">Войти</h4>
-                    </button>
-                </form>
-                <div class="foot">
-                    <h4>Ещё нет аккаунта? <a href="" class="black_50">Зарегистрироваться</a></h4>
-                    <h4 class="black_50">Забыли пароль?</h4>
-                </div>
-                <img class="overflow_icon" src="{% static 'svg/Cookie/TR_avatar.svg' %}">
-            </div>
-            <div class="profile_window d_none">
-                <div class="title">
-                    <h2 class="cookie lilita_font">Восстановление пароля</h2>
-                    <h3 class="cookie lilita_font">Мы отправим вам код на почту</h3>
-                </div>
-                <form class="info_form">
-                    <div class="field_item">
-                        <h4>Адрес электронной почты</h4>
-                        <div class="input_wrapper">
-                            <input placeholder="Введите адрес электронной почты">
-                            <p>Отправить</p>
-                        </div>
-                    </div>
-                    <div class="field_item">
-                        <h4>Код из письма</h4>
-                        <div class="input_wrapper">
-                            <input placeholder="Введите код из письма">
-                        </div>
-                    </div>
-                    <button class="success_button">
-                        <h4 class="medium_font white">Продолжить</h4>
-                    </button>
-                    <div class="messages_wrapper">
-                        <h4 class="black_50">Повторная отправка через 30 сек.</h4>
-                    </div>
-                </form>
-                <div class="foot">
-                    <h4>Вспомнили пароль? <a href="" class="black_50">Войти</a></h4>
-                </div>
-                <img class="overflow_icon" src="{% static 'svg/Cookie/TR_avatar.svg' %}">
-            </div>
-            <div class="profile_window d_none">
-                <div class="title">
-                    <h2 class="cookie lilita_font">Восстановление пароля</h2>
-                    <h3 class="cookie lilita_font">Придумайте новый пароль</h3>
-                </div>
-                <form class="info_form">
-                    <div class="field_item">
-                        <h4>Пароль</h4>
-                        <div class="input_wrapper">
-                            <input placeholder="Придумайте новый пароль">
-                        </div>
-                        <div class="input_wrapper">
-                            <input placeholder="Введите новый пароль ещё раз">
-                        </div>
-                    </div>
-                    <button class="success_button">
-                        <h4 class="medium_font white">Изменить</h4>
-                    </button>
-                    <div id="messages_wrapper_id" class="messages_wrapper">
-                        <img src="{% static 'svg/Random_icons/Warning.svg' %}">
-                        <h4 class="black_50">Пароли не совпадают</h4>
-                    </div>
-                </form>
-                <img class="overflow_icon" src="{% static 'svg/Cookie/TR_avatar.svg' %}">
-            </div>
-            <div class="profile_window back_fon no_fon d_none">
-                <div class="background">
-                    <div class="title">
-                        <h3 class="medium_font white">Изменить фон профиля</h3>
-                    </div>
-                    <div class="colors">
-                        <div class="color_item">
-                            <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                        </div>
-                        <div class="color_item">
-                            <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                        </div>
-                        <div class="color_item">
-                            <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                        </div>
-                        <div class="color_item">
-                            <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                        </div>
-                        <div class="color_item">
-                            <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                        </div>
-                        <div class="color_item">
-                            <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                        </div>
-                        <div class="color_item active">
-                            <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                        </div>
-                        <div class="color_item">
-                            <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                        </div>
-                        <div class="color_item">
-                            <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
-                        </div>
-                    </div>
-                    <button class="save_background_button">
-                        <h4 class="medium_font white">Сохранить изменения</h4>
-                    </button>
-                </div>
-            </div>
+        <div id="profile_description" class="pop_up_window d_none">
+            <p>Будет отображаться у вас в профиле</p>
+        </div>
+        <div id="recipe_description" class="pop_up_window d_none">
+            <p>Будет отображаться в ваших рецептах рядом с аватаркой</p>
+        </div>
+        <div id="news_description" class="pop_up_window d_none">
+            <p>Будет отображаться в ваших статьях рядом с аватаркой</p>
         </div>
     </main>
 {% endblock %}
 
+{% block extra_back_black_windows %}
+    <form action="{% url 'users:change_back_fon_ajax' %}" method="post" class="profile_window back_fon no_fon d_none">
+        {% csrf_token %}
+        <div class="background">
+            <div class="title">
+                <h3 class="medium_font white">Изменить фон профиля</h3>
+            </div>
+            <div class="colors">
+                {% for color in fon_colors %}
+                <div data-id="{{ color.id }}" class="color_item {% if object.background_color == color %}active{% endif %}" style="background-color: {{ color.hash }};">
+                    <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
+                </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="save_background_button">
+                <h4 class="medium_font white">Сохранить изменения</h4>
+            </button>
+        </div>
+    </form>
+    <div id="recipe_unpublic_warning" class="profile_window unpublic_warning d_none">
+        <h3 class="medium_font">Вы точно хотите снять рецепт с публикации?</h3>
+        <div class="buttons">
+            <div class="button_item unpublic">
+                <h4 class="medium_font">Снять с публикации</h4>
+            </div>
+            <div class="button_item save_public">
+                <h4 class="medium_font">Оставить</h4>
+            </div>
+        </div>
+    </div>
+    <div id="news_unpublic_warning" class="profile_window unpublic_warning d_none">
+        <h3 class="medium_font">Вы точно хотите снять статью с публикации?</h3>
+        <div class="buttons">
+            <div class="button_item unpublic">
+                <h4 class="medium_font">Снять с публикации</h4>
+            </div>
+            <div class="button_item save_public">
+                <h4 class="medium_font">Оставить</h4>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
 {% block custom_scripts %}
     <script src="{% static 'js/profile.js' %}"></script>
+    <script src="{% static 'js/achivs.js' %}"></script>
 {% endblock %}

@@ -1,16 +1,18 @@
 from django.contrib import admin
+from django.contrib.admin import ModelAdmin, TabularInline
 
-from recipes.models import Recipe, RecipePreview, RecipeStep, RecipeIngredient, Ingredient
+from recipes.models import (Ingredient, Recipe, RecipeIngredient,
+                            RecipePreview, RecipeStep, RecipeComment,
+                            RecipeReview)
 
-from unfold.admin import ModelAdmin, TabularInline
 
 @admin.register(RecipePreview)
 class RecipePreviewAdmin(ModelAdmin):
     pass
 
-@admin.register(RecipeStep)
-class RecipeStepAdmin(ModelAdmin):
-    pass
+class RecipeStepAdmin(TabularInline):
+    model = RecipeStep
+    extra = 0
 
 class RecipeIngredientAdmin(TabularInline):
     model = RecipeIngredient
@@ -23,14 +25,25 @@ class RecipeAdmin(ModelAdmin):
 
     inlines = [
         RecipeIngredientAdmin,
+        RecipeStepAdmin,
     ]
 
-from django.contrib import admin
-from django import forms
-from django.shortcuts import render, redirect
-from django.urls import path
+@admin.register(RecipeComment)
+class RecipeCommentAdmin(admin.ModelAdmin):
+    list_display = ["author", "likes", "dislikes", "parent", "published_date", "id"]
+
+@admin.register(RecipeReview)
+class RecipeReviewAdmin(admin.ModelAdmin):
+    list_display = ["author", "rating",]
+
 import csv
 from io import TextIOWrapper
+
+from django import forms
+from django.contrib import admin
+from django.shortcuts import redirect, render
+from django.urls import path
+
 
 class CsvImportForm(forms.Form):
     csv_file = forms.FileField()

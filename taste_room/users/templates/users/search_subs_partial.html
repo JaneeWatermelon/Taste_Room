@@ -1,0 +1,36 @@
+{% load static %}
+{% load custom_filters %}
+{% load humanize %}
+
+{% for item in tag_users %}
+<div data-url="{% url 'users:sub_unsub_ajax' %}" data-id="{{ item.id }}" class="subs_item">
+    <div class="info">
+        <a href="{% url 'users:author' item.username %}" class="image_wrapper">
+            {% if item.avatar %}
+            <img src="{{ item.optimized_image_small.url }}">
+            {% else %}
+            <img src="{% static 'img/Profile/author_default.png' %}">
+            {% endif %}
+        </a>
+        <a href="{% url 'users:author' item.username %}" class="name_and_tag">
+            <h4>{{ item.name }}</h4>
+            <h4 class="black_50">@{{ item.username }}</h4>
+        </a>
+    </div>
+    {% if item.id in user.subscriptions_id %}
+    <div data-type="sub" class="sub_button d_none active">
+        <h4>Подписаться</h4>
+    </div>
+    <div data-type="unsub" class="sub_button">
+        <h4>Отписаться</h4>
+    </div>
+    {% else %}
+    <div data-type="sub" class="sub_button active">
+        <h4>Подписаться</h4>
+    </div>
+    <div data-type="unsub" class="sub_button d_none">
+        <h4>Отписаться</h4>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}

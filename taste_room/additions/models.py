@@ -1,4 +1,7 @@
+import uuid
+
 from django.db import models
+from django.utils.timezone import now, timedelta
 
 
 class Socials(models.Model):
@@ -26,3 +29,22 @@ class MetaTag(models.Model):
 
     def __str__(self):
         return f"Мета-теги для {self.url}"
+
+def default_expiration():
+    return now() + timedelta(hours=24)
+
+class EmailCode(models.Model):
+    email = models.EmailField(verbose_name="Адрес электронной почты")
+    code = models.UUIDField(default=uuid.uuid4, verbose_name="Код подтверждения")
+    expiration = models.DateTimeField(default=default_expiration, verbose_name="Срок действия")
+    accepted = models.BooleanField(default=False, verbose_name="Код подтверждён")
+
+    class Meta:
+        verbose_name = "Код подтверждения"
+        verbose_name_plural = "Коды подтверждения"
+
+    def __str__(self):
+        return f"Код подтверждения {self.code} для {self.email} до {self.expiration}"
+
+    def is_expired(self):
+        return now() > self.expiration

@@ -1,12 +1,12 @@
 import django
+from debug_toolbar.toolbar import debug_toolbar_urls
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
-from debug_toolbar.toolbar import debug_toolbar_urls
+from django.urls import include, path
 
-from recipes.views import MainView
 from additions.views import Error404View
+from recipes.views import MainView
 
 django.conf.urls.handler404 = Error404View.as_view()
 

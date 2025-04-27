@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Art(models.Model):
     title = models.CharField(max_length=128, blank=True, null=True, verbose_name="Название")
     description = models.CharField(max_length=256, blank=True, null=True, verbose_name="Описание")

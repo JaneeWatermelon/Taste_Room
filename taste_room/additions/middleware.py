@@ -1,7 +1,9 @@
 # middleware.py
-from django.utils.deprecation import MiddlewareMixin
-from additions.models import MetaTag
 from django.conf.urls.static import static
+from django.utils.deprecation import MiddlewareMixin
+
+from additions.models import MetaTag
+
 
 class MetaTagsMiddleware(MiddlewareMixin):
     def process_request(self, request):

@@ -5,14 +5,18 @@
     padding: 0 var(--padding-window);
 }
 
+#hidden_profile_image_input {
+    display: none;
+}
+
 .new_recipes_section {
     padding: 0;
-    gap: var(--normal);
+    gap: var(--small);
 }
 .new_recipes_section > .publish_types,
 .articles_section > .publish_types {
     display: flex;
-    gap: var(--normal);
+    gap: var(--small);
 }
 .new_recipes_section > .publish_types > .publish_type_item,
 .articles_section > .publish_types > .publish_type_item {
@@ -25,6 +29,7 @@
     outline: 1px solid var(--color-light-ghost);
     flex-grow: 1;
     cursor: pointer;
+    flex-basis: 25%;
 }
 .new_recipes_section > .publish_types > .publish_type_item.active,
 .articles_section > .publish_types > .publish_type_item.active {
@@ -42,6 +47,7 @@
 
 .profile_header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     padding: var(--big) var(--mid);
     border-radius: var(--mid);
@@ -58,13 +64,33 @@
     justify-content: center;
     align-items: center;
     width: 120px;
-    height: 120px;
     aspect-ratio: 1;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 100px;
+    position: relative;
+}
+.profile_header > .content > .image_wrapper > .change_image_hover {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    position: absolute;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.profile_header > .content > .image_wrapper > .change_image_hover:hover {
+    opacity: 1;
+}
+.profile_header > .content > .image_wrapper > .change_image_hover > img {
+    height: 25px;
+    width: 25px;
 }
 .profile_header > .content > .image_wrapper > img {
     object-fit: cover;
     width: 100%;
-    border-radius: 100px;
 }
 .profile_header > .content > .info {
     display: flex;
@@ -75,6 +101,9 @@
     display: flex;
     align-items: center;
     gap: var(--small);
+}
+.profile_header > .content > .info > .name_tag_descr_achiv > img.shadow {
+    height: 90px;
 }
 .profile_header > .content > .info > .name_tag_descr_achiv > .name_tag_descr {
     display: flex;
@@ -132,23 +161,6 @@
     border-radius: var(--small);
     padding: var(--tiny) var(--small);
 }
-.profile_header > .settings_wrapper > .settings > .sub_action_wrapper {
-    display: flex;
-    justify-content: center;
-    gap: var(--small);
-    background-color: var(--color-red);
-    border-radius: var(--small);
-    padding: var(--tiny) var(--small);
-}
-.profile_header > .settings_wrapper > .settings > .sub_action_wrapper.disabled {
-    background-color: var(--color-light-ghost);
-}
-.profile_header > .settings_wrapper > .settings > .sub_action_wrapper > p {
-    color: var(--color-white);
-}
-.profile_header > .settings_wrapper > .settings > .sub_action_wrapper.disabled > p {
-    color: var(--color-black);
-}
 .profile_header > .settings_wrapper > .settings > .settings_item {
     display: flex;
     align-items: center;
@@ -165,38 +177,58 @@
 }
 .profile_chapters > .chapter_wrapper {
     display: flex;
-    gap: var(--mid);
-    align-items: center;
-}
-.profile_chapters > .chapter_wrapper > h4.active {
-    text-decoration: underline;
-    text-underline-offset: var(--tiny);
-}
-.profile_chapters h4 {
-    font-family: "NTSomic_Medium";
-    cursor: pointer;
-}
-.profile_chapters > .chapter_wrapper > .add_button {
-    display: flex;
     gap: var(--small);
     align-items: center;
-    padding: var(--tiny) var(--small);
+    width: 100%;
+}
+.profile_chapters > .chapter_wrapper > .chapter {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-white);
     border-radius: var(--small);
+    outline: 1px solid var(--color-light-ghost);
+    width: 75%;
+    flex-grow: 1;
+    overflow: hidden;
+}
+.profile_chapters > .chapter_wrapper > .chapter.add_button {
+    width: 25%;
+    background-color: var(--color-cookie);
+    overflow: visible;
+}
+.profile_chapters > .chapter_wrapper > .chapter > .chapter_item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--small);
+    width: 100%;
+    padding: var(--small);
     cursor: pointer;
 }
-.profile_chapters > .chapter_wrapper > .add_button > h4 {
+.profile_chapters > .chapter_wrapper > .chapter > .chapter_item > svg {
+    aspect-ratio: 1;
+    width: auto;
+}
+.profile_chapters > .chapter_wrapper > .chapter > .chapter_item.active {
+    background-color: rgba(76, 149, 108, 0.75);
+}
+.profile_chapters > .chapter_wrapper > .chapter > .chapter_item.active > svg.fill_svg > path {
+    fill: var(--color-white);
+    fill-opacity: 1;
+}
+.profile_chapters > .chapter_wrapper > .chapter > .chapter_item.active > svg.stroke_svg > path {
+    stroke: var(--color-white);
+    stroke-opacity: 1;
+}
+.profile_chapters > .chapter_wrapper > .chapter > .chapter_item > h4 {
+    font-family: "NTSomic_Medium";
+    color: var(--color-black-50);
+}
+.profile_chapters > .chapter_wrapper > .chapter > .chapter_item.active > h4 {
     color: var(--color-white);
 }
-.profile_chapters > .chapter_wrapper > .add_button.recipe {
-    background-color: var(--color-cookie);
-}
-.profile_chapters > .chapter_wrapper > .add_button.news {
-    background-color: var(--color-green);
-}
-.profile_chapters > .line {
-    width: 2px;
-    border-radius: 2px;
-    background-color: var(--color-black);
+.profile_chapters > .chapter_wrapper > .chapter.add_button > .chapter_item > h4 {
+    color: var(--color-white);
 }
 
 .subs_section {
@@ -250,7 +282,7 @@
     width: 100%;
 }
 .subs_section > .subs_wrapper > .subs_item > .sub_button {
-    display: none;
+    display: flex;
     justify-content: center;
     align-items: center;
     padding: var(--small);
@@ -263,12 +295,31 @@
     color: var(--color-black-50);
 }
 .subs_section > .subs_wrapper > .subs_item > .sub_button.active {
-    display: flex;
     background-color: var(--color-red);
 }
 .subs_section > .subs_wrapper > .subs_item > .sub_button.active > h4 {
     color: var(--color-white);
     font-family: "NTSomic_Medium";
+}
+
+.subs_section > .remove_filters {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+    background-color: var(--color-white);
+    border-radius: 50px;
+    padding: var(--small);
+    outline: 1px solid var(--color-light-ghost);
+    width: fit-content;
+    cursor: pointer;
+}
+.subs_section > .remove_filters > p {
+    color: var(--color-black-50);
+}
+.subs_section > .remove_filters > img {
+    height: 16px;
+    width: 16px;
+    filter: invert(0.5);
 }
 
 .articles_section {
@@ -297,16 +348,15 @@
     align-items: center;
     gap: var(--mid);
 }
-.settings_section > .save_button {
+.settings_section > .settings > .fields_form > .save_button {
     display: flex;
     justify-content: center;
     padding: var(--small) var(--huge);
     background-color: var(--color-green);
     border-radius: var(--small);
-    width: fit-content;
     cursor: pointer;
 }
-.settings_section > .save_button > h4 {
+.settings_section > .settings > .fields_form > .save_button > h4 {
     color: var(--color-white);
     font-family: "NTSomic_Medium";
 }
@@ -385,32 +435,38 @@
     width: 100%;
 }
 
-.settings_section > .settings > .fields_wrapper {
+.settings_section > .settings > .fields_form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mid);
+}
+.settings_section > .settings > .fields_form > .fields_wrapper {
     display: flex;
     gap: var(--big);
 }
-.settings_section > .settings > .fields_wrapper > .fields_part {
+.settings_section > .settings > .fields_form > .fields_wrapper > .fields_part {
     display: flex;
     flex-direction: column;
     gap: var(--mid);
     width: 100%;
 }
-.settings_section > .settings > .fields_wrapper > .fields_part > .fields {
+.settings_section > .settings > .fields_form > .fields_wrapper > .fields_part > .fields {
     display: flex;
     flex-direction: column;
     gap: var(--normal);
 }
-.settings_section > .settings > .fields_wrapper > .fields_part > .fields > .field_item {
+.settings_section > .settings > .fields_form > .fields_wrapper > .fields_part > .fields > .field_item {
     display: flex;
     flex-direction: column;
     gap: var(--small);
 }
-.settings_section > .settings > .fields_wrapper > .fields_part > .fields > .field_item > .title_and_mark {
+.settings_section > .settings > .fields_form > .fields_wrapper > .fields_part > .fields > .field_item > .title_and_mark {
     display: flex;
     gap: var(--small);
     align-items: center;
 }
-.settings_section > .settings > .fields_wrapper > .fields_part > .fields > .field_item > .title_and_mark > img {
+.settings_section > .settings > .fields_form > .fields_wrapper > .fields_part > .fields > .field_item > .title_and_mark > img {
+    cursor: pointer;
     height: 24px;
 }
 
@@ -436,7 +492,6 @@
 }
 .achievements_section > * .achiv_list > .achiv_item > img {
     height: 85px;
-    cursor: pointer;
 }
 .achievements_section > * .achiv_list > .achiv_item.disabled > img {
     filter: brightness(0.65);
@@ -469,6 +524,10 @@
 }
 .input_wrapper.disabled {
     background-color: #F5F5F5;
+}
+
+.pagination {
+    margin: 0;
 }
 
 @media (max-width: 720px) {
@@ -529,23 +588,6 @@
         border-radius: var(--small);
         padding: var(--tiny) var(--small);
     }
-    .profile_header > .avatar_and_settings > .settings_wrapper > .settings > .sub_action_wrapper {
-        display: flex;
-        justify-content: center;
-        gap: var(--small);
-        background-color: var(--color-red);
-        border-radius: var(--small);
-        padding: var(--tiny) var(--small);
-    }
-    .profile_header > .avatar_and_settings > .settings_wrapper > .settings > .sub_action_wrapper.disabled {
-        background-color: var(--color-light-ghost);
-    }
-    .profile_header > .avatar_and_settings > .settings_wrapper > .settings > .sub_action_wrapper > p {
-        color: var(--color-white);
-    }
-    .profile_header > .avatar_and_settings > .settings_wrapper > .settings > .sub_action_wrapper.disabled > p {
-        color: var(--color-black);
-    }
     .profile_header > .avatar_and_settings > .settings_wrapper > .settings > .settings_item {
         display: flex;
         align-items: center;
@@ -555,7 +597,6 @@
         height: 21px;
     }
     .profile_chapters {
-        display: flex;
         flex-direction: column;
         gap: var(--small);
         align-items: start;
@@ -620,15 +661,12 @@
     .settings_section > .settings > .background_and_avatar > .avatar > .image_item {
         height: 100%;
     }
-    .settings_section > .settings > .fields_wrapper {
+    .settings_section > .settings > .fields_form > .fields_wrapper {
         flex-direction: column;
         gap: var(--mid);
     }
-    .settings_section > .settings > .fields_wrapper > .fields_part > .fields > .field_item > .title_and_mark > img {
+    .settings_section > .settings > .fields_form > .fields_wrapper > .fields_part > .fields > .field_item > .title_and_mark > img {
         height: 17px;
-    }
-    .settings_section > .save_button {
-        width: -webkit-fill-available;
     }
     .achievements_section {
         gap: var(--mid);

@@ -3,6 +3,7 @@ from django.dispatch import receiver
 
 from news.models import News
 
+
 @receiver(post_save, sender=News)
 def post_save_news(sender, instance, **kwargs):
     if not hasattr(instance, '_post_save_triggered'):

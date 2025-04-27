@@ -1,16 +1,17 @@
 .shadow {
     transition: all 0.25s ease;
+    cursor: pointer;
 }
 
-.silver_shadow:hover {
+.silver_shadow:hover, .silver_shadow.active {
     transform: scale(1.1);
     animation: silver_shadow_animation 1s linear infinite;
 }
-.gold_shadow:hover {
+.gold_shadow:hover, .gold_shadow.active {
     transform: scale(1.1);
     animation: gold_shadow_animation 0.75s linear infinite;
 }
-.ruby_shadow:hover {
+.ruby_shadow:hover, .ruby_shadow.active {
     transform: scale(1.1);
     animation: ruby_shadow_animation 0.5s linear infinite;
 }

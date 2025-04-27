@@ -2,28 +2,7 @@ from django.db import models
 from django.db.models import ManyToManyField
 from django.utils.text import slugify
 
-def transliterate_russian_to_pseudo_english(text):
-    transliteration_table = {
-        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g',
-        'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
-        'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k',
-        'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
-        'п': 'p', 'р': 'r', 'с': 's', 'т': 't',
-        'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'ts',
-        'ч': 'ch', 'ш': 'sh', 'щ': 'shch', 'ъ': '',
-        'ь': '', 'э': 'e', 'ы': 'y', 'ю': 'yu', 'я': 'ya',
-    }
-
-    # Заменяем каждую букву на соответствующую
-    transliterated_text = ''.join(transliteration_table.get(char.lower(), char.lower()) for char in text)
-    return transliterated_text
-
-def get_unique_slug(instance, model_class, old_slug):
-    new_slug = old_slug
-    all_slug_models = model_class.objects.filter(slug=new_slug)
-    if all_slug_models.exists() and all_slug_models.first().id != instance.id:
-        new_slug = f"{old_slug}-{instance.id}"
-    return new_slug
+from additions.views import get_unique_slug
 
 
 class RecipeCategory(models.Model):
@@ -36,8 +15,7 @@ class RecipeCategory(models.Model):
         verbose_name_plural = "Категории"
 
     def save(self, *args, **kwargs):
-        old_slug = slugify(transliterate_russian_to_pseudo_english(self.name))
-        self.slug = get_unique_slug(self, RecipeCategory, old_slug)
+        self.slug = get_unique_slug(self, self.__class__, self.name)
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -53,8 +31,7 @@ class CategoryGroup(models.Model):
         verbose_name_plural = "Группы категорий"
 
     def save(self, *args, **kwargs):
-        old_slug = slugify(transliterate_russian_to_pseudo_english(self.title))
-        self.slug = get_unique_slug(self, CategoryGroup, old_slug)
+        self.slug = get_unique_slug(self, self.__class__, self.title)
         super().save(*args, **kwargs)
 
     def __str__(self):

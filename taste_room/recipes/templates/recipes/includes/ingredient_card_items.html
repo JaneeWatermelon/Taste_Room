@@ -1,0 +1,23 @@
+{% load static %}
+{% load custom_filters %}
+
+{% for item in ingredients %}
+<div class="ingredient_item">
+    <div class="icon_wrapper">
+        <div class="icon_inner">
+            {% if item.icon %}
+            <img src="{{ item.icon.url }}">
+            {% else %}
+            <img src="{% static 'svg/Ingredients/Question_mark.svg' %}">
+            {% endif %}
+        </div>
+        <div class="yes_inner">
+            <img src="{% static 'svg/Yes_No/Yes_shadow.svg' %}">
+        </div>
+        <div class="no_inner">
+            <img src="{% static 'svg/Yes_No/No_shadow.svg' %}">
+        </div>
+    </div>
+    <p>{{ item.title }}</p>
+</div>
+{% endfor %}

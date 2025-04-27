@@ -1,14 +1,15 @@
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 
-from recipes.views import (PopularRecipesView, CategoryRecipesView,
-                           CreateRecipeView, DetailRecipeView,
-                           bluk_create_objects, recipe_like_change,
-                           change_recipe_ingredients, SearchRecipesView)
-
-from users.views import create_comment
+from recipes.views import (CategoryRecipesView, RecipeCreateView,
+                           DetailRecipeView, PopularRecipesView,
+                           SearchRecipesView, bluk_create_objects,
+                           change_recipe_ingredients, change_status,
+                           recipe_like_change, comment_reaction_change, delete_comment, load_more_comments,
+                           create_comment, change_rating, delete_rating, comments_partial_view, ingredient_autocomplete,
+                           add_ingredient_item, recipe_create_view, add_recipe_step, add_ready_photo,
+                           recipe_edit_view, ingredient_cards_autocomplete)
 
 app_name = "recipes"
 
@@ -25,11 +26,30 @@ urlpatterns = [
     path('popular', PopularRecipesView.as_view(), name="popular"),
     path('popular/page/<int:page>', PopularRecipesView.as_view(), name="paginator_popular"),
 
-    path('create', CreateRecipeView.as_view(), name="create"),
+    path('create', recipe_create_view, name="create"),
+    path('<int:pk>/edit', recipe_edit_view, name="edit"),
+    # path('update', recipe_update_view, name="update"),
     path('<int:pk>/<slug:slug>', DetailRecipeView.as_view(), name="detail"),
+
+    path('ajax/change_rating', change_rating, name="change_rating_ajax"),
+    path('ajax/delete_rating', delete_rating, name="delete_rating_ajax"),
+
+    path('ajax/comment_reaction_change', comment_reaction_change, name="comment_reaction_change_ajax"),
+    path('ajax/delete_comment', delete_comment, name="delete_comment_ajax"),
+    path('ajax/load_more_comments', load_more_comments, name="load_more_comments_ajax"),
+    path('ajax/add_comment', create_comment, name="add_comment_ajax"),
+    path('comments_partial_view', comments_partial_view, name="comments_partial_view"),
 
     path('ajax/recipe_like', recipe_like_change, name="recipe_like_ajax"),
     path('ajax/recipe_portions', change_recipe_ingredients, name="recipe_portions_ajax"),
+
+    path('ajax/ingredient-autocomplete/', ingredient_autocomplete, name='ingredient_autocomplete_ajax'),
+    path('ajax/ingredient_cards_autocomplete/', ingredient_cards_autocomplete, name='ingredient_cards_autocomplete_ajax'),
+    path('ajax/add_ingredient_item/', add_ingredient_item, name='add_ingredient_item_ajax'),
+    path('ajax/add_recipe_step/', add_recipe_step, name='add_recipe_step_ajax'),
+    path('ajax/add_ready_photo/', add_ready_photo, name='add_ready_photo_ajax'),
+
+    path('ajax/change_status', change_status, name="change_status_ajax"),
 ]
 
 if settings.DEBUG:

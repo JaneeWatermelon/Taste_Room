@@ -1,0 +1,35 @@
+{% load static %}
+{% load custom_filters %}
+{% load humanize %}
+
+{% if is_paginated %}
+<section class="pagination">
+    {% if page_obj.has_previous %}
+    <a data-page="{{ page_obj.previous_page_number }}" href="{% url 'users:load_my_recipes_ajax' %}" class="pagination_button" data-wpel-link="internal">
+        <img style="transform: rotate(180deg);" src="{% static 'svg/Arrows/White_right.svg' %}">
+    </a>
+    {% else %}
+    <a class="pagination_button disabled" data-wpel-link="internal">
+        <img style="transform: rotate(180deg);" src="{% static 'svg/Arrows/White_right.svg' %}">
+    </a>
+    {% endif %}
+
+    <div class="page_numbers_wrapper">
+        {% for page in paginator.page_range %}
+        <a class="page_link {% if page_obj.number == page %}active{% endif %}" data-page="{{ page }}" href="{% url 'users:load_my_recipes_ajax' %}">
+            <h3>{{ page }}</h3>
+        </a>
+        {% endfor %}
+    </div>
+
+    {% if page_obj.has_next %}
+    <a data-page="{{ page_obj.next_page_number }}" href="{% url 'users:load_my_recipes_ajax' %}" class="pagination_button next" data-wpel-link="internal">
+        <img src="{% static 'svg/Arrows/White_right.svg' %}">
+    </a>
+    {% else %}
+    <a class="pagination_button next disabled" data-wpel-link="internal">
+        <img src="{% static 'svg/Arrows/White_right.svg' %}">
+    </a>
+    {% endif %}
+</section>
+{% endif %}

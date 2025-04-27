@@ -38,7 +38,7 @@ stars_wrapper.on("mouseleave", function() {
 
 stars_wrapper.on("click", "img", function() {
     const item_id = stars_wrapper.attr("data-id");
-    const item_type = stars_wrapper.attr("data-type");
+    // const item_type = stars_wrapper.attr("data-type");
     let data_url = stars_wrapper.attr("data-url");
     const new_rating = Number($(this).attr("data-order"));
 
@@ -54,7 +54,7 @@ stars_wrapper.on("click", "img", function() {
             },
             data: {
                 item_id: item_id,
-                item_type: item_type,
+                // item_type: item_type,
             },
             success: function (data) {
                 console.log('Ответ сервера:', data["answer"]);
@@ -81,7 +81,7 @@ stars_wrapper.on("click", "img", function() {
             },
             data: {
                 item_id: item_id,
-                item_type: item_type,
+                // item_type: item_type,
                 new_rating: new_rating,
             },
             success: function (data) {

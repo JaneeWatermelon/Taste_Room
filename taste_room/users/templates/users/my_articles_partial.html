@@ -3,7 +3,7 @@
 {% load humanize %}
 
 {% for item in my_articles %}
-<div class="news_item">
+<div data-id="{{ item.id }}" class="news_item">
     <div class="news_item_header">
         <div class="image_wrapper">
             <a href="{% url 'news:detail' item.id item.slug %}">
@@ -14,18 +14,18 @@
             </div>
             <div class="buttons">
                 {% if item.status != 1 %}
-                <div class="change">
+                <a href="{% url 'news:update' item.id %}" class="change">
                     <img src="{% static 'svg/Random_icons/Edit_icon.svg' %}">
                     <h4>Редактировать</h4>
-                </div>
+                </a>
                 {% endif %}
                 {% if item.status == 2 %}
-                <div class="public">
+                <div data-url="{% url 'news:change_status_ajax' %}" class="public">
                     <img src="{% static 'svg/Yes_No/Yes_no_shadow.svg' %}">
                     <h4 class="medium_font white">Опубликовать</h4>
                 </div>
                 {% elif item.status == 1 %}
-                <div class="unpublic">
+                <div data-url="{% url 'news:change_status_ajax' %}" class="unpublic">
                     <img src="{% static 'svg/Yes_No/No_no_shadow.svg' %}">
                     <h4 class="medium_font white">Снять с публикации</h4>
                 </div>

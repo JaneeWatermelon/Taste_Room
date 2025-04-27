@@ -1,9 +1,9 @@
 from django.contrib import admin
-
-from unfold.admin import ModelAdmin
+from django.contrib.admin import ModelAdmin
 
 from categories.forms import CategoryGroupForm
-from categories.models import RecipeCategory, CategoryGroup
+from categories.models import CategoryGroup, RecipeCategory
+
 
 @admin.register(RecipeCategory)
 class RecipeCategoryAdmin(ModelAdmin):

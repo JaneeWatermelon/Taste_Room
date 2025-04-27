@@ -1,0 +1,143 @@
+{% load static %}
+{% load custom_filters %}
+{% load humanize %}
+
+{% for item in comments %}
+<div data-page="{{ comments.number }}" data-parent-id="{{ item.id }}" class="comment_wrapper">
+    <div data-comment-id="{{ item.id }}" class="comment_item">
+        <div class="author_info">
+            <a href="{% url 'users:author' item.author.username %}" class="image_wrapper">
+                {% if item.author.avatar %}
+                <img src="{{ item.author.optimized_image_small.url }}">
+                {% else %}
+                <img src="{% static 'img/Profile/author_default.png' %}">
+                {% endif %}
+            </a>
+            <div class="info">
+                <h4>{% if item.author.name %}{{ item.author.name }}{% else %}{{ item.author.username }}{% endif %}</h4>
+                <h5 class="black_75">{{ item.published_date|naturaltime }}</h5>
+            </div>
+            <div class="comment_actions d_none">
+                <div class="action answer">
+                    <h5 class="medium_font black_50">Ответить</h5>
+                </div>
+                {% if item.author == request.user %}
+                <div data-url="{% url 'news:delete_comment_ajax' %}" class="action delete">
+                    <h5 class="medium_font black_50">Удалить</h5>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="content">
+            {% if item.image %}
+            <div class="image_wrapper">
+                <img src="{{ item.image.url }}">
+            </div>
+            {% endif %}
+            <h5>{{ item.text }}</h5>
+        </div>
+        <div data-url="{% url 'news:comment_reaction_change_ajax' %}" class="rating">
+            <div class="likes">
+                {% if item in request.user.liked_recipe_comments.all %}
+                <img class="active" src="{% static 'svg/Likes_Dislikes/Like_fill.svg' %}">
+                {% else %}
+                <img src="{% static 'svg/Likes_Dislikes/Like_blank.svg' %}">
+                {% endif %}
+
+                {% if item.likes %}
+                <h5>{{ item.likes }}</h5>
+                {% endif %}
+            </div>
+            <div class="dislikes">
+                {% if item in request.user.disliked_recipe_comments.all %}
+                <img class="active" src="{% static 'svg/Likes_Dislikes/Dislike_fill.svg' %}">
+                {% else %}
+                <img src="{% static 'svg/Likes_Dislikes/Dislike_blank.svg' %}">
+                {% endif %}
+
+                {% if item.dislikes %}
+                <h5>{{ item.dislikes }}</h5>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% if item.children.exists %}
+    <div class="answers d_none">
+        <span class="line"></span>
+        <div class="answers_list">
+            {% for answer in item.children.all %}
+            <div data-comment-id="{{ answer.id }}" class="comment_item">
+                <div class="author_info">
+                    <a href="{% url 'users:author' answer.author.username %}" class="image_wrapper">
+                        {% if answer.author.avatar %}
+                        <img src="{{ answer.author.optimized_image_small.url }}">
+                        {% else %}
+                        <img src="{% static 'img/Profile/author_default.png' %}">
+                        {% endif %}
+                    </a>
+                    <div class="info">
+                        <h4>{% if answer.author.name %}{{ answer.author.name }}{% else %}{{ answer.author.username }}{% endif %}</h4>
+                        <h5 class="black_75">{{ answer.published_date|naturaltime }}</h5>
+                    </div>
+                    <div class="comment_actions d_none">
+                        {% if item.author == user %}
+                        <div data-url="{% url 'news:delete_comment_ajax' %}" class="action delete">
+                            <h5 class="medium_font black_50">Удалить</h5>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="content">
+                    {% if answer.image %}
+                    <div class="image_wrapper">
+                        <img src="{{ answer.image.url }}">
+                    </div>
+                    {% endif %}
+                    <h5>{{ answer.text }}</h5>
+                </div>
+                <div data-url="{% url 'news:comment_reaction_change_ajax' %}" class="rating">
+                    <div class="likes">
+                        {% if answer in request.user.liked_recipe_comments.all %}
+                        <img class="active" src="{% static 'svg/Likes_Dislikes/Like_fill.svg' %}">
+                        {% else %}
+                        <img src="{% static 'svg/Likes_Dislikes/Like_blank.svg' %}">
+                        {% endif %}
+
+                        {% if answer.likes %}
+                        <h5>{{ answer.likes }}</h5>
+                        {% endif %}
+                    </div>
+                    <div class="dislikes">
+                        {% if answer in request.user.disliked_recipe_comments.all %}
+                        <img class="active" src="{% static 'svg/Likes_Dislikes/Dislike_fill.svg' %}">
+                        {% else %}
+                        <img src="{% static 'svg/Likes_Dislikes/Dislike_blank.svg' %}">
+                        {% endif %}
+
+                        {% if answer.dislikes %}
+                        <h5>{{ answer.dislikes }}</h5>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="change_visibility_answers hide_answers d_none">
+        <h5 class="black_75">Скрыть ответы</h5>
+    </div>
+    <div class="change_visibility_answers show_answers">
+        <h5 class="black_75">Показать ответы</h5>
+    </div>
+    {% endif %}
+    <form data-id="{{ object.id }}" data-parent-id="{{ item.id }}" action="{% url 'news:add_comment_ajax' %}" method="post" enctype="multipart/form-data" class="add_answer_comment d_none">
+        {% csrf_token %}
+        <div class="input_wrapper">
+            <textarea required="required" name="text" placeholder="Ответьте на комментарий"></textarea>
+            <button type="submit" class="input_button">
+                <img src="{% static 'svg/Arrows/Send_comment.svg' %}">
+            </button>
+        </div>
+    </form>
+</div>
+{% endfor %}
