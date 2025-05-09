@@ -49,24 +49,6 @@
                                 {% endwith %}
                             </div>
                             {% endfor %}
-<!--                            <div class="opacity_item">-->
-<!--                                <input id="visibility_2" type="radio" name="visibility" value="2"-->
-<!--                                   {% if form.visibility.value == 2 %}checked{% endif %}>-->
-<!--                                <label for="visibility_2"><h4>Только в профиле</h4></label>-->
-<!--                                <label for="visibility_2"><h4 class="black_50">(виден всем у вас на странице)</h4></label>-->
-<!--                            </div>-->
-<!--                            <div class="opacity_item">-->
-<!--                                <input id="visibility_3" type="radio" name="visibility" value="3"-->
-<!--                                   {% if form.visibility.value == 3 %}checked{% endif %}>-->
-<!--                                <label for="visibility_3"><h4>Только подписчики</h4></label>-->
-<!--                                <label for="visibility_3"><h4 class="black_50">(виден только подписчикам)</h4></label>-->
-<!--                            </div>-->
-<!--                            <div class="opacity_item">-->
-<!--                                <input id="visibility_4" type="radio" name="visibility" value="4"-->
-<!--                                   {% if form.visibility.value == 4 %}checked{% endif %}>-->
-<!--                                <label for="visibility_4"><h4>Только я</h4></label>-->
-<!--                                <label for="visibility_4"><h4 class="black_50">(приватный, виден только вам)</h4></label>-->
-<!--                            </div>-->
                         </fieldset>
                     </div>
                 </div>
@@ -438,6 +420,7 @@
 {% block custom_scripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.6/Sortable.min.js" integrity="sha512-csIng5zcB+XpulRUa+ev1zKo7zRNGpEaVfNB9On1no9KYTEY/rLGAEEpvgdw6nim1WdTuihZY1eqZ31K7/fZjw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{% static 'js/profile.js' %}"></script>
+    <script src="{% static 'js/create_page/general.js' %}"></script>
     <script src="{% static 'js/recipe_create/add_recipe.js' %}"></script>
     <script src="{% static 'js/recipe_create/change_symbols_count.js' %}"></script>
 {% endblock %}

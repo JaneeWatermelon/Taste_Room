@@ -2,6 +2,8 @@
 {% load static %}
 {% load custom_filters %}
 
+{% block og_url %}{{ request.scheme }}://{{ request.get_host }}{% if kwargs.slug %}{% url 'recipes:category' kwargs.slug %}{% else %}{% url 'recipes:index' %}{% endif %}{% endblock %}
+
 {% block custom_styles %}
     <link rel="stylesheet" href="{% static 'css/recipe/recipe_card.css' %}">
     <link rel="stylesheet" href="{% static 'css/recipe/repice_card_long.css' %}">
@@ -67,12 +69,17 @@
                 </div>
             </section>
             <section class="new_recipes_section">
+                {% if recipes_1.exists or recipes_2.exists %}
                 <div class="cards_wrapper">
                     {% include "recipes/includes/recipe_cards.html" with recipes_list=recipes_1 %}
                 </div>
                 <div class="cards_wrapper_long d_mobile_none">
                     {% include "recipes/includes/recipe_long_cards.html" with recipes_list=recipes_2 %}
                 </div>
+                {% else %}
+                    {{ empty_block }}
+                {% endif %}
+
             </section>
         </div>
         {% if is_paginated %}

@@ -1,4 +1,5 @@
 import os
+from uuid import uuid4
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -7,7 +8,7 @@ from django.utils.timezone import now, timedelta
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
-from additions.views import get_unique_slug, Status, Visibility
+from additions.views import Status, Visibility, get_unique_slug
 from categories.models import RecipeCategory
 from users.models import User
 
@@ -55,12 +56,33 @@ class Units:
         ("щеп", "Щепотки"),
     )
 
+def recipe_step_image_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f"image_{uuid4().hex}.{ext}"
+    return os.path.join("recipe_step_images", filename)
+
+def ingredient_image_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f"image_{uuid4().hex}.{ext}"
+    return os.path.join("ingredient_icons", filename)
+
+def recipe_preview_image_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f"image_{uuid4().hex}.{ext}"
+    return os.path.join("recipe_previews", filename)
+
+def recipe_comments_image_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f"image_{uuid4().hex}.{ext}"
+    return os.path.join("recipe_comments_images", filename)
+
 class Ingredient(models.Model):
     title = models.CharField(max_length=64, verbose_name="Название")
     slug = models.SlugField(blank=True, default=slugify(title), verbose_name="Ссылочное название")
-    icon = models.FileField(upload_to="ingredient_icons/", verbose_name="Иконка")
+    icon = models.FileField(upload_to=ingredient_image_path, verbose_name="Иконка")
     calory_count = models.PositiveSmallIntegerField(default=0, verbose_name="Кол-во калорий")
     weight_per_unit = models.PositiveSmallIntegerField(default=0, verbose_name="Вес 1 штуки")
+    popularity = models.PositiveSmallIntegerField(default=0, verbose_name="Популярность")
 
     def __str__(self):
         return self.title
@@ -72,12 +94,23 @@ class Ingredient(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = get_unique_slug(self, self.__class__, self.title)
+        # Удаляем старое изображение при обновлении
+        if self.pk:
+            old_item = self.__class__.objects.get(pk=self.pk)
+            if old_item.icon and old_item.icon != self.icon:
+                old_item.icon.delete(save=False)
         super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        # Удаляем файл изображения при удалении шага
+        if self.icon:
+            self.icon.delete(save=False)
+        super().delete(*args, **kwargs)
+
 class RecipePreview(models.Model):
-    preview_1 = models.ImageField(upload_to="recipe_previews/", verbose_name="Превью 1")
-    preview_2 = models.ImageField(upload_to="recipe_previews/", blank=True, null=True, verbose_name="Превью 2")
-    preview_3 = models.ImageField(upload_to="recipe_previews/", blank=True, null=True, verbose_name="Превью 3")
+    preview_1 = models.ImageField(upload_to=recipe_preview_image_path, verbose_name="Превью 1")
+    preview_2 = models.ImageField(upload_to=recipe_preview_image_path, blank=True, null=True, verbose_name="Превью 2")
+    preview_3 = models.ImageField(upload_to=recipe_preview_image_path, blank=True, null=True, verbose_name="Превью 3")
 
     optimized_image_1_small = ImageSpecField(
         source='preview_1',
@@ -108,6 +141,28 @@ class RecipePreview(models.Model):
         verbose_name = "Превью в рецепте"
         verbose_name_plural = "Превью в рецептах"
 
+    def save(self, *args, **kwargs):
+        # Удаляем старое изображение при обновлении
+        if self.pk:
+            old_item = self.__class__.objects.get(pk=self.pk)
+            if old_item.preview_1 and old_item.preview_1 != self.preview_1:
+                old_item.preview_1.delete(save=False)
+            if old_item.preview_2 and old_item.preview_2 != self.preview_2:
+                old_item.preview_2.delete(save=False)
+            if old_item.preview_3 and old_item.preview_3 != self.preview_3:
+                old_item.preview_3.delete(save=False)
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Удаляем файл изображения при удалении шага
+        if self.preview_1:
+            self.preview_1.delete(save=False)
+        if self.preview_2:
+            self.preview_2.delete(save=False)
+        if self.preview_3:
+            self.preview_3.delete(save=False)
+        super().delete(*args, **kwargs)
+
     def __str__(self):
         return f"{self.preview_1}"
 
@@ -136,11 +191,14 @@ class Recipe(models.Model):
     popularity = models.PositiveSmallIntegerField(default=0, verbose_name="Популярность")
 
     status = models.PositiveSmallIntegerField(choices=Status.List, verbose_name="Статус")
+    status_updated_at = models.DateTimeField(default=now, verbose_name="Время обновления статуса")
     visibility = models.PositiveSmallIntegerField(choices=Visibility.List, verbose_name="Видимость")
 
     categories = models.ManyToManyField(to=RecipeCategory, blank=True, verbose_name="Категории")
 
     author = models.ForeignKey(to=User, blank=True, null=True, on_delete=models.CASCADE, verbose_name="Автор")
+
+    cache_version = models.PositiveSmallIntegerField(default=0, verbose_name="Версия кэша")
 
     @property
     def stars_on_count(self):
@@ -223,6 +281,9 @@ class Recipe(models.Model):
             result += RecipeComment.objects.filter(recipe=self).count() * 20
             self.popularity = int(result)
 
+    def change_cache_version(self):
+        self.cache_version = abs(1 - self.cache_version)
+
     class Meta:
         ordering = ["title"]
         verbose_name = "Рецепт"
@@ -235,13 +296,12 @@ class Recipe(models.Model):
         self.slug = get_unique_slug(self, self.__class__, self.title)
         self.set_total_rating()
         self.set_popularity()
+        self.change_cache_version()
+        if self.pk:
+            old_status = self.__class__.objects.get(pk=self.pk).status
+            if old_status != self.status:
+                self.status_updated_at = now()
         super().save(*args, **kwargs)
-
-def recipe_step_image_path(instance, filename):
-    # Генерируем уникальное имя файла: steps/рецепт_id/шаг_id_uuid4.расширение
-    ext = filename.split('.')[-1]
-    filename = f"step_{instance.id}.{ext}"
-    return os.path.join('recipe_step_images', f'recipe_{instance.recipe.id}', filename)
 
 class RecipeStep(models.Model):
     recipe = models.ForeignKey(to=Recipe, on_delete=models.CASCADE, verbose_name="Рецепт")
@@ -264,9 +324,9 @@ class RecipeStep(models.Model):
     def save(self, *args, **kwargs):
         # Удаляем старое изображение при обновлении
         if self.pk:
-            old_step = RecipeStep.objects.get(pk=self.pk)
-            if old_step.image and old_step.image != self.image:
-                old_step.image.delete(save=False)
+            old_item = self.__class__.objects.get(pk=self.pk)
+            if old_item.image and old_item.image != self.image:
+                old_item.image.delete(save=False)
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -310,7 +370,7 @@ class RecipeReview(models.Model):
 
 class RecipeComment(models.Model):
     text = models.TextField(default="", max_length=1024, verbose_name="Текст")
-    image = models.ImageField(upload_to='comments_images/', blank=True, null=True, verbose_name="Изображение")
+    image = models.ImageField(upload_to=recipe_comments_image_path, blank=True, null=True, verbose_name="Изображение")
     optimized_image_small = ImageSpecField(
         source='image',
         processors=[ResizeToFill(256, 170)],  # Размер оптимизированного изображения
@@ -332,3 +392,17 @@ class RecipeComment(models.Model):
         ordering = ['author']
         verbose_name = "Комментарий к рецепту"
         verbose_name_plural = "Комментарии к рецептам"
+        
+    def save(self, *args, **kwargs):
+        # Удаляем старое изображение при обновлении
+        if self.pk:
+            old_item = self.__class__.objects.get(pk=self.pk)
+            if old_item.image and old_item.image != self.image:
+                old_item.image.delete(save=False)
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Удаляем файл изображения при удалении шага
+        if self.image:
+            self.image.delete(save=False)
+        super().delete(*args, **kwargs)

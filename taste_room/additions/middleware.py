@@ -15,10 +15,10 @@ class MetaTagsMiddleware(MiddlewareMixin):
             request.meta_description = meta_tag.description
             request.meta_og_title = meta_tag.og_title
             request.meta_og_description = meta_tag.og_description
-            request.meta_og_image = "Описание по умолчанию"
+            # request.meta_og_image = "Описание по умолчанию"
         except MetaTag.DoesNotExist:
-            request.meta_title = "Заголовок по умолчанию"
-            request.meta_description = "Описание по умолчанию"
-            request.meta_og_title = "Описание по умолчанию"
-            request.meta_og_description = "Описание по умолчанию"
-            request.meta_og_image = "Описание по умолчанию"
+            request.meta_title = "Комната Вкусов - Пошаговые рецепты"
+            request.meta_description = "Комната Вкусов — коллекция вкусных рецептов с пошаговыми инструкциями. Готовьте легко с нашими проверенными рецептами!"
+            request.meta_og_title = "Комната Вкусов - Пошаговые рецепты"
+            request.meta_og_description = "Комната Вкусов — коллекция вкусных рецептов с пошаговыми инструкциями. Готовьте легко с нашими проверенными рецептами!"
+            # request.meta_og_image = "Описание по умолчанию"

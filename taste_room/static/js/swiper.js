@@ -99,10 +99,10 @@ else {
         keyboard: true,
         width: recipes_slidesPerView*0.4*recipe_recs_width,
         spaceBetween: 8,
-        autoplay: {
-            delay: 3000,
-            pauseOnMouseEnter: true,
-        },
+        // autoplay: {
+        //     delay: 3000,
+        //     pauseOnMouseEnter: true,
+        // },
         navigation: {
             nextEl: '.recipe_recs > .swiper_nav.next',
             prevEl: '.recipe_recs > .swiper_nav.prev',

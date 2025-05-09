@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Сброс пароля - Комната Вкусов</title>
+    <style type="text/css">
+        /* Основные стили */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            line-height: 1.4;
+            color: #333333;
+            background-color: #f5f5f5;
+        }
+        
+        /* Контейнер письма */
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+        }
+        
+        /* Шапка */
+        .header {
+            padding: 20px;
+            background-color: #FF6766;
+            color: white;
+            text-align: center;
+        }
+        
+        /* Контент */
+        .content {
+            padding: 30px 20px;
+        }
+        
+        /* Код подтверждения */
+        .confirmation-code {
+            margin: 25px 0;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border: 1px dashed #e0e0e0;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #FF6766;
+        }
+        
+        /* Подпись */
+        .footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #999999;
+            background-color: #f5f5f5;
+        }
+        
+        /* Кнопка (если понадобится) */
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #FF6766;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>Личный кабинет Комната Вкусов</h1>
+        </div>
+        
+        <div class="content">
+            <p>Используйте этот код, чтобы сбросить пароль для аккаунта {{ email }}</p>
+            
+            <h2>Ваш код подтверждения</h2>
+            
+            <div class="confirmation-code">
+                {{ email_code }}
+            </div>
+            
+            <p>Если вы не отправляли запрос на восстановление пароля от личного кабинета {{ email }} Комнаты Вкусов, проигнорируйте это сообщение.</p>
+        </div>
+        
+        <div class="footer">
+            <p>С уважением, Техническая поддержка Комнаты Вкусов</p>
+            <p>&copy; 2024-2025 Комната Вкусов. Все права защищены.</p>
+        </div>
+    </div>
+</body>
+</html>

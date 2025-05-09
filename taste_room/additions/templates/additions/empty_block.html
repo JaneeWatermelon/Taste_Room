@@ -1,0 +1,34 @@
+{% load static %}
+
+<div class="empty_wrapper d_mobile_none">
+    <a href="{% url 'main' %}" class="info sub_info">
+        <h2 class="h1_style lilita_font">Главная</h2>
+        <h3>Не знаешь, что вкусного приготовить? Собери из того, что есть в холодильнике!</h3>
+    </a>
+    <img class="arrow" src="{% static 'svg/Arrows/Simple_left_green.svg' %}">
+    <a href="{% url 'main' %}" class="info">
+        <img src="{% static 'svg/Cookie/Sad_green.svg' %}">
+        <h3 class="nothing_title medium_font">Тут пока ничего нет</h3>
+    </a>
+    <img class="arrow" src="{% static 'svg/Arrows/Simple_left_green.svg' %}">
+    <a href="{% url 'main' %}" class="info sub_info">
+        <h2 class="h1_style lilita_font">Блог</h2>
+        <h3>Хочешь знать обо всех новинках в мире гастрономии? Тогда тебе к нам!</h3>
+    </a>
+</div>
+<div class="empty_wrapper d_desktop_none">
+    <a href="{% url 'main' %}" class="info">
+        <img src="{% static 'svg/Cookie/Sad_green.svg' %}">
+        <h3 class="nothing_title medium_font">Тут пока ничего нет</h3>
+    </a>
+    <img class="arrow" src="{% static 'svg/Arrows/Simple_down_green.svg' %}">
+    <a href="{% url 'main' %}" class="info sub_info">
+        <h2 class="h1_style lilita_font">Главная</h2>
+        <h3>Не знаешь, что вкусного приготовить? Собери из того, что есть в холодильнике!</h3>
+    </a>
+    <img class="arrow" src="{% static 'svg/Arrows/Simple_down_green.svg' %}">
+    <a href="{% url 'main' %}" class="info sub_info">
+        <h2 class="h1_style lilita_font">Блог</h2>
+        <h3>Хочешь знать обо всех новинках в мире гастрономии? Тогда тебе к нам!</h3>
+    </a>
+</div>

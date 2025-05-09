@@ -97,20 +97,22 @@
                         <div class="subs_wrapper">
                             <p id="subs_count" class="medium_font">Подписчики: {{ object.subscribers.count }}</p>
                         </div>
-                        {% if object.id in user.subscriptions_id %}
-                        <button type="button" data-type="unsub" class="sub_action_wrapper">
-                            <p class="medium_font">Отказаться от подписки</p>
-                        </button>
-                        <button type="button" data-type="sub" class="sub_action_wrapper active d_none">
-                            <p class="medium_font">Подписаться</p>
-                        </button>
-                        {% else %}
-                        <button type="button" data-type="unsub" class="sub_action_wrapper d_none">
-                            <p class="medium_font">Отказаться от подписки</p>
-                        </button>
-                        <button type="button" data-type="sub" class="sub_action_wrapper active">
-                            <p class="medium_font">Подписаться</p>
-                        </button>
+                        {% if object != user %}
+                            {% if object in user.subscriptions.all %}
+                            <button data-require-auth type="button" data-type="unsub" class="sub_action_wrapper">
+                                <p class="medium_font">Отказаться от подписки</p>
+                            </button>
+                            <button data-require-auth type="button" data-type="sub" class="sub_action_wrapper active d_none">
+                                <p class="medium_font">Подписаться</p>
+                            </button>
+                            {% else %}
+                            <button data-require-auth type="button" data-type="unsub" class="sub_action_wrapper d_none">
+                                <p class="medium_font">Отказаться от подписки</p>
+                            </button>
+                            <button data-require-auth type="button" data-type="sub" class="sub_action_wrapper active">
+                                <p class="medium_font">Подписаться</p>
+                            </button>
+                            {% endif %}
                         {% endif %}
                         <div class="settings_item">
                             <img src="{% static 'svg/Cookie/Smile_green.svg' %}">
@@ -140,20 +142,22 @@
                             <div class="subs_wrapper">
                                 <p id="subs_count" class="medium_font">Подписчики: {{ object.subscribers.count }}</p>
                             </div>
-                            {% if object.id in user.subscriptions_id %}
-                            <button type="button" data-type="unsub" class="sub_action_wrapper">
-                                <p class="medium_font">Отказаться от подписки</p>
-                            </button>
-                            <button type="button" data-type="sub" class="sub_action_wrapper active d_none">
-                                <p class="medium_font">Подписаться</p>
-                            </button>
-                            {% else %}
-                            <button type="button" data-type="unsub" class="sub_action_wrapper d_none">
-                                <p class="medium_font">Отказаться от подписки</p>
-                            </button>
-                            <button type="button" data-type="sub" class="sub_action_wrapper active">
-                                <p class="medium_font">Подписаться</p>
-                            </button>
+                            {% if object != user %}
+                                {% if object in user.subscriptions.all %}
+                                <button data-require-auth type="button" data-type="unsub" class="sub_action_wrapper">
+                                    <p class="medium_font">Отказаться от подписки</p>
+                                </button>
+                                <button data-require-auth type="button" data-type="sub" class="sub_action_wrapper active d_none">
+                                    <p class="medium_font">Подписаться</p>
+                                </button>
+                                {% else %}
+                                <button data-require-auth type="button" data-type="unsub" class="sub_action_wrapper d_none">
+                                    <p class="medium_font">Отказаться от подписки</p>
+                                </button>
+                                <button data-require-auth type="button" data-type="sub" class="sub_action_wrapper active">
+                                    <p class="medium_font">Подписаться</p>
+                                </button>
+                                {% endif %}
                             {% endif %}
                             <div class="settings_item">
                                 <img src="{% static 'svg/Cookie/Smile_green.svg' %}">
@@ -266,53 +270,61 @@
             </section>
 
             <section id="liked_recipes_section" class="new_recipes_section possible_block">
+                {% if recipes.exists %}
                 <div class="cards_wrapper">
                     {% include "recipes/includes/recipe_cards.html" with recipes_list=recipes %}
                 </div>
+                {% else %}
+                    {{ empty_block }}
+                {% endif %}
             </section>
             <section id="articles_section" class="articles_section possible_block d_none">
+                {% if articles.exists %}
                 <div class="cards_wrapper">
                     {% include "news/includes/news_cards.html" with news_list=articles %}
                 </div>
-            </section>
-            <section id="nothing_section" class="nothing_section possible_block d_none">
-                <img src="{% static 'svg/Cookie/Sad_half_black.svg' %}">
-                <h3 class="black_50 medium_font">Тут пока ничего нет</h3>
+                {% else %}
+                    {{ empty_block }}
+                {% endif %}
             </section>
             <section id="achievements_section" class="achievements_section possible_block d_none">
-                {% if one_use_achivs %}
-                <div class="my_achiv">
-                    <h3 class="medium_font">Одноразовые</h3>
-                    <div class="achiv_list">
-                        {% for item in one_use_achivs %}
-                        <div class="achiv_item">
-                            <img class="shadow
-                            {% if item.level == 1 %}silver_shadow
-                            {% elif item.level == 2 %}gold_shadow
-                            {% elif item.level == 3 %}ruby_shadow
-                            {% else %}silver_shadow
-                            {% endif %}" src="{{ item.icon.url }}">
+                {% if one_use_achivs or multiple_use_achivs %}
+                    {% if one_use_achivs %}
+                    <div class="my_achiv">
+                        <h3 class="medium_font">Одноразовые</h3>
+                        <div class="achiv_list">
+                            {% for item in one_use_achivs %}
+                            <div class="achiv_item">
+                                <img class="shadow
+                                {% if item.level == 1 %}silver_shadow
+                                {% elif item.level == 2 %}gold_shadow
+                                {% elif item.level == 3 %}ruby_shadow
+                                {% else %}silver_shadow
+                                {% endif %}" src="{{ item.icon.url }}">
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
-                </div>
-                {% endif %}
-                {% if multiple_use_achivs %}
-                <div class="all_achiv">
-                    <h3 class="medium_font">Многоразовые</h3>
-                    <div class="achiv_list">
-                        {% for item in multiple_use_achivs %}
-                        <div class="achiv_item">
-                            <img class="shadow
-                            {% if item.level == 1 %}silver_shadow
-                            {% elif item.level == 2 %}gold_shadow
-                            {% elif item.level == 3 %}ruby_shadow
-                            {% else %}silver_shadow
-                            {% endif %}" src="{{ item.icon.url }}">
+                    {% endif %}
+                    {% if multiple_use_achivs %}
+                    <div class="all_achiv">
+                        <h3 class="medium_font">Многоразовые</h3>
+                        <div class="achiv_list">
+                            {% for item in multiple_use_achivs %}
+                            <div class="achiv_item">
+                                <img class="shadow
+                                {% if item.level == 1 %}silver_shadow
+                                {% elif item.level == 2 %}gold_shadow
+                                {% elif item.level == 3 %}ruby_shadow
+                                {% else %}silver_shadow
+                                {% endif %}" src="{{ item.icon.url }}">
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
-                </div>
+                    {% endif %}
+                {% else %}
+                    {{ empty_block }}
                 {% endif %}
             </section>
         </div>

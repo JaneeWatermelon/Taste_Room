@@ -333,15 +333,6 @@
     gap: var(--small);
 }
 
-.nothing_section {
-    display: flex;
-    align-items: center;
-    gap: var(--big);
-}
-.nothing_section > img {
-    height: 85px;
-}
-
 .settings_section {
     display: flex;
     flex-direction: column;

@@ -156,6 +156,78 @@ $(".settings_section > .settings > .background_and_avatar > form.background").on
     });
 })
 
+$(".settings_section > .settings > form.fields_form").on("submit", function(event) {
+    event.preventDefault();
+    const $this = $(this);
+
+    const telegram_input = $("input[name='telegram']");
+    const vk_input = $("input[name='vk']");
+    const pinterest_input = $("input[name='pinterest']");
+    const youtube_input = $("input[name='youtube']");
+    const rutube_input = $("input[name='rutube']");
+
+    let can_continue = true;
+
+    if (telegram_input.val() 
+        && !telegram_input.val().trim().startsWith("https://t.me/") 
+        && !telegram_input.val().trim().startsWith("https://telegram.me/")) 
+        {
+        telegram_input.closest(".field_item").find(".error_message").removeClass("d_none");
+        can_continue = false;
+    }
+    else {
+        telegram_input.closest(".field_item").find(".error_message").addClass("d_none");
+    }
+
+    if (vk_input.val() 
+        && !vk_input.val().trim().startsWith("https://vk.com/") 
+        && !vk_input.val().trim().startsWith("https://m.vk.com/")) 
+        {
+        vk_input.closest(".field_item").find(".error_message").removeClass("d_none");
+        can_continue = false;
+    }
+    else {
+        vk_input.closest(".field_item").find(".error_message").addClass("d_none");
+    }
+
+    if (pinterest_input.val() 
+        && !pinterest_input.val().trim().startsWith("https://pinterest.com/") 
+        && !pinterest_input.val().trim().startsWith("https://www.pinterest.com/")) 
+        {
+        pinterest_input.closest(".field_item").find(".error_message").removeClass("d_none");
+        can_continue = false;
+    }
+    else {
+        pinterest_input.closest(".field_item").find(".error_message").addClass("d_none");
+    }
+
+    if (youtube_input.val() 
+        && !youtube_input.val().trim().startsWith("https://youtube.com/") 
+        && !youtube_input.val().trim().startsWith("https://www.youtube.com/")) 
+        {
+        youtube_input.closest(".field_item").find(".error_message").removeClass("d_none");
+        can_continue = false;
+    }
+    else {
+        youtube_input.closest(".field_item").find(".error_message").addClass("d_none");
+    }
+
+    if (rutube_input.val() 
+        && !rutube_input.val().trim().startsWith("https://rutube.ru/") 
+        && !rutube_input.val().trim().startsWith("https://www.rutube.ru/")) 
+        {
+        rutube_input.closest(".field_item").find(".error_message").removeClass("d_none");
+        can_continue = false;
+    }
+    else {
+        rutube_input.closest(".field_item").find(".error_message").addClass("d_none");
+    }
+
+    if (can_continue) {
+        this.submit();
+    }
+})
+
 let max_width = 0;
 
 // $(".subs_section > .subs_wrapper > .subs_item > .sub_button").toArray().forEach(element => {
@@ -218,8 +290,14 @@ function reloadMyRecipesAJAX(data_url, data_status, page=1) {
             window.setCardShareWindows();
             window.setCardIngredientAndCooktimeWindows();
             window.setHeartAnimEventHandler();
-            setRecipeCardButtonsEventHandler();
-
+            setCardButtonsEventHandler();
+            
+            if (data.html.trim()) {
+                $("#my_recipes_section > .empty_section").addClass("d_none");
+            }
+            else {
+                $("#my_recipes_section > .empty_section").removeClass("d_none");
+            }
             console.log('Ответ сервера:', data["answer"]);
         },
         error: function (error) {
@@ -265,9 +343,15 @@ $(".articles_section > .publish_types > .publish_type_item").on("click", functio
             },
             success: function (data) {
                 $(".articles_section > .cards_wrapper").html(data.html);
-                console.log('Ответ сервера:', data["answer"]);
                 window.setCardShareWindows();
-                setNewsCardButtonsEventHandler();
+                setCardButtonsEventHandler();
+                if (data.html.trim()) {
+                    $(".articles_section > .empty_section").addClass("d_none");
+                }
+                else {
+                    $(".articles_section > .empty_section").removeClass("d_none");
+                }
+                console.log('Ответ сервера:', data["answer"]);
             },
             error: function (error) {
                 console.error('Ошибка:', error);
@@ -365,9 +449,9 @@ $(".subs_section > .remove_filters").on("click", function() {
     });
 })
 
-function setRecipeCardButtonsEventHandler() {
-    const hover_el = $(".recipe_item > .recipe_item_header > .image_wrapper > .buttons > .unpublic");
-    const pop_up = $(".profile_window.unpublic_warning#recipe_unpublic_warning");
+function setCardButtonsEventHandler() {
+    const hover_el = $(".card_item .image_wrapper > .buttons > .unpublic");
+    const pop_up = $(".profile_window.unpublic_warning#card_unpublic_warning");
 
     $(document).on('click', function (event) {
         window.HideBackBlackOverWindowClick(event, pop_up, hover_el);
@@ -377,22 +461,39 @@ function setRecipeCardButtonsEventHandler() {
         event.stopPropagation(); // Останавливаем всплытие события
     });
 
-    $(".recipe_item > .recipe_item_header > .image_wrapper > .buttons > *").off("click").on("click", function(event) {
+    $(".image_wrapper > .buttons > *").off("click").on("click", function(event) {
         $this = $(this);
         let action_status;
+        let data_status;
+        let card_type;
         const data_url = $this.attr("data-url");
-        const item_id = $this.closest(".recipe_item").attr("data-id");
+        const card_item = $this.closest(".card_item");
+        const item_id = card_item.attr("data-id");
+
+        if (card_item.hasClass("recipe_item")) {
+            card_type = "recipe";
+        }
+        else {
+            card_type = "news";
+        }
     
         if ($this.hasClass("unpublic")) {
-            action_status = "2";
+            action_status = "3";
 
             window.showHideBackBlack(event, pop_up);
 
             pop_up.attr("data-url", data_url);
             pop_up.attr("data-id", item_id);
+            pop_up.attr("data-card-type", card_type);
         }
         else if ($this.hasClass("public")) {
-            action_status = "1";
+            action_status = "4";
+            if (card_type == "recipe") {
+                data_status = recipes_active_status;
+            }
+            else {
+                data_status = news_active_status;
+            }
             $.ajax({
                 url: data_url,
                 method: "POST",
@@ -402,15 +503,15 @@ function setRecipeCardButtonsEventHandler() {
                 },
                 data: {
                     action_status: action_status,
-                    data_status: recipes_active_status,
+                    data_status: data_status,
                     item_id: item_id,
                 },
         
                 success: function (data) {
                     console.log('Ответ сервера:', data["answer"]);
-                    $("#my_recipes_section > .cards_wrapper").html(data.html);
+                    $this.closest(".cards_wrapper").html(data.html);
                     window.setCardShareWindows();
-                    setRecipeCardButtonsEventHandler();
+                    setCardButtonsEventHandler();
                 },
                 error: function (error) {
                     console.error('Ошибка:', error);
@@ -420,16 +521,25 @@ function setRecipeCardButtonsEventHandler() {
     })
 }
 
-setRecipeCardButtonsEventHandler();
+setCardButtonsEventHandler();
 
-$(".profile_window.unpublic_warning#recipe_unpublic_warning > .buttons > .button_item.unpublic").on("click", function(event) {
+$(".profile_window.unpublic_warning#card_unpublic_warning > .buttons > .button_item.unpublic").on("click", function(event) {
     $this = $(this);
-    let action_status = "2";
+    let action_status = "3";
+    let data_status;
     const unpublic_warning = $this.closest(".unpublic_warning");
     const data_url = unpublic_warning.attr("data-url");
     const item_id = unpublic_warning.attr("data-id");
+    const card_type = unpublic_warning.attr("data-card-type");
 
     window.showHideBackBlack(event, unpublic_warning);
+
+    if (card_type == "recipe") {
+        data_status = recipes_active_status;
+    }
+    else {
+        data_status = news_active_status;
+    }
 
     $.ajax({
         url: data_url,
@@ -440,16 +550,21 @@ $(".profile_window.unpublic_warning#recipe_unpublic_warning > .buttons > .button
         },
         data: {
             action_status: action_status,
-            data_status: recipes_active_status,
+            data_status: data_status,
             item_id: item_id,
         },
 
         success: function (data) {
             console.log('Ответ сервера:', data["answer"]);
-            $("#my_recipes_section > .cards_wrapper").html(data.html);
+            if (card_type == "recipe") {
+                $("#my_recipes_section > .cards_wrapper").html(data.html);
+            }
+            else {
+                $("#articles_section > .cards_wrapper").html(data.html);
+            }
             window.setCardShareWindows();
             
-            setRecipeCardButtonsEventHandler();
+            setCardButtonsEventHandler();
         },
         error: function (error) {
             console.error('Ошибка:', error);
@@ -457,105 +572,7 @@ $(".profile_window.unpublic_warning#recipe_unpublic_warning > .buttons > .button
     });
 })
 
-$(".profile_window.unpublic_warning#recipe_unpublic_warning > .buttons > .button_item.save_public").on("click", function(event) {
-    const unpublic_warning = $this.closest(".unpublic_warning");
-    window.showHideBackBlack(event, unpublic_warning);
-})
-
-
-function setNewsCardButtonsEventHandler() {
-    const hover_el = $(".news_item > .news_item_header > .image_wrapper > .buttons > .unpublic");
-    const pop_up = $(".profile_window.unpublic_warning#news_unpublic_warning");
-
-    $(document).on('click', function (event) {
-        window.HideBackBlackOverWindowClick(event, pop_up, hover_el);
-    });
-
-    pop_up.off("click").on('click', function (event) {
-        event.stopPropagation(); // Останавливаем всплытие события
-    });
-
-    $(".news_item > .news_item_header > .image_wrapper > .buttons > *").off("click").on("click", function(event) {
-        $this = $(this);
-        let action_status;
-        const data_url = $this.attr("data-url");
-        const item_id = $this.closest(".news_item").attr("data-id");
-    
-        if ($this.hasClass("unpublic")) {
-            action_status = "2";
-
-            window.showHideBackBlack(event, pop_up);
-
-            pop_up.attr("data-url", data_url);
-            pop_up.attr("data-id", item_id);
-        }
-        else if ($this.hasClass("public")) {
-            action_status = "1";
-            $.ajax({
-                url: data_url,
-                method: "POST",
-    
-                headers: {
-                    'X-CSRFToken': CSRF_TOKEN,
-                },
-                data: {
-                    action_status: action_status,
-                    data_status: news_active_status,
-                    item_id: item_id,
-                },
-        
-                success: function (data) {
-                    console.log('Ответ сервера:', data["answer"]);
-                    $(".articles_section > .cards_wrapper").html(data.html);
-                    window.setCardShareWindows();
-                    setNewsCardButtonsEventHandler();
-                },
-                error: function (error) {
-                    console.error('Ошибка:', error);
-                },
-            });
-        }
-    })
-}
-
-setNewsCardButtonsEventHandler();
-
-$(".profile_window.unpublic_warning#news_unpublic_warning > .buttons > .button_item.unpublic").on("click", function(event) {
-    $this = $(this);
-    let action_status = "2";
-    const unpublic_warning = $this.closest(".unpublic_warning");
-    const data_url = unpublic_warning.attr("data-url");
-    const item_id = unpublic_warning.attr("data-id");
-
-    window.showHideBackBlack(event, unpublic_warning);
-
-    $.ajax({
-        url: data_url,
-        method: "POST",
-
-        headers: {
-            'X-CSRFToken': CSRF_TOKEN,
-        },
-        data: {
-            action_status: action_status,
-            data_status: news_active_status,
-            item_id: item_id,
-        },
-
-        success: function (data) {
-            console.log('Ответ сервера:', data["answer"]);
-            $(".articles_section > .cards_wrapper").html(data.html);
-            window.setCardShareWindows();
-            
-            setNewsCardButtonsEventHandler();
-        },
-        error: function (error) {
-            console.error('Ошибка:', error);
-        },
-    });
-})
-
-$(".profile_window.unpublic_warning#news_unpublic_warning > .buttons > .button_item.save_public").on("click", function(event) {
+$(".profile_window.unpublic_warning#card_unpublic_warning > .buttons > .button_item.save_public").on("click", function(event) {
     const unpublic_warning = $this.closest(".unpublic_warning");
     window.showHideBackBlack(event, unpublic_warning);
 })

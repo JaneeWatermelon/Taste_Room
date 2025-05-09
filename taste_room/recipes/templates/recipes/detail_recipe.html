@@ -3,6 +3,14 @@
 {% load custom_filters %}
 {% load humanize %}
 
+{% block extra_meta %}
+    <meta property="og:type" content="recipe">
+    <meta property="recipe:cook_time" content="{{ object.cook_time_active|iso_timedelta }}">
+    {% if ingredients_list %}
+    <meta property="recipe:ingredients" content="{{ ingredients_list }}">
+    {% endif %}
+{% endblock %}
+
 {% block custom_styles %}
     <link rel="stylesheet" href="{% static 'css/recipe/recipe_card.css' %}">
     <link rel="stylesheet" href="{% static 'css/news/news_card.css' %}">
@@ -86,7 +94,7 @@
                             </div>
                             {% endif %}
                         {% else %}
-                        <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ object.id }}">
+                        <div data-require-auth class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ object.id }}">
                             <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
                         </div>
                         {% endif %}
@@ -140,7 +148,7 @@
                         </div>
                     </div>
                     <div class="column">
-                        <a href="#news_reviews" class="recipe_stats_item">
+                        <a href="#reviews_section" class="recipe_stats_item">
                             <img src="{% static 'svg/Stars/Star_on.svg' %}">
                             <div class="info">
                                 <h4>Рейтинг:</h4>
@@ -230,10 +238,10 @@
                     </h4>
                 </div>
                 <div class="recipe_reviews">
-                    <span class="anchor_hidden" id="news_reviews"></span>
+                    <span class="anchor_hidden" id="reviews_section"></span>
                     <div class="rating_wrapper">
                         <h4 class="medium_font">Оцени рецепт “{{ object.title }}”</h4>
-                        <div data-id="{{ object.id }}" data-type="recipe" data-url="{% url 'recipes:change_rating_ajax' %}" data-url-delete="{% url 'recipes:delete_rating_ajax' %}" class="stars">
+                        <div data-require-auth data-id="{{ object.id }}" data-type="recipe" data-url="{% url 'recipes:change_rating_ajax' %}" data-url-delete="{% url 'recipes:delete_rating_ajax' %}" class="stars">
                             {% for _ in object.stars_on_count|repeat %}
                             <img src="{% static 'svg/Stars/Star_half_on.svg' %}">
                             {% endfor %}
@@ -338,11 +346,11 @@
                             <p class="d_mobile_none">Перетащи или нажми, чтобы выбрать</p>
                             <p class="d_desktop_none">Нажми, чтобы выбрать</p>
                         </div>
-                        <input name="image" class="image_input" type="file" accept="image/png,image/jpeg">
+                        <input data-require-auth name="image" class="image_input" type="file" accept="image/png,image/jpeg">
                     </div>
                     <div class="input_wrapper">
                         <textarea required="required" name="text" placeholder="Поделитесь своими мыслями"></textarea>
-                        <button type="submit" class="input_button">
+                        <button data-require-auth type="submit" class="input_button">
                             <img src="{% static 'svg/Arrows/Send_comment.svg' %}">
                         </button>
                     </div>

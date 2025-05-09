@@ -1,26 +1,63 @@
 {% load static %}
 {% load custom_filters %}
+{% load cache %}
 
+{% with user_liked_recipes=user_liked_recipes %}
 {% for item in recipes_list %}
-<div data-id="{{ item.id }}" class="recipe_item {% if swiper_slide %}swiper-slide{% endif %}">
+{% cache 60 recipes_list item.id item.cache_version swiper_slide is_buttons %}
+<div data-id="{{ item.id }}" class="card_item recipe_item {% if swiper_slide %}swiper-slide{% endif %}">
     <div class="recipe_item_header">
         <div class="image_wrapper">
-            <a href="{% url 'recipes:detail' item.id item.slug %}">
+            <a class="image_link" href="{% url 'recipes:detail' item.id item.slug %}">
                 <img data-id="{{ item.id }}" class="back_image" src="{% if item.previews.preview_1 %}{{ item.previews.optimized_image_1_small.url }}{% else %}{% static 'img/Default/Default_image.jpg' %}{% endif %}">
             </a>
-            {% if user.is_authenticated %}
-                {% if item in user.liked_recipes.all %}
-                <div class="heart_wrapper active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
-                    <img src="{% static 'svg/Random_icons/Heart_fill.svg' %}">
+            <div class="visibility_and_adds">
+                {% if is_buttons %}
+                <div class="visibility_wrapper">
+                    <img src="{% static 'svg/Random_icons/Eye_icon_black.svg' %}">
+                    <h4>{{ item.get_visibility_display }}</h4>
                 </div>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    {% if item in user_liked_recipes %}
+                    <div class="heart_wrapper active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                        <img src="{% static 'svg/Random_icons/Heart_fill.svg' %}">
+                    </div>
+                    {% else %}
+                    <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                        <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
+                    </div>
+                    {% endif %}
                 {% else %}
-                <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                <div data-require-auth class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
                     <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
                 </div>
                 {% endif %}
-            {% else %}
-            <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
-                <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
+            </div>
+            {% if is_buttons %}
+            <div class="buttons">
+                {% if item.status != 1 %}
+                <a href="{% url 'recipes:edit' item.id %}" class="change">
+                    <img src="{% static 'svg/Random_icons/Edit_icon.svg' %}">
+                    <h4>Редактировать</h4>
+                </a>
+                {% endif %}
+                {% if item.status == 2 or item.status == 3 %}
+                <div data-url="{% url 'recipes:change_status_ajax' %}" class="public">
+                    <img src="{% static 'svg/Yes_No/Yes_no_shadow.svg' %}">
+                    <h4 class="medium_font white">Опубликовать</h4>
+                </div>
+                {% elif item.status == 1 %}
+                <div data-url="{% url 'recipes:change_status_ajax' %}" class="unpublic">
+                    <img src="{% static 'svg/Yes_No/No_no_shadow.svg' %}">
+                    <h4 class="medium_font white">Снять с публикации</h4>
+                </div>
+                {% elif item.status == 4 %}
+                <div class="moderator">
+                    <img src="{% static 'svg/Random_icons/Gear_icon_white.svg' %}">
+                    <h4 class="medium_font white">Проверяется модератором</h4>
+                </div>
+                {% endif %}
             </div>
             {% endif %}
         </div>
@@ -83,4 +120,6 @@
         {% endfor %}
     </div>
 </div>
+{% endcache %}
 {% endfor %}
+{% endwith %}

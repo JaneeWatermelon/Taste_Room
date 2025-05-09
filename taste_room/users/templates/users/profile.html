@@ -264,19 +264,23 @@
                 </div>
             </section>
             <section id="liked_recipes_section" class="new_recipes_section possible_block">
+                {% if liked_recipes.exists %}
                 <div class="cards_wrapper">
                     {% include "recipes/includes/recipe_cards.html" with recipes_list=liked_recipes %}
                 </div>
+                {% else %}
+                    {{ empty_block }}
+                {% endif %}
             </section>
             <section data-type="my_recipes" id="my_recipes_section" class="new_recipes_section possible_block d_none">
                 <div data-url="{% url 'users:load_my_recipes_ajax' %}" class="publish_types">
                     <div data-status="1" class="publish_type_item active">
                         <h4 class="medium_font">Опубликованные</h4>
                     </div>
-                    <div data-status="2" class="publish_type_item">
+                    <div data-status="2" class="publish_type_item d_none">
                         <h4 class="medium_font">Не опубликованные</h4>
                     </div>
-                    <div data-status="3" class="publish_type_item">
+                    <div data-status="2,3" class="publish_type_item">
                         <h4 class="medium_font">Черновики</h4>
                     </div>
                     <div data-status="4" class="publish_type_item">
@@ -284,7 +288,10 @@
                     </div>
                 </div>
                 <div class="cards_wrapper">
-                    {% include "recipes/includes/recipe_cards_with_buttons.html" with recipes_list=my_recipes %}
+                    {% include "recipes/includes/recipe_cards.html" with recipes_list=my_recipes is_buttons=True %}
+                </div>
+                <div class="empty_section {% if my_recipes.exists %}d_none{% endif %}">
+                    {{ empty_block }}
                 </div>
             </section>
             <section id="subs_section" class="subs_section possible_block d_none">
@@ -338,10 +345,10 @@
                     <div data-status="1" class="publish_type_item active">
                         <h4 class="medium_font">Опубликованные</h4>
                     </div>
-                    <div data-status="2" class="publish_type_item">
+                    <div data-status="2" class="publish_type_item d_none">
                         <h4 class="medium_font">Не опубликованные</h4>
                     </div>
-                    <div data-status="3" class="publish_type_item">
+                    <div data-status="2,3" class="publish_type_item">
                         <h4 class="medium_font">Черновики</h4>
                     </div>
                     <div data-status="4" class="publish_type_item">
@@ -349,12 +356,11 @@
                     </div>
                 </div>
                 <div class="cards_wrapper">
-                    {% include "news/includes/news_cards.html" with news_list=my_articles %}
+                    {% include "news/includes/news_cards.html" with news_list=my_articles is_buttons=True %}
                 </div>
-            </section>
-            <section id="nothing_section" class="nothing_section possible_block d_none">
-                <img src="{% static 'svg/Cookie/Sad_half_black.svg' %}">
-                <h3 class="black_50 medium_font">Тут пока ничего нет</h3>
+                <div class="empty_section {% if my_articles.exists %}d_none{% endif %}">
+                    {{ empty_block }}
+                </div>
             </section>
             <section id="settings_section" class="settings_section possible_block d_none">
                 <div class="settings">
@@ -473,6 +479,7 @@
                                         <div class="input_wrapper">
                                             {{ settings_form.telegram }}
                                         </div>
+                                        <p class="error_message red d_none">Ссылка на Telegram должна начинаться с https://t.me/ или https://telegram.me/</p>
                                     </div>
                                     <div class="field_item">
                                         <label for="{{ settings_form.vk.id_for_label }}" class="title_and_mark">
@@ -481,6 +488,7 @@
                                         <div class="input_wrapper">
                                             {{ settings_form.vk }}
                                         </div>
+                                        <p class="error_message red d_none">Ссылка на VK должна начинаться с https://vk.com/ или https://m.vk.com/</p>
                                     </div>
                                     <div class="field_item">
                                         <label for="{{ settings_form.pinterest.id_for_label }}" class="title_and_mark">
@@ -489,6 +497,7 @@
                                         <div class="input_wrapper">
                                             {{ settings_form.pinterest }}
                                         </div>
+                                        <p class="error_message red d_none">Ссылка на Pinterest должна начинаться с https://pinterest.com/ или https://www.pinterest.com/</p>
                                     </div>
                                     <div class="field_item">
                                         <label for="{{ settings_form.youtube.id_for_label }}" class="title_and_mark">
@@ -497,6 +506,7 @@
                                         <div class="input_wrapper">
                                             {{ settings_form.youtube }}
                                         </div>
+                                        <p class="error_message red d_none">Ссылка на YouTube должна начинаться с https://youtube.com/ или https://www.youtube.com/</p>
                                     </div>
                                     <div class="field_item">
                                         <label for="{{ settings_form.rutube.id_for_label }}" class="title_and_mark">
@@ -505,6 +515,7 @@
                                         <div class="input_wrapper">
                                             {{ settings_form.rutube }}
                                         </div>
+                                        <p class="error_message red d_none">Ссылка на Rutube должна начинаться с https://rutube.ru/ или https://www.rutube.ru/</p>
                                     </div>
                                 </div>
                             </div>
@@ -516,29 +527,13 @@
                 </div>
             </section>
             <section data-url="{% url 'users:change_profile_current_achiv_ajax' %}" id="achievements_section" class="achievements_section possible_block d_none">
-                <div class="my_achiv">
-                    <h3 class="medium_font">Полученные достижения</h3>
-                    <div class="achiv_list">
-                        {% for item in object.achivs.all %}
-                        <div data-id="{{ item.id }}" class="achiv_item">
-                            <img class="shadow {% if object.choosed_achiv %}{% if object.choosed_achiv.id == item.id %}active{% endif %}{% endif %}
-                            {% if item.level == 1 %}silver_shadow
-                            {% elif item.level == 2 %}gold_shadow
-                            {% elif item.level == 3 %}ruby_shadow
-                            {% else %}silver_shadow
-                            {% endif %}" src="{{ item.icon.url }}">
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="all_achiv">
-                    <h3 class="medium_font">Все достижения</h3>
-                    {% if one_use_achivs %}
-                    <div class="one_time type">
-                        <h4>Одноразовые</h4>
+                {% if object.achivs.exists or one_use_achivs or multiple_use_achivs %}
+                    {% if object.achivs.exists %}
+                    <div class="my_achiv">
+                        <h3 class="medium_font">Полученные достижения</h3>
                         <div class="achiv_list">
-                            {% for item in one_use_achivs %}
-                            <div data-id="{{ item.id }}" class="achiv_item {% if item not in object.achivs.all %}disabled{% endif %}">
+                            {% for item in object.achivs.all %}
+                            <div data-id="{{ item.id }}" class="achiv_item">
                                 <img class="shadow {% if object.choosed_achiv %}{% if object.choosed_achiv.id == item.id %}active{% endif %}{% endif %}
                                 {% if item.level == 1 %}silver_shadow
                                 {% elif item.level == 2 %}gold_shadow
@@ -550,36 +545,60 @@
                         </div>
                     </div>
                     {% endif %}
-                    {% if multiple_use_achivs %}
-                    <div class="multiple_time type">
-                        <h4>Многоразовые</h4>
-                        <div class="multiple_achiv_list">
-                            {% for achiv_item in multiple_use_achivs.items %}
-                            <div class="multiple_achiv_item">
-                                <div class="achiv_list">
-                                    {% for item in achiv_item.1.0.all %}
-                                    <div data-id="{{ item.id }}" class="achiv_item {% if item not in object.achivs.all %}disabled{% endif %}">
-                                        <img class="shadow {% if object.choosed_achiv %}{% if object.choosed_achiv.id == item.id %}active{% endif %}{% endif %}
-                                        {% if item.level == 1 %}silver_shadow
-                                        {% elif item.level == 2 %}gold_shadow
-                                        {% elif item.level == 3 %}ruby_shadow
-                                        {% else %}silver_shadow
-                                        {% endif %}" src="{{ item.icon.url }}">
-                                    </div>
-                                    {% endfor %}
-                                    {% for _ in achiv_item.1.2|repeat %}
-                                    <div data-id="{{ item.id }}" class="achiv_item disabled">
-                                        <img class="shadow silver_shadow" src="{% static 'svg/Achievements/Comments_Silver.svg' %}">
-                                    </div>
-                                    {% endfor %}
+                    {% if one_use_achivs or multiple_use_achivs %}
+                    <div class="all_achiv">
+                        <h3 class="medium_font">Все достижения</h3>
+                        {% if one_use_achivs %}
+                        <div class="one_time type">
+                            <h4>Одноразовые</h4>
+                            <div class="achiv_list">
+                                {% for item in one_use_achivs %}
+                                <div data-id="{{ item.id }}" class="achiv_item {% if item not in object.achivs.all %}disabled{% endif %}">
+                                    <img class="shadow {% if object.choosed_achiv %}{% if object.choosed_achiv.id == item.id %}active{% endif %}{% endif %}
+                                    {% if item.level == 1 %}silver_shadow
+                                    {% elif item.level == 2 %}gold_shadow
+                                    {% elif item.level == 3 %}ruby_shadow
+                                    {% else %}silver_shadow
+                                    {% endif %}" src="{{ item.icon.url }}">
                                 </div>
-                                <h4 class="medium_font">{{ achiv_item.0 }}</h4>
+                                {% endfor %}
                             </div>
-                            {% endfor %}
                         </div>
+                        {% endif %}
+                        {% if multiple_use_achivs %}
+                        <div class="multiple_time type">
+                            <h4>Многоразовые</h4>
+                            <div class="multiple_achiv_list">
+                                {% for achiv_item in multiple_use_achivs.items %}
+                                <div class="multiple_achiv_item">
+                                    <div class="achiv_list">
+                                        {% for item in achiv_item.1.0.all %}
+                                        <div data-id="{{ item.id }}" class="achiv_item {% if item not in object.achivs.all %}disabled{% endif %}">
+                                            <img class="shadow {% if object.choosed_achiv %}{% if object.choosed_achiv.id == item.id %}active{% endif %}{% endif %}
+                                            {% if item.level == 1 %}silver_shadow
+                                            {% elif item.level == 2 %}gold_shadow
+                                            {% elif item.level == 3 %}ruby_shadow
+                                            {% else %}silver_shadow
+                                            {% endif %}" src="{{ item.icon.url }}">
+                                        </div>
+                                        {% endfor %}
+                                        {% for _ in achiv_item.1.2|repeat %}
+                                        <div data-id="{{ item.id }}" class="achiv_item disabled">
+                                            <img class="shadow silver_shadow" src="{% static 'svg/Achievements/Comments_Silver.svg' %}">
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <h4 class="medium_font">{{ achiv_item.0 }}</h4>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                     {% endif %}
-                </div>
+                {% else %}
+                    {{ empty_block }}
+                {% endif %}
             </section>
         </div>
         <div id="profile_description" class="pop_up_window d_none">
@@ -613,19 +632,8 @@
             </button>
         </div>
     </form>
-    <div id="recipe_unpublic_warning" class="profile_window unpublic_warning d_none">
-        <h3 class="medium_font">Вы точно хотите снять рецепт с публикации?</h3>
-        <div class="buttons">
-            <div class="button_item unpublic">
-                <h4 class="medium_font">Снять с публикации</h4>
-            </div>
-            <div class="button_item save_public">
-                <h4 class="medium_font">Оставить</h4>
-            </div>
-        </div>
-    </div>
-    <div id="news_unpublic_warning" class="profile_window unpublic_warning d_none">
-        <h3 class="medium_font">Вы точно хотите снять статью с публикации?</h3>
+    <div id="card_unpublic_warning" class="profile_window unpublic_warning d_none">
+        <h3 class="medium_font">Вы точно хотите снять с публикации?</h3>
         <div class="buttons">
             <div class="button_item unpublic">
                 <h4 class="medium_font">Снять с публикации</h4>

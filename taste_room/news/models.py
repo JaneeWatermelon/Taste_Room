@@ -1,21 +1,35 @@
+import os
+from uuid import uuid4
+
 from bs4 import BeautifulSoup
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import JSONField
 from django.utils.text import slugify
+from django.utils.timezone import now
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
-from additions.views import get_unique_slug, Status, Visibility
+from additions.views import Status, Visibility, get_unique_slug
 from categories.models import RecipeCategory
 from users.models import User
 
 
+def news_preview_image_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f"image_{uuid4().hex}.{ext}"
+    return os.path.join("news_previews", filename)
+
+def news_comments_image_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f"image_{uuid4().hex}.{ext}"
+    return os.path.join("news_comments_images", filename)
+
 class News(models.Model):
     title = models.CharField(max_length=128, verbose_name="Название")
     slug = models.SlugField(blank=True, default=slugify(title), verbose_name="Ссылочное название")
-    preview = models.ImageField(upload_to="news_previews/", verbose_name="Превью")
+    preview = models.ImageField(upload_to=news_preview_image_path, verbose_name="Превью")
     optimized_image = ImageSpecField(
         source='preview',
         processors=[ResizeToFill(1536, 1024)],  # Размер оптимизированного изображения
@@ -44,12 +58,15 @@ class News(models.Model):
     views = models.PositiveIntegerField(default=0, verbose_name="Просмотры")
 
     status = models.PositiveSmallIntegerField(choices=Status.List, verbose_name="Статус")
+    status_updated_at = models.DateTimeField(default=now, verbose_name="Время обновления статуса")
     visibility = models.PositiveSmallIntegerField(choices=Visibility.List, verbose_name="Видимость")
     popularity = models.PositiveSmallIntegerField(default=0, verbose_name="Популярность")
 
     categories = models.ManyToManyField(to=RecipeCategory, blank=True, verbose_name="Категории")
 
     author = models.ForeignKey(to=User, blank=True, null=True, on_delete=models.CASCADE, verbose_name="Автор")
+
+    cache_version = models.PositiveSmallIntegerField(default=0, verbose_name="Версия кэша")
 
     def set_total_rating(self):
         result = 0
@@ -96,6 +113,9 @@ class News(models.Model):
 
         self.headings = headings
 
+    def change_cache_version(self):
+        self.cache_version = abs(1 - self.cache_version)
+
     @property
     def stars_on_count(self):
         return self.rating
@@ -123,8 +143,24 @@ class News(models.Model):
         self.set_h2_headings()
         self.set_total_rating()
         self.set_popularity()
+        self.change_cache_version()
+        print(self.cache_version)
 
+        # Удаляем старое изображение при обновлении
+        if self.pk:
+            old_item = self.__class__.objects.get(pk=self.pk)
+            if old_item.preview and old_item.preview != self.preview:
+                old_item.preview.delete(save=False)
+
+            if old_item.status != self.status:
+                self.status_updated_at = now()
         super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Удаляем файл изображения при удалении шага
+        if self.preview:
+            self.preview.delete(save=False)
+        super().delete(*args, **kwargs)
 
 class NewsReview(models.Model):
     news = models.ForeignKey(to=News, on_delete=models.CASCADE, verbose_name="Статья")
@@ -144,7 +180,7 @@ class NewsReview(models.Model):
 
 class NewsComment(models.Model):
     text = models.TextField(default="", max_length=1024, verbose_name="Текст")
-    image = models.ImageField(upload_to='comments_images/', blank=True, null=True, verbose_name="Изображение")
+    image = models.ImageField(upload_to=news_comments_image_path, blank=True, null=True, verbose_name="Изображение")
     optimized_image_small = ImageSpecField(
         source='image',
         processors=[ResizeToFill(256, 170)],  # Размер оптимизированного изображения
@@ -166,3 +202,17 @@ class NewsComment(models.Model):
         ordering = ['author']
         verbose_name = "Комментарий к статье"
         verbose_name_plural = "Комментарии к статьям"
+
+    def save(self, *args, **kwargs):
+        # Удаляем старое изображение при обновлении
+        if self.pk:
+            old_item = self.__class__.objects.get(pk=self.pk)
+            if old_item.image and old_item.image != self.image:
+                old_item.image.delete(save=False)
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Удаляем файл изображения при удалении шага
+        if self.image:
+            self.image.delete(save=False)
+        super().delete(*args, **kwargs)

@@ -1,25 +1,28 @@
 from decimal import Decimal
 
 from django.core.paginator import Paginator
-from django.db.models import Q, prefetch_related_objects
+from django.db.models import Count, Q, prefetch_related_objects, F
 from django.db.models.functions import Lower
 from django.http import Http404, HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.text import slugify
-from django.utils.timezone import timedelta, now
-from django.views.decorators.http import require_POST, require_GET
-from django.views.generic import DetailView, ListView, TemplateView, CreateView, UpdateView
+from django.utils.timezone import now, timedelta
+from django.views.decorators.http import require_GET, require_POST
+from django.views.generic import (CreateView, DetailView, ListView,
+                                  TemplateView, UpdateView)
 
-from additions.views import Status, transliterate_russian_to_pseudo_english, Visibility
+from additions.views import (Status, Visibility,
+                             transliterate_russian_to_pseudo_english, get_recipes_PUBLISHED_ALL_SUBS, get_recs_recipes,
+                             get_recipes_related)
 from categories.models import CategoryGroup, RecipeCategory
-from news.models import News
-from recipes.models import Ingredient, Recipe, RecipeComment, RecipeReview, Units, RecipePreview, RecipeStep, Scipy, \
-    Difficulty, RecipeIngredient
-from recipes.forms import CreateRecipeForm, RecipeStepFormSet, RecipePreviewForm, RecipeIngredientFormSet, \
-    CreateRecipeCommentForm, RecipeStepForm
+from news.views import get_news_PUBLISHED_ALL_SUBS, get_recs_news
+from recipes.forms import (CreateRecipeCommentForm, CreateRecipeForm)
+from recipes.models import (Difficulty, Ingredient, Recipe, RecipeComment,
+                            RecipeIngredient, RecipePreview, RecipeReview,
+                            RecipeStep, Scipy, Units)
 from users.views import _prepare_recipes_data, validate_image_extension
 
 
@@ -36,24 +39,26 @@ def DHMS(initial_days=0, initial_hours=0, initial_minutes=0, initial_seconds=0):
         "seconds": seconds,
     }
 
-paginate_by = 34
+paginate_by = 32
+support_paginate_by = 24
 
 class MainView(TemplateView):
     template_name = "recipes/main.html"
 
     def get_context_data(self, **kwargs):
+        user = self.request.user
         context = super(MainView, self).get_context_data(**kwargs)
-        context['ingredients'] = Ingredient.objects.all()[:12]
-        all_recipes = Recipe.objects.filter(visibility=1, status=1).select_related("previews", "author").prefetch_related("recipereview_set", "recipeingredient_set", "recipeingredient_set__ingredient",)
+        context['ingredients'] = Ingredient.objects.order_by("-popularity")[:6]
+        all_recipes = get_recipes_PUBLISHED_ALL_SUBS(user)
         context['recipes'] = all_recipes.order_by("-published_date")[:paginate_by]
         context['recipes_popular'] = all_recipes.order_by('-popularity')[:paginate_by]
 
-        context['recipes_1'] = context['recipes'][:24]
-        context['recipes_2'] = context['recipes'][24:]
-        context['recipes_popular_1'] = context['recipes_popular'][:24]
-        context['recipes_popular_2'] = context['recipes_popular'][24:]
+        context['recipes_1'] = context['recipes'][:support_paginate_by]
+        context['recipes_2'] = context['recipes'][support_paginate_by:]
+        context['recipes_popular_1'] = context['recipes_popular'][:support_paginate_by]
+        context['recipes_popular_2'] = context['recipes_popular'][support_paginate_by:]
 
-        context['articles'] = News.objects.filter(visibility=1, status=1).select_related("author").prefetch_related("newsreview_set")[:10]
+        context['articles'] = get_news_PUBLISHED_ALL_SUBS(user)[:10]
 
         return context
 
@@ -63,7 +68,8 @@ class CategoryRecipesView(ListView):
     paginate_by = paginate_by
 
     def get_queryset(self):
-        queryset = super(CategoryRecipesView, self).get_queryset().select_related("previews", "author").prefetch_related("recipereview_set", "recipeingredient_set", "recipeingredient_set__ingredient",)
+        user = self.request.user
+        queryset = get_recipes_PUBLISHED_ALL_SUBS(user)
         if (self.kwargs.get("slug", None)):
             category_obj = RecipeCategory.objects.get(slug=self.kwargs["slug"])
             queryset = queryset.filter(categories=category_obj)
@@ -87,15 +93,60 @@ class SearchRecipesView(ListView):
     model = Recipe
     paginate_by = paginate_by
 
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+        ingredients_ids = self.request.GET.get("ingredients_ids")
+        if ingredients_ids:
+            ingredients_ids = ingredients_ids.split(",")
+            Ingredient.objects.filter(id__in=ingredients_ids).update(popularity=F("popularity")+1)
+        return self.render_to_response(context)
+
     def get_queryset(self):
-        # decoded_prompt = iri_to_uri(self.request.GET.get("q"))
-        queryset = find_similar_recipes(self.request.GET.get("q")) + list(word_search_recipes(self.request.GET.get("q")))
+        user = self.request.user
+        q_param = self.request.GET.get("q")
+        ingredients_ids = self.request.GET.get("ingredients_ids")
+
+        if q_param:
+            by_title = find_similar_recipes(q_param, user).distinct()
+            by_icontains = word_search_recipes(q_param, user).distinct()
+
+            queryset = get_recipes_related((by_title | by_icontains).distinct())
+        elif ingredients_ids:
+            # Аннотируем количеством совпавших ингредиентов
+            ingredients_ids = ingredients_ids.split(",")
+            recipes = Recipe.objects.annotate(
+                match_count=Count('recipeingredient__ingredient',
+                                  filter=Q(recipeingredient__ingredient__id__in=ingredients_ids)
+                                  )
+            )
+
+            # Сортируем по убыванию совпадений и другим критериям (например, рейтингу)
+            queryset = get_recipes_related(recipes).order_by('-match_count', '-popularity', '-rating')
+        else:
+            queryset = super(SearchRecipesView, self).get_queryset()
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super(SearchRecipesView, self).get_context_data(**kwargs)
+
+        q_param = self.request.GET.get("q")
+        ingredients_ids = self.request.GET.get("ingredients_ids")
+
         context['category_groups'] = CategoryGroup.objects.all()
-        context['prompt'] = self.request.GET.get("q")
+        if q_param:
+            context['prompt_type'] = "q"
+            context['prompt_params'] = q_param
+            context['prompt'] = q_param
+        elif ingredients_ids:
+            context['prompt_type'] = "ingredients_ids"
+            context['prompt_params'] = ingredients_ids
+            ingredients_titles = []
+            for ingredient in Ingredient.objects.filter(id__in=ingredients_ids.split(",")):
+                ingredients_titles += [ingredient.title]
+            context['prompt'] = ", ".join(ingredients_titles)
+        else:
+            context['prompt'] = ""
 
         return context
 
@@ -105,7 +156,8 @@ class PopularRecipesView(ListView):
     paginate_by = paginate_by
 
     def get_queryset(self):
-        queryset = super(PopularRecipesView, self).get_queryset().select_related("previews", "author").prefetch_related("recipereview_set", "recipeingredient_set", "recipeingredient_set__ingredient",).order_by('-popularity')
+        user = self.request.user
+        queryset = get_recipes_PUBLISHED_ALL_SUBS(user).order_by('-popularity')
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -117,34 +169,12 @@ class PopularRecipesView(ListView):
 
         return context
 
-
-class RecipeCreateView(CreateView):
-    model = Recipe
-    template_name = 'recipes/add_recipe.html'
-    form_class = CreateRecipeForm
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        form.instance.status = Status.DRAFT  # Предполагается, что у вас есть статус "Черновик"
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return reverse_lazy('recipe-update', kwargs={'pk': self.object.pk, 'step': 2})
-
-    def get_context_data(self, **kwargs):
-        context = super(RecipeCreateView, self).get_context_data(**kwargs)
-        context["category_groups"] = CategoryGroup.objects.all()
-
-        return context
-
 def recipe_create_view(request):
     if request.method == "GET":
         form = CreateRecipeForm()
-        steps_form = RecipeStepForm()
 
         return render(request, 'recipes/add_recipe.html', {
             'form': form,
-            'steps_form': steps_form,
             'category_groups': CategoryGroup.objects.all(),
             'visibility_descriptions': Visibility.TypeAndDescr,
         })
@@ -157,7 +187,7 @@ def recipe_create_view(request):
         description_inner = " "
         description_card = " "
 
-        categories = RecipeCategory.objects.filter(id__in=data.getlist("categories", []))
+        categories = RecipeCategory.objects.filter(id__in=data.getlist("categories", [])[:10])
 
         difficulty = int(data.get("difficulty", Difficulty.NEWBIE))
         scipy = int(data.get("scipy", Scipy.NEWBIE))
@@ -244,7 +274,6 @@ def recipe_create_view(request):
             'url': reverse("recipes:edit", kwargs={'pk': recipe.id})
         })
 
-
 def recipe_edit_view(request, pk):
     if request.method == "GET":
         recipe = get_object_or_404(Recipe, id=pk)
@@ -276,7 +305,7 @@ def recipe_edit_view(request, pk):
         difficulty = int(data.get("difficulty", Difficulty.NEWBIE))
         scipy = int(data.get("scipy", Scipy.NEWBIE))
 
-        status = data.get("status", Status.DRAFT)
+        status = data.get("status", Status.MODERATION if "publish" in data else Status.DRAFT)
         visibility = data.get("visibility", Visibility.ME)
         portions = int(data.get("portions")) if data.get("portions").isdigit() else 1
 
@@ -298,8 +327,6 @@ def recipe_edit_view(request, pk):
 
         video_url_first = data.get("video_url_first", "")
         video_url_second = data.get("video_url_second", "")
-
-        print(files)
 
         existing_previews = [recipe.previews.preview_1, recipe.previews.preview_2, recipe.previews.preview_3]
         for i in range(1, 4):
@@ -334,20 +361,12 @@ def recipe_edit_view(request, pk):
             "author": request.user,
         }
 
-        print(data)
-        print(recipe_data)
+        recipe = get_object_or_404(Recipe, id=pk)
+        recipe.__dict__.update(recipe_data)  # Обновляем атрибуты
+        recipe.save()
 
-        recipe = Recipe.objects.filter(id=pk)
-        recipe.update(**recipe_data)
-        recipe = recipe.first()
-        # recipe.full_clean()  # Валидация модели
-        # recipe.save()
-
-        print(1)
 
         recipe.categories.set(categories)
-
-        print(11)
 
         new_step_ids = dict()
 
@@ -357,9 +376,6 @@ def recipe_edit_view(request, pk):
 
             step_id = data.get(f"step_id_{i}")
             step_text = data.get(f"text_{i}")
-
-            print(step_id)
-            print(new_image)
 
             if new_image:
                 if step_id:
@@ -388,8 +404,6 @@ def recipe_edit_view(request, pk):
                 step.delete()
             except:
                 pass
-
-        print(2)
 
         for i in range(1, int(data.get("ingredients_count", 25)) + 1):
             ingredient_id = data.get(f"ingredient_id_{i}")
@@ -425,8 +439,6 @@ def recipe_edit_view(request, pk):
                 recipe_ingredient.delete()
             except:
                 pass
-
-        print(3)
 
         if "save" in data:
             return JsonResponse({
@@ -488,20 +500,6 @@ def add_ready_photo(request):
             "overflow": True,
         })
 
-class RecipeUpdateView(UpdateView):
-    model = Recipe
-    template_name = 'recipes/add_recipe.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['current_step'] = self.kwargs.get('step', 1)
-        return context
-
-    def get_success_url(self):
-        next_step = int(self.kwargs.get('step', 1)) + 1
-        return reverse_lazy('recipe-update', kwargs={'pk': self.object.pk, 'step': next_step})
-
-
 class DetailRecipeView(DetailView):
     template_name = "recipes/detail_recipe.html"
     model = Recipe
@@ -510,67 +508,65 @@ class DetailRecipeView(DetailView):
         context = super().get_context_data()
         user = self.request.user
 
-        if self.object.status == 4:
-            return context
-        elif self.object.status in (2, 4):
-            raise Http404
+
+        if self.object.author != user:
+            if self.object.status == Status.MODERATION:
+                return context
+
+            subs_check = True
+            only_me_check = self.object.visibility == Visibility.ME
+            print(only_me_check)
+            if self.object.visibility == Visibility.SUBS:
+                subs_check = user in self.object.author.subscribers.all()
+
+            elif self.object.status in (Status.UNPUBLISHED, Status.DRAFT) or not subs_check or only_me_check:
+                raise Http404
+
+        context['category_groups'] = CategoryGroup.objects.prefetch_related("categories", "categories__children")
+
+        context['recipe_calories_per_100g'] = self.object.calculate_calories_per_100g()
+        context['recipe_ingredients'] = self.object.recipeingredient_set.all()
+
+        context['side_articles'] = get_news_PUBLISHED_ALL_SUBS(user).order_by("-published_date")[:10]
+
+        recipe_categories = self.object.categories.all()
+
+        context['recs_recipes'] = get_recs_recipes(user, recipe_categories, self.object.pk, 10)
+
+        context['recs_news'] = get_recs_news(user, recipe_categories, None, 10)
+
+        if user.is_authenticated and self.object.recipereview_set.filter(author=user).exists():
+            context["user_review_exists"] = 1
+            context["user_review_rating"] = self.object.recipereview_set.get(author=user).rating
         else:
-            context['category_groups'] = CategoryGroup.objects.prefetch_related("categories", "categories__children")
+            context["user_review_exists"] = 0
 
-            context['recipe_calories_per_100g'] = self.object.calculate_calories_per_100g()
-            context['recipe_ingredients'] = self.object.recipeingredient_set.all()
+        comments = RecipeComment.objects.filter(recipe=self.object, parent=None).order_by('-published_date')
+        paginator = Paginator(comments, 2)  # 20 комментариев на страницу
+        page_number = 1
+        page_obj = paginator.get_page(page_number)
 
-            context['side_articles'] = News.objects.filter(visibility=1, status=1).select_related("author").prefetch_related("newsreview_set").order_by("-published_date")[:10]
-
-            recipe_categories = self.object.categories.all()
-
-            context['recs_recipes'] = list(
-                (Recipe.objects.filter(categories__in=recipe_categories, visibility=1, status=1)
-                 .exclude(pk=self.object.pk))[:10].select_related("previews", "author").prefetch_related("recipereview_set", "recipeingredient_set", "recipeingredient_set__ingredient",)
-            )
-            if len(context['recs_recipes']) < 10:
-                additional_items = list(
-                    Recipe.objects.filter(visibility=1, status=1).exclude(categories__in=recipe_categories)[:10-len(context['recs_recipes'])]
-                    .select_related("previews", "author").prefetch_related("recipereview_set", "recipeingredient_set", "recipeingredient_set__ingredient",)
-                )
-                context['recs_recipes'] = context['recs_recipes'] + additional_items
-            if len(context['recs_recipes']) < 4:
-                context['recs_recipes'] = None
-
-            context['recs_news'] = list(
-                News.objects.filter(categories__in=recipe_categories, visibility=1, status=1)[:10]
-                .select_related("author").prefetch_related("newsreview_set")
-            )
-            if len(context['recs_news']) < 10:
-                additional_items = list(
-                    News.objects.filter(visibility=1, status=1).exclude(
-                    categories__in=recipe_categories)[:10 - len(context['recs_news'])]
-                    .select_related("author").prefetch_related("newsreview_set")
-                )
-                context['recs_news'] = context['recs_news'] + additional_items
-            if len(context['recs_news']) < 4:
-                context['recs_news'] = None
-
-            if user.is_authenticated and self.object.recipereview_set.filter(author=user).exists():
-                context["user_review_exists"] = 1
-                context["user_review_rating"] = self.object.recipereview_set.get(author=user).rating
-            else:
-                context["user_review_exists"] = 0
-
-            comments = RecipeComment.objects.filter(recipe=self.object, parent=None).order_by('-published_date')
-            paginator = Paginator(comments, 2)  # 20 комментариев на страницу
-            page_number = 1
-            page_obj = paginator.get_page(page_number)
-
-            context["comments"] = page_obj
-            context["create_comment_form"] = CreateRecipeCommentForm()
+        context["comments"] = page_obj
+        context["create_comment_form"] = CreateRecipeCommentForm()
+        context["ingredients_list"] = []
+        for recipe_ingredient in context['recipe_ingredients']:
+            context["ingredients_list"].append(recipe_ingredient.ingredient.title)
+        context["ingredients_list"] = ",".join(context["ingredients_list"])
 
         return context
 
     def get(self, request, *args, **kwargs):
         self.object = Recipe.objects.filter(id=self.kwargs.get("pk")).select_related("previews", "author").prefetch_related("recipereview_set", "recipeingredient_set", "recipeingredient_set__ingredient",).get()
         context = self.get_context_data(object=self.object)
-        if self.object.status == 4:
+
+        if self.object.previews.preview_1:
+            request.meta_og_image = self.object.previews.preview_1
+        request.meta_title = self.object.title
+        request.meta_description = self.object.description_card
+        request.meta_og_title = self.object.title
+        request.meta_og_description = self.object.description_card
+
+        if self.object.status == Status.MODERATION:
             self.template_name = "additions/error_moderator.html"
         return self.render_to_response(context)
 
@@ -641,28 +637,28 @@ def change_recipe_ingredients(request):
 from Levenshtein import distance, ratio
 
 
-def find_similar_recipes(search_prompt, threshold=10):
-    all_recipes = Recipe.objects.all().select_related("previews", "author")
-    similar = []
-    search_prompt = search_prompt.lower()
+def find_similar_recipes(search_prompt, user, threshold=10):
+    all_recipes = get_recipes_PUBLISHED_ALL_SUBS(user)
+    similar_ids = []
+    search_prompt = search_prompt.lower().replace("ё", "е")
 
     for recipe in all_recipes:
-        my_treshold = distance(search_prompt, recipe.title.lower())
+        my_treshold = distance(search_prompt, recipe.title.lower().replace("ё", "е"))
         if my_treshold <= threshold:
-            similar.append(recipe)
+            similar_ids.append(recipe.id)
 
-    return similar
+    return Recipe.objects.filter(id__in=similar_ids)
 
-def word_search_recipes(search_prompt):
+def word_search_recipes(search_prompt, user):
     # 2. Поиск по словам
     words = search_prompt.split()
     word_q = Q()
     for word in words:
         word = word.lower()
         word_q |= Q(title__icontains=word) | Q(description_card__icontains=word) | Q(recipeingredient__ingredient__title__icontains=word)
-    word_results = Recipe.objects.filter(word_q)
+    word_results = get_recipes_PUBLISHED_ALL_SUBS(user).filter(word_q)
 
-    return word_results.select_related("previews", "author")
+    return word_results
 
 @require_POST
 def change_status(request):
@@ -675,7 +671,9 @@ def change_status(request):
     item.status = action_status
     item.save()
 
-    return JsonResponse(_prepare_recipes_data(request.user, data_status, page))
+    data_statuses = data_status.split(",")
+
+    return JsonResponse(_prepare_recipes_data(request.user, data_statuses, page))
 
 
 @require_POST
@@ -685,7 +683,7 @@ def change_rating(request):
         new_rating = int(request.POST.get("new_rating"))
         item_id = request.POST.get("item_id")
 
-        item = Recipe.objects.get(id=item_id)
+        item = get_object_or_404(Recipe, id=item_id)
 
         review = RecipeReview.objects.filter(author=user, recipe=item)
         if review.exists():
@@ -708,7 +706,7 @@ def delete_rating(request):
     if user.is_authenticated:
         item_id = request.POST.get("item_id")
 
-        item = Recipe.objects.get(id=item_id)
+        item = get_object_or_404(Recipe, id=item_id)
 
         review = RecipeReview.objects.filter(author=user, recipe=item)
         if review.exists():
@@ -863,13 +861,17 @@ def load_more_comments(request):
 @require_GET
 def ingredient_cards_autocomplete(request):
     search_term = request.GET.get('data_term', '').lower()  # Приводим к нижнему регистру
+    active_ids_list = request.GET.getlist('active_ids_list')
+
+    active_ids_list = list(map(int, active_ids_list))
 
     if search_term != '':
         search_term = slugify(transliterate_russian_to_pseudo_english(search_term))
 
-        ingredients = Ingredient.objects.filter(slug__icontains=search_term)[:10]
-        html_data = render_to_string("recipes/includes/ingredient_item.html", context={
+        ingredients = Ingredient.objects.filter(slug__icontains=search_term)[:6]
+        html_data = render_to_string("recipes/includes/ingredient_card_items.html", context={
             "ingredients": ingredients,
+            "active_ids_list": active_ids_list,
         })
         return JsonResponse({
             "html_data": html_data,
@@ -877,6 +879,26 @@ def ingredient_cards_autocomplete(request):
     else:
         return JsonResponse({
             "answer": "Пустой список ингредиентов",
+        }, 404)
+
+@require_GET
+def add_ingredient_card_item(request):
+    data_id = request.GET.get('data_id')
+    if data_id:
+        ingredient = get_object_or_404(Ingredient, id=data_id)
+
+        context = {
+            'ingredients': [ingredient],
+        }
+
+        html_data = render_to_string("recipes/includes/ingredient_card_items.html", context=context)
+
+        return JsonResponse({
+            "html_data": html_data,
+        })
+    else:
+        return JsonResponse({
+            "error": "Ингредиент не найден",
         }, 404)
 
 @require_GET

@@ -1,4 +1,6 @@
+import os
 import random
+from uuid import uuid4
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -6,6 +8,7 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
 from additions.models import Socials
+
 
 class AchivLevels:
     List = [
@@ -52,6 +55,16 @@ class DisplayNames:
     def get_random_display_name(self):
         return self.List[random.randint(0, len(self.List)-1)][1]
 
+def achiv_icon_image_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f"image_{uuid4().hex}.{ext}"
+    return os.path.join("achiv_icons", filename)
+
+def users_avatar_image_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f"image_{uuid4().hex}.{ext}"
+    return os.path.join("users_avatars", filename)
+
 class CategoryAchievement(models.Model):
     title = models.CharField(max_length=64, verbose_name="Название")
 
@@ -74,7 +87,7 @@ class GeneralAchievementCondition(models.Model):
 
 class Achievement(models.Model):
     title = models.CharField(default="", max_length=128, blank=True, null=True, verbose_name="Название")
-    icon = models.FileField(upload_to="achiv_icons/", verbose_name="Иконка")
+    icon = models.FileField(upload_to=achiv_icon_image_path, verbose_name="Иконка")
     level = models.PositiveSmallIntegerField(choices=AchivLevels.List, verbose_name="Уровень")
     category = models.ForeignKey(to=CategoryAchievement, on_delete=models.CASCADE, verbose_name="Категория")
     condition_general = models.ForeignKey(to=GeneralAchievementCondition, on_delete=models.CASCADE, verbose_name="Общее условие")
@@ -83,6 +96,20 @@ class Achievement(models.Model):
     class Meta:
         verbose_name = "Достижение"
         verbose_name_plural = "Достижения"
+
+    def save(self, *args, **kwargs):
+        # Удаляем старое изображение при обновлении
+        if self.pk:
+            old_item = self.__class__.objects.get(pk=self.pk)
+            if old_item.icon and old_item.icon != self.icon:
+                old_item.icon.delete(save=False)
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Удаляем файл изображения при удалении шага
+        if self.icon:
+            self.icon.delete(save=False)
+        super().delete(*args, **kwargs)
 
 class Color(models.Model):
     title = models.CharField(default="", blank=True, null=True, max_length=64, verbose_name="Название")
@@ -100,7 +127,7 @@ class Color(models.Model):
 
 class User(AbstractUser):
     name = models.CharField(default=DisplayNames.List[0][1], blank=True, null=True, max_length=32, verbose_name="Отображаемое имя")
-    avatar = models.ImageField(upload_to='users_avatars/', blank=True, null=True, verbose_name="Аватарка")
+    avatar = models.ImageField(upload_to=users_avatar_image_path, blank=True, null=True, verbose_name="Аватарка")
     optimized_image = ImageSpecField(
         source='avatar',
         processors=[ResizeToFill(128, 128)],  # Размер оптимизированного изображения
@@ -140,8 +167,7 @@ class User(AbstractUser):
     liked_news_comments = models.ManyToManyField(to='news.NewsComment', blank=True, related_name='liked_news_comments_set', verbose_name="Лайкнутые комментарии статьи")
     disliked_news_comments = models.ManyToManyField(to='news.NewsComment', blank=True, related_name='disliked_news_comments_set', verbose_name="Дизлайкнутые комментарии статей")
 
-    subscribers = models.ManyToManyField(to='self', blank=True, related_name='subscribers_set', verbose_name="Подписчики")
-    subscriptions = models.ManyToManyField(to='self', blank=True, related_name='subscriptions_set', verbose_name="Подписки")
+    subscriptions = models.ManyToManyField(to='self', symmetrical=False, blank=True, related_name='subscribers', verbose_name="Подписки")
 
     choosed_achiv = models.ForeignKey(to=Achievement, blank=True, null=True, on_delete=models.SET_NULL, related_name="choosed_achiv_set", verbose_name="Выбранное достижение")
     achivs = models.ManyToManyField(to=Achievement, blank=True, related_name="achivs_set", verbose_name="Полученные достижения")
@@ -157,3 +183,17 @@ class User(AbstractUser):
         ordering = ['username']
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
+
+    def save(self, *args, **kwargs):
+        # Удаляем старое изображение при обновлении
+        if self.pk:
+            old_item = self.__class__.objects.get(pk=self.pk)
+            if old_item.avatar and old_item.avatar != self.avatar:
+                old_item.avatar.delete(save=False)
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Удаляем файл изображения при удалении шага
+        if self.avatar:
+            self.avatar.delete(save=False)
+        super().delete(*args, **kwargs)

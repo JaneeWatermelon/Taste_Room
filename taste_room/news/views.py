@@ -1,21 +1,23 @@
 from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect, JsonResponse, Http404
+from django.db.models import Q
+from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.context_processors import csrf
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.views.decorators.http import require_POST, require_GET
+from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import DetailView, ListView, TemplateView
+from docs.source.conf import author
 
+from additions.views import Status, Visibility, get_recs_news, get_news_PUBLISHED_ALL_SUBS, get_news_comments
 from categories.models import CategoryGroup, RecipeCategory
-from news.forms import CreateNewsCommentForm
+from news.forms import CreateNewsCommentForm, CreateNewsForm
 from news.models import News, NewsComment, NewsReview
 from recipes.models import Recipe
-from users.views import (_prepare_articles_data, load_my_articles,
-                         load_my_recipes, validate_image_extension)
+from recipes.views import get_recs_recipes
+from users.views import (_prepare_articles_data, validate_image_extension)
 
-paginate_by = 24
-
+paginate_by = 32
 
 class NewsView(ListView):
     template_name = "news/articles.html"
@@ -23,7 +25,8 @@ class NewsView(ListView):
     paginate_by = paginate_by
 
     def get_queryset(self):
-        queryset = super(NewsView, self).get_queryset().select_related("author").prefetch_related("newsreview_set")
+        user = self.request.user
+        queryset = get_news_PUBLISHED_ALL_SUBS(user)
         if (self.kwargs.get("slug", None)):
             category_obj = RecipeCategory.objects.get(slug=self.kwargs["slug"])
             queryset = queryset.filter(categories=category_obj)
@@ -42,58 +45,214 @@ class NewsView(ListView):
 class CreateNewsView(TemplateView):
     template_name = "news/add_news.html"
 
+def news_create_view(request):
+    if request.method == "GET":
+        form = CreateNewsForm()
+
+        return render(request, 'news/add_news.html', {
+            'form': form,
+            'category_groups': CategoryGroup.objects.all(),
+            'visibility_descriptions': Visibility.TypeAndDescr,
+        })
+    elif request.method == "POST":
+        data = request.POST
+        files = request.FILES
+
+
+        title = data.get("title", "")
+        description_card = data.get("description_card", "")
+        content_start = data.get("content_start", "")
+        content_middle = data.get("content_middle", "")
+        content_end = data.get("content_end", "")
+
+        categories = RecipeCategory.objects.filter(id__in=data.getlist("categories", [])[:10])
+
+        status = data.get("status", Status.DRAFT)
+        visibility = data.get("visibility", Visibility.ME)
+
+        preview = files.get("preview", None)
+
+        item_data = {
+            "title": title,
+            "preview": preview,
+            "description_card": description_card,
+            "content_start": content_start,
+            "content_middle": content_middle,
+            "content_end": content_end,
+            "visibility": visibility,
+            "status": status,
+            "author": request.user,
+        }
+
+        item_object = News(**item_data)
+        item_object.full_clean()  # Валидация модели
+        item_object.save()
+
+        item_object.categories.set(categories)
+
+        if "save" in data:
+            return JsonResponse({
+                'answer': 'Статья успешно создана или изменёна',
+                'url': reverse("news:edit", kwargs={'pk': item_object.id}),
+                'redirect': True,
+            })
+        elif "publish" in data:
+            return JsonResponse({
+                'answer': 'Статья успешно создана или изменёна',
+                'redirect': True,
+                'url': reverse("users:profile")
+            })
+        else:
+            return JsonResponse({
+                'answer': 'Статья успешно создана или изменёна',
+                'url': reverse("news:edit", kwargs={'pk': item_object.id}),
+                'redirect': True,
+            })
+
+def news_edit_view(request, pk):
+    if request.method == "GET":
+        item_object = get_object_or_404(News, id=pk)
+        form = CreateNewsForm(instance=item_object)
+
+        context = {
+            'object': item_object,
+            'form': form,
+            'category_groups': CategoryGroup.objects.all(),
+            'visibility_descriptions': Visibility.TypeAndDescr,
+        }
+
+        return render(request, 'news/edit_news.html', context=context)
+    elif request.method == "POST":
+        data = request.POST
+        files = request.FILES
+
+        item_object = get_object_or_404(News, id=pk)
+
+        # Данные рецепта
+        title = data.get("title", "")
+        description_card = data.get("description_card") if data.get("description_card") != "" else " "
+        content_start = data.get("content_start", "")
+        content_middle = data.get("content_middle", "")
+        content_end = data.get("content_end", "")
+
+        categories = RecipeCategory.objects.filter(id__in=data.getlist("categories", []))
+
+        status = data.get("status", Status.MODERATION if "publish" in data else Status.DRAFT)
+        visibility = data.get("visibility", Visibility.ME)
+
+        preview_deleted = data.get("preview_deleted")
+        new_image = files.get("preview")
+        preview = item_object.preview
+
+        if new_image:
+            preview = new_image
+        elif preview_deleted:
+            preview = None
+
+        item_data = {
+            "title": title,
+            "preview": preview,
+            "description_card": description_card,
+            "content_start": content_start,
+            "content_middle": content_middle,
+            "content_end": content_end,
+            "visibility": visibility,
+            "status": status,
+            "author": request.user,
+        }
+
+        item_object = get_object_or_404(News, id=pk)
+        item_object.__dict__.update(item_data)  # Обновляем атрибуты
+        item_object.save()
+
+        item_object.categories.set(categories)
+
+        if "save" in data:
+            return JsonResponse({
+                'answer': 'Статья успешно создана или изменёна',
+                'redirect': False,
+            })
+        elif "publish" in data:
+            return JsonResponse({
+                'answer': 'Статья успешно создана или изменёна',
+                'redirect': True,
+                'url': reverse("users:profile")
+            })
+        else:
+            return JsonResponse({
+                'answer': 'Статья успешно создана или изменёна',
+                'url': reverse("news:edit", kwargs={'pk': item_object.id}),
+                'redirect': True,
+            })
+
 class DetailNewsView(DetailView):
     template_name = "news/detail_news.html"
     model = News
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.object.views += 1
-        self.object.save()
+        context = self.get_context_data(object=self.object)
+        user = self.request.user
+        if self.object.author_id != user.id:
+            if self.object.status == Status.MODERATION:
+                self.template_name = "additions/error_moderator.html"
+                return self.render_to_response(context)
+            elif self.object.status in (Status.UNPUBLISHED, Status.DRAFT):
+                return super().get(request, *args, **kwargs)
+            else:
+                self.object.views += 1
+                self.object.save()
+
+        if self.object.preview:
+            request.meta_og_image = self.object.preview
+        request.meta_title = self.object.title
+        request.meta_description = self.object.description_card
+        request.meta_og_title = self.object.title
+        request.meta_og_description = self.object.description_card
+
         return super().get(request, *args, **kwargs)
+
 
     def get_context_data(self, **kwargs):
         context = super(DetailNewsView, self).get_context_data(**kwargs)
 
         user = self.request.user
 
-        if self.object.status == 4:
-            return context
-        elif self.object.status in (2, 4):
-            raise Http404
+        if self.object.author_id != user.id:
+            if self.object.status == Status.MODERATION:
+                return context
+
+            subs_check = True
+            only_me_check = self.object.visibility == Visibility.ME
+            if self.object.visibility == Visibility.SUBS:
+                subs_check = user in self.object.author.subscribers.all()
+
+            elif self.object.status in (Status.UNPUBLISHED, Status.DRAFT) or not subs_check or only_me_check:
+                raise Http404
+
+        object_categories = self.object.categories.all()
+
+        context['category_groups'] = CategoryGroup.objects.all()
+        context['news_side'] = get_news_PUBLISHED_ALL_SUBS(user).order_by("-published_date")[:10]
+
+        context['recs_recipes'] = get_recs_recipes(user, object_categories, None, 10)
+
+        context['recs_news'] = get_recs_news(user, object_categories, self.object.pk, 10)
+
+        if user.is_authenticated and self.object.newsreview_set.filter(author=user).exists():
+            context["user_review_exists"] = 1
+            context["user_review_rating"] = self.object.newsreview_set.get(author=user).rating
         else:
-            object_categories = self.object.categories.all()
+            context["user_review_exists"] = 0
 
-            context['category_groups'] = CategoryGroup.objects.all()
-            context['news_side'] = News.objects.filter(visibility=1, status=1).select_related("author").prefetch_related("newsreview_set").order_by("-published_date")[:10]
+        comments = get_news_comments(self.object)
+        paginator = Paginator(comments, 2)  # 20 комментариев на страницу
+        page_number = 1
+        page_obj = paginator.get_page(page_number)
 
-            context['recs_recipes'] = Recipe.objects.filter(categories__in=object_categories, visibility=1, status=1).select_related("previews", "author")[:10]
-            if context['recs_recipes'].count() < 10:
-                additional_items = Recipe.objects.filter(visibility=1, status=1).exclude(categories__in=object_categories).select_related("previews", "author")[:10-context['recs_recipes'].count()]
-                context['recs_recipes'] = context['recs_recipes'] | additional_items
-            if context['recs_recipes'].count() < 4:
-                context['recs_recipes'] = None
-
-            context['recs_news'] = News.objects.filter(categories__in=object_categories, visibility=1, status=1).select_related("author").prefetch_related("newsreview_set")[:10]
-            if context['recs_news'].count() < 10:
-                additional_items = News.objects.filter(visibility=1, status=1).exclude(categories__in=object_categories).select_related("author").prefetch_related("newsreview_set")[:10-context['recs_news'].count()]
-                context['recs_news'] = context['recs_news'] | additional_items
-            if context['recs_news'].count() < 4:
-                context['recs_news'] = None
-
-            if user.is_authenticated and self.object.newsreview_set.filter(author=user).exists():
-                context["user_review_exists"] = 1
-                context["user_review_rating"] = self.object.newsreview_set.get(author=user).rating
-            else:
-                context["user_review_exists"] = 0
-
-            comments = NewsComment.objects.filter(news=self.object, parent=None).order_by('-published_date')
-            paginator = Paginator(comments, 2)  # 20 комментариев на страницу
-            page_number = 1
-            page_obj = paginator.get_page(page_number)
-
-            context["comments"] = page_obj
-            context["create_comment_form"] = CreateNewsCommentForm()
+        context["comments"] = page_obj
+        context["create_comment_form"] = CreateNewsCommentForm()
+        context["iso_published_date"] = self.object.published_date.isoformat()
 
         return context
 
@@ -118,7 +277,9 @@ def change_status(request):
     item.status = action_status
     item.save()
 
-    return JsonResponse(_prepare_articles_data(request.user, data_status, page))
+    data_statuses = data_status.split(",")
+
+    return JsonResponse(_prepare_articles_data(request.user, data_statuses, page))
 
 
 @require_POST
@@ -128,7 +289,7 @@ def change_rating(request):
         new_rating = int(request.POST.get("new_rating"))
         item_id = request.POST.get("item_id")
 
-        item = News.objects.get(id=item_id)
+        item = get_object_or_404(News, id=item_id)
 
         review = NewsReview.objects.filter(author=user, news=item)
         if review.exists():
@@ -151,7 +312,7 @@ def delete_rating(request):
     if user.is_authenticated:
         item_id = request.POST.get("item_id")
 
-        item = News.objects.get(id=item_id)
+        item = get_object_or_404(News, id=item_id)
 
         review = NewsReview.objects.filter(author=user, news=item)
         if review.exists():
@@ -173,7 +334,7 @@ def create_comment(request):
     text = request.POST.get("text")
     data_parent_id = request.POST.get("data_parent_id")
 
-    item = News.objects.get(id=item_id)
+    item = get_object_or_404(News, id=item_id)
 
     if data_parent_id:
         parent = NewsComment.objects.get(id=data_parent_id)

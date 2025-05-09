@@ -5,9 +5,9 @@ from django.urls import include, path
 from users.views import (AuthorPageView, ProfileView, change_back_fon,
                          change_profile_current_achiv, change_profile_image,
                          continue_reset_password, final_change_password,
-                         get_search_subs, load_my_articles,
-                         load_my_recipes, send_email_code, sub_unsub,
-                         user_login, user_logout, user_registration)
+                         get_search_subs, load_my_articles, load_my_recipes,
+                         send_email_code, sub_unsub, user_login, user_logout,
+                         user_registration)
 
 app_name = "users"
 

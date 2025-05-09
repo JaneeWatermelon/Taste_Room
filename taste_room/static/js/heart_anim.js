@@ -1,5 +1,5 @@
 window.setHeartAnimEventHandler = function() {
-    const heart_wrappers = $(".image_wrapper > .heart_wrapper")
+    const heart_wrappers = $(".heart_wrapper")
 
     heart_wrappers.off("click").on("click", function() {
         const heart = $(this).find("img");

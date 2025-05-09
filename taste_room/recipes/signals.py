@@ -1,7 +1,10 @@
-from django.db.models.signals import post_save, pre_delete, post_delete
+import os
+
+from django.db.models.signals import post_delete, post_save, pre_delete
 from django.dispatch import receiver
 
-from recipes.models import Recipe, RecipeIngredient, RecipeReview, RecipeComment
+from recipes.models import (Recipe, RecipeComment, RecipeIngredient,
+                            RecipeReview)
 from users.models import User
 
 
@@ -22,9 +25,11 @@ def change_units(instance):
         instance.quantity /= 1000
         instance.unit = "л"
 
+
 @receiver(post_save, sender=Recipe)
 def post_save_recipe(sender, instance, **kwargs):
     if not hasattr(instance, '_post_save_triggered'):
+
         instance._post_save_triggered = True
 
         for recipe_ingredient in RecipeIngredient.objects.filter(recipe=instance):
@@ -44,43 +49,15 @@ def post_save_recipe_ingredient(sender, instance, **kwargs):
         change_units(instance)
 
         delattr(instance, '_post_save_triggered')
-        
-        
-# def change_rating(instance):
-#     item = Recipe.objects.filter(reviews=instance)
-#
-#     if item.exists():
-#         item.first().save()
+
 
 @receiver(post_save, sender=RecipeReview)
 def post_save_review(sender, instance, **kwargs):
-    print("in post save users")
-    # change_rating(instance)
-
     instance.recipe.save()
-
-related_instance = None
-
-# @receiver(pre_delete, sender=RecipeReview)
-# def pre_delete_review(sender, instance, **kwargs):
-#     global related_instance
-#     # Сохраняем связанный рецепт или новость
-#     item = Recipe.objects.filter(reviews=instance).first()
-#     if item:
-#         related_instance = item
-#     else:
-#         item = News.objects.filter(reviews=instance).first()
-#         if item:
-#             related_instance = item
 
 @receiver(post_delete, sender=RecipeReview)
 def post_delete_review(sender, instance, **kwargs):
-    global related_instance
     instance.recipe.save()
-
-    # if related_instance:
-    #     related_instance.save()  # Вызываем save(), чтобы обновить рейтинг
-    #     related_instance = None  # Очищаем переменную
 
 @receiver(post_delete, sender=RecipeComment)
 def post_delete_comment(sender, instance, **kwargs):

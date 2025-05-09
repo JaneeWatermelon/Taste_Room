@@ -2,7 +2,7 @@
 {% load custom_filters %}
 
 {% for item in ingredients %}
-<div class="ingredient_item">
+<div data-id="{{ item.id }}" class="ingredient_item {% if item.id in active_ids_list %}active{% endif %}">
     <div class="icon_wrapper">
         <div class="icon_inner">
             {% if item.icon %}

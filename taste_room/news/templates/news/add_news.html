@@ -1,9 +1,11 @@
 {% extends 'recipes/base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block custom_styles %}
     <link rel="stylesheet" href="{% static 'css/recipe/add_recipe.css' %}">
     <link rel="stylesheet" href="{% static 'css/news/add_news.css' %}">
+    <link rel="stylesheet" href="{% static 'css/general/ckeditor.css' %}">
 {% endblock %}
 
 {% block main %}
@@ -16,7 +18,8 @@
             <a href="{% url 'news:create' %}"><p>Добавление статьи</p></a>
         </section>
         <div class="main_content">
-            <section class="edit_section">
+            <form action="{% url 'news:create' %}" method="post" class="edit_section">
+                {% csrf_token %}
                 <div class="main_title">
                     <span class="line"></span>
                     <h1 class="lilita_font green">Добавление новой статьи</h1>
@@ -28,7 +31,7 @@
                     <div class="title">
                         <h3>Название статьи</h3>
                         <div class="input_wrapper">
-                            <input min="20" max="40" placeholder="Введите название статьи">
+                            {{ form.title }}
                         </div>
                         <div class="marks_limits">
                             <h4>Мин. знаков: <span class="orange">20</span></h4>
@@ -37,28 +40,17 @@
                         </div>
                     </div>
                     <div class="opacity">
-                        <h3>Кто видит опубликованный рецепт</h3>
+                        <h3>Кто видит опубликованную статью</h3>
                         <fieldset id="opacity_radios">
+                            {% for radio in form.visibility %}
                             <div class="opacity_item">
-                                <input id="opacity_all" type="radio" name="opacity_radios">
-                                <label for="opacity_all"><h4>Все</h4></label>
-                                <label for="opacity_all"><h4 class="black_50">(видна всем и везде)</h4></label>
+                                {{ radio.tag }}
+                                {% with selected_value=forloop.counter %}
+                                <label for="{{ radio.id_for_label }}"><h4>{{ visibility_descriptions|get_first_value:selected_value }}</h4></label>
+                                <label for="{{ radio.id_for_label }}"><h4 class="black_50">{{ visibility_descriptions|get_second_value:selected_value }}</h4></label>
+                                {% endwith %}
                             </div>
-                            <div class="opacity_item">
-                                <input id="opacity_profile" type="radio" name="opacity_radios">
-                                <label for="opacity_profile"><h4>Только в профиле</h4></label>
-                                <label for="opacity_profile"><h4 class="black_50">(видна всем у вас на странице)</h4></label>
-                            </div>
-                            <div class="opacity_item">
-                                <input id="opacity_subs" type="radio" name="opacity_radios">
-                                <label for="opacity_subs"><h4>Только подписчики</h4></label>
-                                <label for="opacity_subs"><h4 class="black_50">(видна только подписчикам)</h4></label>
-                            </div>
-                            <div class="opacity_item">
-                                <input id="opacity_me" type="radio" name="opacity_radios">
-                                <label for="opacity_me"><h4>Только я</h4></label>
-                                <label for="opacity_me"><h4 class="black_50">(приватная, видна только вам)</h4></label>
-                            </div>
+                            {% endfor %}
                         </fieldset>
                     </div>
                 </div>
@@ -74,11 +66,12 @@
                     </div>
                     <div class="title">
                         <div class="sub_title_and_mark">
-                            <h3>Первая часть</h3>
+                            <h3>Первая часть*</h3>
                             <img class="part_1" src="{% static 'svg/Random_icons/Question_mark.svg' %}">
                         </div>
                         <div class="input_wrapper">
-                            <textarea placeholder="Придумайте мини-описание для карточки рецепта"></textarea>
+                            {{ form.media }}
+                            {{ form.content_start }}
                         </div>
                     </div>
                     <div class="title">
@@ -87,7 +80,7 @@
                             <img class="insertion" src="{% static 'svg/Random_icons/Question_mark.svg' %}">
                         </div>
                         <div class="input_wrapper">
-                            <textarea minlength="0" maxlength="200" placeholder="Придумайте мини-описание для карточки рецепта"></textarea>
+                            {{ form.content_middle }}
                         </div>
                         <div class="marks_limits">
                             <h4>Макс. знаков: <span class="orange">200</span></h4>
@@ -100,7 +93,7 @@
                             <img class="part_2" src="{% static 'svg/Random_icons/Question_mark.svg' %}">
                         </div>
                         <div class="input_wrapper">
-                            <textarea placeholder="Придумайте мини-описание для карточки рецепта"></textarea>
+                            {{ form.content_end }}
                         </div>
                     </div>
                 </div>
@@ -115,57 +108,39 @@
                             <h4>Горизонтальный формат изображения.</h4>
                             <img src="{% static 'svg/Yes_No/Horizontal_vertical.svg' %}">
                         </div>
+                        <div class="condition">
+                            <h4 class="medium_font">2.</h4>
+                            <h4>Фото должно соответствовать содержанию статьи.</h4>
+                        </div>
                     </div>
                     <div class="photo_list">
-                        <div class="photo_item">
-                            <div class="photo_wrapper">
-                                <div class="image_wrapper">
-                                    <img class="back_image" src="{% static 'img/recipe_and_article/noodles.jpg' %}">
-                                    <div class="delete_and_change">
-                                        <div class="action_item delete">
-                                            <img src="{% static 'svg/Random_icons/Trash_icon.svg' %}">
-                                        </div>
-                                        <div class="action_item change">
-                                            <img src="{% static 'svg/Random_icons/Edit_icon.svg' %}">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {% if object.preview %}
+                            {% include "news/includes/news_main_photo.html" with ready_photo=object.preview next_item_number=1 %}
+                        {% else %}
+                            {% include "news/includes/news_main_photo.html" with next_item_number=1 %}
+                        {% endif %}
                     </div>
-                    <div class="add_photo_button">
-                        <img src="{% static 'svg/Cookie/Add_image_half_black.svg' %}">
-                        <div class="info">
-                            <p class="black_50">Добавь фото к своей статье</p>
-                            <p class="black_50">Перетащи или нажми, чтобы выбрать</p>
-                        </div>
-                        <input class="image_input" type="file">
-                    </div>
-                </div>
-                <div class="continue_and_drafts">
-                    <button class="continue_button">
-                        <img src="{% static 'svg/Yes_No/Yes_no_shadow.svg' %}">
-                        <h3 class="medium_font white">Продолжить</h3>
-                    </button>
-                    <button class="drafts_button">
-                        <img src="{% static 'svg/Random_icons/Edit_icon_half_black.svg' %}">
-                        <h3 class="black_50 d_mobile_none">Сохранить в черновики</h3>
-                        <h3 class="black_50 d_desktop_none">Сохранить</h3>
-                    </button>
+<!--                    <div data-url="{% url 'recipes:add_ready_photo_ajax' %}" class="add_photo_button {% if object.preview %}d_none{% endif %}">-->
+<!--                        <img src="{% static 'svg/Cookie/Add_image_half_black.svg' %}">-->
+<!--                        <div class="info">-->
+<!--                            <p class="black_50">Добавь фото своей статьи</p>-->
+<!--                            <p class="black_50">Перетащи или нажми, чтобы выбрать</p>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
                 <span class="line"></span>
                 <div class="sub_section description_to_recipe">
                     <span class="anchor_hidden" id="description_to_recipe"></span>
                     <h2>Описание статьи</h2>
                     <div class="title">
-                        <h3>Мини-описание для карточки статьи</h3>
+                        <label for="{{ form.description_card.id_for_label }}"><h3>Мини-описание для карточки статьи</h3></label>
                         <h4 class="black_50">Старайтесь кратко описать чем интересна ваша статья, так больше вероятность, что её посмотрит больше людей</h4>
                         <div class="input_wrapper">
-                            <textarea minlength="30" maxlength="60" placeholder="Придумайте мини-описание для карточки рецепта"></textarea>
+                            {{ form.description_card }}
                         </div>
                         <div class="marks_limits">
                             <h4>Мин. знаков: <span class="orange">30</span></h4>
-                            <h4>Макс. знаков: <span class="orange">60</span></h4>
+                            <h4>Макс. знаков: <span class="orange">50</span></h4>
                             <h4>Ваши знаки: <span class="my_symbols heart">0</span></h4>
                         </div>
                     </div>
@@ -182,82 +157,53 @@
                         <h4 class="black_50">Выбрано категорий: <span class="categories_count black medium_font">0/10</span></h4>
                     </div>
                     <div class="categories_list">
+                        {% for category_group in category_groups %}
                         <div class="title_and_list">
-                            <h4 class="lilita_font">Кухня</h4>
+                            <h4 class="lilita_font">{{ category_group.title }}</h4>
                             <span class="line"></span>
+                            {% for category in category_group.categories.all %}
                             <div class="category_item">
                                 <div class="category first_category">
-                                    <input type="checkbox" name="euro">
-                                    <label for="euro"><p>Европейская</p></label>
+                                    {{ form.categories|get_checkbox:category.id }}
+                                    <label for="id_categories_{{ category.id }}"><p>{{ category.name }}</p></label>
                                     <img class="plus d_none" src="{% static 'svg/Plus_Minus/Plus_blank.svg' %}">
                                     <img class="minus" src="{% static 'svg/Plus_Minus/Minus_blank.svg' %}">
                                 </div>
                                 <div class="second_categories">
+                                    {% for sub_category in category.children.all %}
                                     <div class="category">
-                                        <input id="euro" type="checkbox" name="euro">
-                                        <label for="euro"><p>Европейская</p></label>
+                                        {{ form.categories|get_checkbox:sub_category.id }}
+                                        <label for="id_categories_{{ sub_category.id }}"><p>{{ sub_category.name }}</p></label>
                                     </div>
-                                    <div class="category">
-                                        <input type="checkbox" name="euro">
-                                        <label for="euro"><p>Европейская</p></label>
-                                    </div>
-                                    <div class="category">
-                                        <input type="checkbox" name="euro">
-                                        <label for="euro"><p>Европейская</p></label>
-                                    </div>
+                                    {% endfor %}
                                 </div>
                             </div>
+                            {% endfor %}
                         </div>
-                        <div class="title_and_list">
-                            <h4 class="lilita_font">Кухня</h4>
-                            <span class="line"></span>
-                            <div class="category_item">
-                                <div class="category first_category">
-                                    <input type="checkbox" name="euro">
-                                    <label for="euro"><p>Европейская</p></label>
-                                    <img class="plus d_none" src="{% static 'svg/Plus_Minus/Plus_blank.svg' %}">
-                                    <img class="minus" src="{% static 'svg/Plus_Minus/Minus_blank.svg' %}">
-                                </div>
-                                <div class="second_categories">
-                                    <div class="category">
-                                        <input id="euro" type="checkbox" name="euro">
-                                        <label for="euro"><p>Европейская</p></label>
-                                    </div>
-                                    <div class="category">
-                                        <input type="checkbox" name="euro">
-                                        <label for="euro"><p>Европейская</p></label>
-                                    </div>
-                                    <div class="category">
-                                        <input type="checkbox" name="euro">
-                                        <label for="euro"><p>Европейская</p></label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
                 <div class="continue_and_drafts publish_and_drafts">
-                    <button class="continue_button">
+                    <button name="publish" value="submit" type="submit" class="continue_button">
                         <img src="{% static 'svg/Yes_No/Yes_no_shadow.svg' %}">
                         <h3 class="medium_font white">Опубликовать</h3>
                     </button>
-                    <button class="drafts_button">
+                    <button name="save" value="submit" type="submit" class="drafts_button">
                         <img src="{% static 'svg/Random_icons/Edit_icon_half_black.svg' %}">
-                        <h3 class="black_50 d_mobile_none">Сохранить в черновики</h3>
-                        <h3 class="black_50 d_desktop_none">Сохранить</h3>
+                        <h3 class="black_50">Сохранить</h3>
                     </button>
                 </div>
-            </section>
+            </form>
             <section class="navigation_section d_mobile_none">
                 <h3>Быстрая навигация</h3>
                 <div class="links_wrapper">
                     <a href="#title_and_opacity" class="link_item">
-                        <img src="{% static 'svg/Yes_No/Yes_light_green.svg' %}">
-                        <h4 class="done">Название и видимость</h4>
+                        <img class="d_none" src="{% static 'svg/Yes_No/Yes_light_green.svg' %}">
+                        <h4 class="current">Название и видимость</h4>
                     </a>
                     <a href="#news_content" class="link_item">
                         <img class="d_none" src="{% static 'svg/Yes_No/Yes_light_green.svg' %}">
-                        <h4 class="current">Содержание статьи</h4>
+                        <h4>Содержание статьи</h4>
                     </a>
                     <a href="#ready_dish_photo" class="link_item">
                         <img class="d_none" src="{% static 'svg/Yes_No/Yes_light_green.svg' %}">
@@ -293,7 +239,12 @@
 {% endblock %}
 
 {% block custom_scripts %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.6/Sortable.min.js" integrity="sha512-csIng5zcB+XpulRUa+ev1zKo7zRNGpEaVfNB9On1no9KYTEY/rLGAEEpvgdw6nim1WdTuihZY1eqZ31K7/fZjw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        const default_load_image = "{% static 'img/Default/Load_image.jpg' %}";
+    </script>
     <script src="{% static 'js/profile.js' %}"></script>
-    <script src="{% static 'js/add_news.js' %}"></script>
+    <script src="{% static 'js/news_create/image_actions.js' %}"></script>
+    <script src="{% static 'js/create_page/general.js' %}"></script>
+    <script src="{% static 'js/news_create/add_news.js' %}"></script>
+    <script src="{% static 'js/recipe_create/change_symbols_count.js' %}"></script>
 {% endblock %}

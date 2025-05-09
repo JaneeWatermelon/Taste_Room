@@ -1,5 +1,10 @@
 from django import forms
-from news.models import NewsComment
+
+from additions.views import Visibility
+from categories.models import RecipeCategory
+from news.models import NewsComment, News
+from ckeditor.widgets import CKEditorWidget
+
 
 class CreateNewsCommentForm(forms.ModelForm):
     text = forms.CharField(widget=forms.Textarea(attrs={
@@ -13,3 +18,41 @@ class CreateNewsCommentForm(forms.ModelForm):
     class Meta:
         model = NewsComment
         fields = ['text', 'image']
+
+class CreateNewsForm(forms.ModelForm):
+    categories = forms.ModelMultipleChoiceField(
+        queryset=RecipeCategory.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+    title = forms.CharField(widget=forms.TextInput(attrs={
+        'placeholder': 'Введите название статьи',
+        'minlength': 20,
+        'maxlength': 40,
+    }))
+    content_start = forms.CharField(widget=CKEditorWidget(config_name="awesome_ckeditor"))
+    content_middle = forms.CharField(widget=forms.Textarea(attrs={
+        'placeholder': 'Интересный факт, статистика или какая-то полезная информация',
+        'minlength': 0,
+        'maxlength': 200,
+    }), required=False)
+    content_end = forms.CharField(widget=CKEditorWidget(config_name="awesome_ckeditor"), required=False)
+    description_card = forms.CharField(widget=forms.Textarea(attrs={
+        'placeholder': 'Придумайте мини-описание для карточки рецепта',
+        'minlength': 30,
+        'maxlength': 50,
+    }))
+    visibility = forms.CharField(widget=forms.RadioSelect(choices=Visibility.List))
+
+    class Meta:
+        model = News
+        fields = [
+            'title', 'description_card',
+            'content_start', 'content_middle', 'content_end',
+            'status', 'visibility', 'categories'
+        ]
+        # widgets = {
+        #     'cook_time_full': forms.TimeInput(attrs={'type': 'time'}),
+        #     'cook_time_active': forms.TimeInput(attrs={'type': 'time'}),
+        #     'description_inner': forms.Textarea(attrs={'rows': 4}),
+        # }

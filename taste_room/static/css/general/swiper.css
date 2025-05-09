@@ -2,15 +2,18 @@
     display: flex !important;
     width: calc(100% + 0px);
     position: relative;
+    padding: 0 !important;
 }
 .swiper .swiper-wrapper {
     display: flex !important;
     flex-direction: row !important;
+    align-items: stretch !important;
     gap: 0 !important;
     position: relative;
 }
 .swiper .swiper-slide {
     box-sizing: border-box;
+    height: auto !important;
 }
 
 .swiper_nav {

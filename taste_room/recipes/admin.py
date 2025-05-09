@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.contrib.admin import ModelAdmin, TabularInline
 
-from recipes.models import (Ingredient, Recipe, RecipeIngredient,
-                            RecipePreview, RecipeStep, RecipeComment,
-                            RecipeReview)
+from recipes.models import (Ingredient, Recipe, RecipeComment,
+                            RecipeIngredient, RecipePreview, RecipeReview,
+                            RecipeStep)
 
 
 @admin.register(RecipePreview)
@@ -18,6 +18,10 @@ class RecipeIngredientAdmin(TabularInline):
     model = RecipeIngredient
     extra = 0
 
+class RecipeReviewAdmin(TabularInline):
+    model = RecipeReview
+    extra = 0
+
 @admin.register(Recipe)
 class RecipeAdmin(ModelAdmin):
     list_display = ["title", "status", "visibility", "author", "published_date"]
@@ -26,15 +30,12 @@ class RecipeAdmin(ModelAdmin):
     inlines = [
         RecipeIngredientAdmin,
         RecipeStepAdmin,
+        RecipeReviewAdmin,
     ]
 
 @admin.register(RecipeComment)
 class RecipeCommentAdmin(admin.ModelAdmin):
     list_display = ["author", "likes", "dislikes", "parent", "published_date", "id"]
-
-@admin.register(RecipeReview)
-class RecipeReviewAdmin(admin.ModelAdmin):
-    list_display = ["author", "rating",]
 
 import csv
 from io import TextIOWrapper

@@ -3,6 +3,12 @@
 {% load custom_filters %}
 {% load humanize %}
 
+{% block extra_meta %}
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="{{ iso_published_date }}">
+    <meta property="article:author" content="{% if object.author.name %}{{ object.author.name }}{% else %}{{ object.author.username }}{% endif %}">
+{% endblock %}
+
 {% block custom_styles %}
     <link rel="stylesheet" href="{% static 'css/recipe/recipe_card.css' %}">
     <link rel="stylesheet" href="{% static 'css/news/news_card.css' %}">
@@ -68,7 +74,7 @@
                     <h1>{{ object.title }}</h1>
                     <div class="stats">
                         <div class="rating_and_views">
-                            <a href="#news_reviews" class="rating">
+                            <a href="#reviews_section" class="rating">
                                 <h4 class="black_75">Рейтинг:</h4>
                                 <div class="stars">
                                     {% for _ in object.stars_on_count|repeat %}
@@ -81,14 +87,14 @@
                                 <h4 class="black_75">({{ object.newsreview_set.count }})</h4>
                             </a>
                             <div class="date_and_views">
-                                <h4 class="black_75 d_mobile_none">Опубликована: {{ published_date }}</h4>
+                                <h4 class="black_75 d_mobile_none">Опубликована: {{ object.formated_published_date }}</h4>
                                 <div class="views">
                                     <img src="{% static 'svg/Random_icons/Eye_icon.svg' %}">
                                     <h4 class="green">{{ object.views }}</h4>
                                 </div>
                             </div>
                         </div>
-                        <h4 class="black_75 d_desktop_none">Опубликована: {{ published_date }}</h4>
+                        <h4 class="black_75 d_desktop_none">Опубликована: {{ object.formated_published_date }}</h4>
                     </div>
                     <div class="news_author">
                         <a href="{% url 'users:author' object.author.username %}" class="image_wrapper circle">
@@ -128,10 +134,10 @@
                     {{ object.content_end|safe }}
                 </div>
                 <div class="news_reviews">
-                    <span class="anchor_hidden" id="news_reviews"></span>
+                    <span class="anchor_hidden" id="reviews_section"></span>
                     <div class="rating_wrapper">
                         <h4 class="medium_font">Оцени статью “{{ object.title }}”</h4>
-                        <div data-id="{{ object.id }}" data-type="news" data-url="{% url 'news:change_rating_ajax' %}" data-url-delete="{% url 'news:delete_rating_ajax' %}" class="stars">
+                        <div data-require-auth data-id="{{ object.id }}" data-type="news" data-url="{% url 'news:change_rating_ajax' %}" data-url-delete="{% url 'news:delete_rating_ajax' %}" class="stars">
                             {% for _ in object.stars_on_count|repeat %}
                             <img src="{% static 'svg/Stars/Star_half_on.svg' %}">
                             {% endfor %}
@@ -220,7 +226,7 @@
                     {% csrf_token %}
                     <div class="input_wrapper">
                         <textarea required="required" name="text" placeholder="Поделитесь своими мыслями"></textarea>
-                        <button type="submit" class="input_button">
+                        <button data-require-auth type="submit" class="input_button">
                             <img src="{% static 'svg/Arrows/Send_comment.svg' %}">
                         </button>
                     </div>
@@ -245,7 +251,7 @@
                                     <div class="action answer">
                                         <h5 class="medium_font black_50">Ответить</h5>
                                     </div>
-                                    {% if item.author == user %}
+                                    {% if item.author_id == user.id %}
                                     <div data-url="{% url 'news:delete_comment_ajax' %}" class="action delete">
                                         <h5 class="medium_font black_50">Удалить</h5>
                                     </div>
@@ -262,7 +268,7 @@
                             </div>
                             <div data-url="{% url 'news:comment_reaction_change_ajax' %}" class="rating">
                                 <div class="likes">
-                                    {% if item in request.user.liked_news_comments.all %}
+                                    {% if item in user.liked_news_comments.all %}
                                     <img class="active" src="{% static 'svg/Likes_Dislikes/Like_fill.svg' %}">
                                     {% else %}
                                     <img src="{% static 'svg/Likes_Dislikes/Like_blank.svg' %}">
@@ -273,7 +279,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="dislikes">
-                                    {% if item in request.user.disliked_news_comments.all %}
+                                    {% if item in user.disliked_news_comments.all %}
                                     <img class="active" src="{% static 'svg/Likes_Dislikes/Dislike_fill.svg' %}">
                                     {% else %}
                                     <img src="{% static 'svg/Likes_Dislikes/Dislike_blank.svg' %}">
@@ -304,7 +310,7 @@
                                             <h5 class="black_75">{{ answer.published_date|naturaltime }}</h5>
                                         </div>
                                         <div class="comment_actions d_none">
-                                            {% if item.author == user %}
+                                            {% if item.author_id == user.id %}
                                             <div data-url="{% url 'news:delete_comment_ajax' %}" class="action delete">
                                                 <h5 class="medium_font black_50">Удалить</h5>
                                             </div>
@@ -321,7 +327,7 @@
                                     </div>
                                     <div data-url="{% url 'news:comment_reaction_change_ajax' %}" class="rating">
                                         <div class="likes">
-                                            {% if answer in request.user.liked_news_comments.all %}
+                                            {% if answer in user.liked_news_comments.all %}
                                             <img class="active" src="{% static 'svg/Likes_Dislikes/Like_fill.svg' %}">
                                             {% else %}
                                             <img src="{% static 'svg/Likes_Dislikes/Like_blank.svg' %}">
@@ -332,7 +338,7 @@
                                             {% endif %}
                                         </div>
                                         <div class="dislikes">
-                                            {% if answer in request.user.disliked_news_comments.all %}
+                                            {% if answer in user.disliked_news_comments.all %}
                                             <img class="active" src="{% static 'svg/Likes_Dislikes/Dislike_fill.svg' %}">
                                             {% else %}
                                             <img src="{% static 'svg/Likes_Dislikes/Dislike_blank.svg' %}">

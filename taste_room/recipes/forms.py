@@ -4,8 +4,8 @@ from django import forms
 from django.forms import inlineformset_factory
 
 from additions.views import Status, Visibility
-from .models import Recipe, RecipePreview, RecipeIngredient, RecipeStep, RecipeCategory, RecipeComment, Difficulty, \
-    Scipy
+
+from .models import (Difficulty, Recipe, RecipeCategory, RecipeComment, Scipy)
 
 
 class CreateRecipeCommentForm(forms.ModelForm):
@@ -20,16 +20,6 @@ class CreateRecipeCommentForm(forms.ModelForm):
     class Meta:
         model = RecipeComment
         fields = ['text', 'image']
-
-class RecipePreviewForm(forms.ModelForm):
-    class Meta:
-        model = RecipePreview
-        fields = ['preview_1', 'preview_2', 'preview_3']
-        widgets = {
-            'preview_1': forms.FileInput(attrs={'accept': 'image/*'}),
-            'preview_2': forms.FileInput(attrs={'accept': 'image/*'}),
-            'preview_3': forms.FileInput(attrs={'accept': 'image/*'}),
-        }
 
 
 class CreateRecipeForm(forms.ModelForm):
@@ -90,39 +80,3 @@ class CreateRecipeForm(forms.ModelForm):
             'cook_time_active': forms.TimeInput(attrs={'type': 'time'}),
             'description_inner': forms.Textarea(attrs={'rows': 4}),
         }
-
-
-class RecipeIngredientForm(forms.ModelForm):
-    class Meta:
-        model = RecipeIngredient
-        fields = ['ingredient', 'quantity', 'unit']
-        widgets = {
-            'quantity': forms.NumberInput(attrs={'step': '0.1'}),
-            'unit': forms.Select(attrs={'class': 'unit-select'}),
-        }
-
-
-class RecipeStepForm(forms.ModelForm):
-    class Meta:
-        model = RecipeStep
-        fields = ['image', 'text']
-        widgets = {
-            'text': forms.Textarea(attrs={'rows': 3}),
-            'image': forms.FileInput(attrs={'accept': 'image/*'}),
-        }
-
-
-# FormSets для связанных моделей
-RecipeIngredientFormSet = inlineformset_factory(
-    Recipe, RecipeIngredient,
-    form=RecipeIngredientForm,
-    extra=1,
-    can_delete=True
-)
-
-RecipeStepFormSet = inlineformset_factory(
-    Recipe, RecipeStep,
-    form=RecipeStepForm,
-    extra=1,
-    can_delete=True
-)

@@ -42,6 +42,7 @@
     top: 0;
     left: 0; */
 }
+
 .recipe_section > .recipe_header > .image_wrapper > .heart_wrapper {
     display: flex;
     justify-content: center;

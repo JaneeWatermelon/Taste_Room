@@ -13,7 +13,9 @@ def short_timedelta(duration):
     total_seconds %= 3600
     minutes = f"{int(total_seconds / 60)} мин " if int(total_seconds / 60) else ""
 
-    return (days + hours + minutes).strip()
+    result = (days + hours + minutes).strip()
+
+    return result if result != "" else "Не указано"
 
 @register.filter
 def repeat(n):
@@ -62,4 +64,20 @@ def DHMS(time_delta): # Days Hours Minutes Seconds
     minutes, seconds = divmod(remainder, 60)
 
     return [days, hours, minutes, seconds]
+
+@register.filter
+def iso_timedelta(time_delta):
+    days, hours, minutes, seconds = DHMS(time_delta)
+
+    result = "PT"
+    if days > 0:
+        result += str(days) + "D"
+    if hours > 0:
+        result += str(hours) + "H"
+    if minutes > 0:
+        result += str(minutes) + "M"
+
+    return result
+
+
 

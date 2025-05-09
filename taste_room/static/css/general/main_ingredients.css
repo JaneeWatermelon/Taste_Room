@@ -1,0 +1,87 @@
+.plate_wrapper > #ready_ingredients_container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: var(--mid);
+    position: absolute;
+    width: 70%;
+}
+.ingredients_wrapper {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--mid);
+}
+.ingredient_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--big);
+    padding: var(--small) var(--small) var(--big) var(--small);
+    background-color: var(--color-white);
+    border-radius: 100px;
+    outline: 1px solid var(--color-light-ghost);
+    cursor: pointer;
+}
+
+.ingredient_item > p {
+    text-align: center;
+    word-break: break-word;
+}
+
+.ingredient_item > .icon_wrapper {
+    aspect-ratio: 1;
+    width: 100%;
+    position: relative;
+}
+.ingredient_item > .icon_wrapper > * {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--normal);
+    aspect-ratio: 1;
+    width: -webkit-fill-available;
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.1) inset;
+    border-radius: 100px;
+    position: absolute;
+}
+.ingredient_item > .icon_wrapper > * > * {
+    max-width: 100%;
+    max-height: 100%;
+    height: 100%;
+}
+
+.ingredient_item .icon_inner {
+    background-color: var(--color-light-cream);
+}
+.ingredient_item .yes_inner, .ingredient_item .no_inner {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.3s ease, opacity 0.3s ease;
+}
+.ingredient_item .yes_inner {
+    background-color: rgba(149, 207, 0, 0.5);
+    padding: var(--small);
+}
+.ingredient_item .no_inner {
+    background-color: rgba(255, 103, 102, 0.5);
+}
+.ingredient_item.active .yes_inner, .ingredient_item.deactive .no_inner {
+    visibility: visible;
+    opacity: 1;
+}
+
+@media (max-width: 720px) {
+    .ingredients_wrapper {
+        grid-template-columns: repeat(5, 1fr);
+        gap: var(--small);
+    }
+    .ingredient_item {
+        gap: var(--normal);
+    }
+    #choices_ingredients_container > .ingredient_item:nth-child(6) {
+        display: none;
+    }
+    .ingredient_item > .icon_wrapper > * {
+        padding: var(--small);
+    }
+}

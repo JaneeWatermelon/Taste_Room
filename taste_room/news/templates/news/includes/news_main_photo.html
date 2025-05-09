@@ -1,0 +1,23 @@
+{% load static %}
+
+<div class="photo_item" data-order="{% if next_item_number %}{{ next_item_number }}{% else %}1{% endif %}">
+    <div class="photo_wrapper">
+        <div class="image_wrapper">
+            <img class="back_image" src="{% if ready_photo %}{{ ready_photo.url }}{% else %}{% static 'img/Default/Load_image.jpg' %}{% endif %}">
+            <div class="delete_and_change">
+                <div class="action_item delete">
+                    <img src="{% static 'svg/Random_icons/Trash_icon.svg' %}">
+                </div>
+                <div class="action_item change">
+                    <img src="{% static 'svg/Random_icons/Edit_icon.svg' %}">
+                </div>
+            </div>
+            <input class="image_input" name="preview" type="file" accept="image/png,image/jpeg">
+        </div>
+        {% if sortable %}
+        <div class="move_bar">
+            <img src="{% static 'svg/Arrows/Left_Right.svg' %}">
+        </div>
+        {% endif %}
+    </div>
+</div>

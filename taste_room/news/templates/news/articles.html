@@ -2,6 +2,8 @@
 {% load static %}
 {% load custom_filters %}
 
+{% block og_url %}{{ request.scheme }}://{{ request.get_host }}{% if kwargs.slug %}{% url 'news:category' kwargs.slug %}{% else %}{% url 'news:index' %}{% endif %}{% endblock %}
+
 {% block custom_styles %}
     <link rel="stylesheet" href="{% static 'css/news/news_card.css' %}">
     <link rel="stylesheet" href="{% static 'css/news/articles.css' %}">
@@ -66,9 +68,13 @@
                 </div>
             </section>
             <section class="articles_section">
+                {% if object_list.exists %}
                 <div class="cards_wrapper">
                     {% include "news/includes/news_cards.html" with news_list=object_list %}
                 </div>
+                {% else %}
+                    {{ empty_block }}
+                {% endif %}
             </section>
         </div>
         {% if is_paginated %}

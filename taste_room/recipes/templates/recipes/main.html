@@ -5,6 +5,7 @@
 {% block custom_styles %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/general/dishes_animation.css' %}">
+    <link rel="stylesheet" href="{% static 'css/general/main_ingredients.css' %}">
     <link rel="stylesheet" href="{% static 'css/recipe/recipe_card.css' %}">
     <link rel="stylesheet" href="{% static 'css/recipe/repice_card_long.css' %}">
     <link rel="stylesheet" href="{% static 'css/news/news_card.css' %}">
@@ -31,35 +32,38 @@
                     <h4 class="letter_spacing_25 d_desktop_none">или из того, что есть в холодильнике</h4>
                     <div class="buttons_wrapper">
                         <div class="input_wrapper">
-                            <input autocomplete="off" type="text" data-url="{% url 'recipes:ingredient_cards_autocomplete_ajax' %}" data-url-click="{% url 'recipes:add_ingredient_item_ajax' %}" id="enter_ingredient_title_input" placeholder="Введите название ингредиента">
-                            <button class="input_button">
+                            <input autocomplete="off" type="text" data-url="{% url 'recipes:ingredient_cards_autocomplete_ajax' %}" id="enter_ingredient_title_input" placeholder="Введите название ингредиента">
+                            <button class="input_button" style="visibility: hidden; width: 0; padding-left: 0; padding-right: 0;">
                                 <img src="{% static 'svg/Arrows/White_right.svg' %}">
                             </button>
                         </div>
-                        <div class="input_wrapper magnifier">
-                            <button class="input_button magnifier">
+                        <form id="search_by_ingredients_form" action="{% url 'recipes:search' %}" method="get" class="input_wrapper magnifier">
+                            <input hidden="hidden" type="text" name="ingredients_ids">
+                            <button disabled type="submit" class="input_button magnifier">
                                 <img src="{% static 'svg/Shapes/Magnifier.svg' %}">
                             </button>
-                        </div>
+                        </form>
                     </div>
-                    <div id="choices_ingredients_container" class="ingredients_wrapper">
+                    <div id="choices_ingredients_container" data-url-click="{% url 'recipes:add_ingredient_card_item_ajax' %}" class="ingredients_wrapper">
                         {% include "recipes/includes/ingredient_card_items.html" with ingredients=ingredients %}
                     </div>
                     <h4 class="d_desktop_none">Выбранные:</h4>
-                    <div class="ingredients_wrapper d_desktop_none">
-                        {% include "recipes/includes/ingredient_card_items.html" with ingredients=ingredients %}
-                    </div>
+                    <div id="ready_ingredients_container" class="ingredients_wrapper d_desktop_none"></div>
                 </div>
             </div>
             <div class="welcome_section_plate d_mobile_none">
-                <img id="double_circle" src="{% static 'svg/Shapes/Double_circle.svg' %}">
+                <img draggable="false" id="double_circle" src="{% static 'svg/Shapes/Double_circle.svg' %}">
                 <div class="dishes_wrapper">
-                    <img id="ragu" src="{% static 'img/dishes/ragu.png' %}">
-                    <img id="drink_1" src="{% static 'img/dishes/drink_1.png' %}">
-                    <img id="tofu" src="{% static 'img/dishes/tofu.png' %}">
-                    <img id="drink_2" src="{% static 'img/dishes/drink_2.png' %}">
-                    <img id="fish" src="{% static 'img/dishes/fish.png' %}">
-                    <img id="drink_3" src="{% static 'img/dishes/drink_3.png' %}">
+                    <img draggable="false" id="ragu" src="{% static 'img/dishes/ragu.png' %}">
+                    <img draggable="false" id="drink_1" src="{% static 'img/dishes/drink_1.png' %}">
+                    <img draggable="false" id="tofu" src="{% static 'img/dishes/tofu.png' %}">
+                    <img draggable="false" id="drink_2" src="{% static 'img/dishes/drink_2.png' %}">
+                    <img draggable="false" id="fish" src="{% static 'img/dishes/fish.png' %}">
+                    <img draggable="false" id="drink_3" src="{% static 'img/dishes/drink_3.png' %}">
+                </div>
+                <div class="plate_wrapper d_none">
+                    <img draggable="false" id="plate" src="{% static 'img/dishes/Plate.png' %}">
+                    <div id="ready_ingredients_container"></div>
                 </div>
             </div>
         </section>
@@ -69,12 +73,16 @@
             <span class="line"></span>
         </section>
         <section class="new_recipes_section">
+            {% if recipes_1.exists or recipes_2.exists %}
             <div class="cards_wrapper">
                 {% include "recipes/includes/recipe_cards.html" with recipes_list=recipes_1 %}
             </div>
             <div class="cards_wrapper_long d_mobile_none">
                 {% include "recipes/includes/recipe_long_cards.html" with recipes_list=recipes_2 %}
             </div>
+            {% else %}
+                {{ empty_block }}
+            {% endif %}
         </section>
         <section class="section_title">
             <span class="line"></span>
@@ -82,20 +90,28 @@
             <span class="line"></span>
         </section>
         <section class="new_recipes_section d_mobile_none">
+            {% if recipes_popular_1.exists or recipes_popular_2.exists %}
             <div class="cards_wrapper">
                 {% include "recipes/includes/recipe_cards.html" with recipes_list=recipes_popular_1 %}
             </div>
             <div class="cards_wrapper_long d_mobile_none">
                 {% include "recipes/includes/recipe_long_cards.html" with recipes_list=recipes_popular_2 %}
             </div>
+            {% else %}
+                {{ empty_block }}
+            {% endif %}
         </section>
         <section class="new_recipes_section d_desktop_none swiper">
+            {% if recipes_popular_1.exists or recipes_popular_2.exists %}
             <div class="cards_wrapper swiper-wrapper">
                 {% include "recipes/includes/recipe_cards.html" with recipes_list=recipes_popular_1 swiper_slide=True %}
                 {% include "recipes/includes/recipe_cards.html" with recipes_list=recipes_popular_2 swiper_slide=True %}
             </div>
             <img class="swiper_nav prev" style="transform: rotate(180deg);" src="{% static 'svg/Arrows/Slider_right.svg' %}">
             <img class="swiper_nav next" src="{% static 'svg/Arrows/Slider_right.svg' %}">
+            {% else %}
+                {{ empty_block }}
+            {% endif %}
         </section>
         <section class="section_title d_desktop_none">
             <span class="line"></span>
@@ -103,15 +119,20 @@
             <span class="line"></span>
         </section>
         <section class="news_recs_section d_desktop_none swiper">
+            {% if articles.exists %}
             <div class="news_recs_wrapper swiper-wrapper">
                 {% include "news/includes/news_cards.html" with news_list=articles swiper_slide=True %}
             </div>
             <img class="swiper_nav prev" style="transform: rotate(180deg);" src="{% static 'svg/Arrows/Slider_right.svg' %}">
             <img class="swiper_nav next" src="{% static 'svg/Arrows/Slider_right.svg' %}">
+            {% else %}
+                {{ empty_block }}
+            {% endif %}
         </section>
     </main>
 {% endblock %}
 
 {% block custom_scripts %}
     <script src="{% static 'js/dishes_animation.js' %}"></script>
+    <script src="{% static 'js/find_recipe_by_ingredients.js' %}"></script>
 {% endblock %}

@@ -4,9 +4,10 @@ from django.contrib import admin
 from django.urls import include, path
 
 from news.views import (CreateNewsView, DetailNewsView, NewsView,
-                        bluk_create_objects, change_status, comment_reaction_change,
-                        delete_comment, load_more_comments, create_comment, change_rating, delete_rating,
-                        comments_partial_view)
+                        bluk_create_objects, change_rating, change_status,
+                        comment_reaction_change, comments_partial_view,
+                        create_comment, delete_comment, delete_rating,
+                        load_more_comments, news_create_view, news_edit_view)
 
 app_name = "news"
 
@@ -15,8 +16,9 @@ urlpatterns = [
     path('category/<slug:slug>', NewsView.as_view(), name="category"),
     path('page/<int:page>', NewsView.as_view(), name="paginator"),
     path('page/<int:page>/category/<slug:slug>', NewsView.as_view(), name="paginator_category"),
-    path('create', CreateNewsView.as_view(), name="create"),
-    path('<int:pk>/update', CreateNewsView.as_view(), name="update"),
+
+    path('create', news_create_view, name="create"),
+    path('<int:pk>/edit', news_edit_view, name="edit"),
     path('<int:pk>/<slug:slug>', DetailNewsView.as_view(), name="detail"),
 
     path('ajax/change_rating', change_rating, name="change_rating_ajax"),

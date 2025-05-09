@@ -2,14 +2,18 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
 
-from recipes.views import (CategoryRecipesView, RecipeCreateView,
-                           DetailRecipeView, PopularRecipesView,
-                           SearchRecipesView, bluk_create_objects,
+from recipes.views import (CategoryRecipesView, DetailRecipeView,
+                           PopularRecipesView, SearchRecipesView,
+                           add_ingredient_card_item, add_ingredient_item,
+                           add_ready_photo, add_recipe_step,
+                           bluk_create_objects, change_rating,
                            change_recipe_ingredients, change_status,
-                           recipe_like_change, comment_reaction_change, delete_comment, load_more_comments,
-                           create_comment, change_rating, delete_rating, comments_partial_view, ingredient_autocomplete,
-                           add_ingredient_item, recipe_create_view, add_recipe_step, add_ready_photo,
-                           recipe_edit_view, ingredient_cards_autocomplete)
+                           comment_reaction_change, comments_partial_view,
+                           create_comment, delete_comment, delete_rating,
+                           ingredient_autocomplete,
+                           ingredient_cards_autocomplete, load_more_comments,
+                           recipe_create_view, recipe_edit_view,
+                           recipe_like_change)
 
 app_name = "recipes"
 
@@ -28,7 +32,6 @@ urlpatterns = [
 
     path('create', recipe_create_view, name="create"),
     path('<int:pk>/edit', recipe_edit_view, name="edit"),
-    # path('update', recipe_update_view, name="update"),
     path('<int:pk>/<slug:slug>', DetailRecipeView.as_view(), name="detail"),
 
     path('ajax/change_rating', change_rating, name="change_rating_ajax"),
@@ -46,6 +49,7 @@ urlpatterns = [
     path('ajax/ingredient-autocomplete/', ingredient_autocomplete, name='ingredient_autocomplete_ajax'),
     path('ajax/ingredient_cards_autocomplete/', ingredient_cards_autocomplete, name='ingredient_cards_autocomplete_ajax'),
     path('ajax/add_ingredient_item/', add_ingredient_item, name='add_ingredient_item_ajax'),
+    path('ajax/add_ingredient_card_item/', add_ingredient_card_item, name='add_ingredient_card_item_ajax'),
     path('ajax/add_recipe_step/', add_recipe_step, name='add_recipe_step_ajax'),
     path('ajax/add_ready_photo/', add_ready_photo, name='add_ready_photo_ajax'),
 

@@ -2,6 +2,8 @@
 {% load static %}
 {% load custom_filters %}
 
+{% block og_url %}{{ request.scheme }}://{{ request.get_host }}{% url 'recipes:search' %}?{{ prompt_type }}={{ prompt_params }}{% endblock %}
+
 {% block custom_styles %}
     <link rel="stylesheet" href="{% static 'css/recipe/recipe_card.css' %}">
     <link rel="stylesheet" href="{% static 'css/recipe/repice_card_long.css' %}">
@@ -65,9 +67,13 @@
                 </div>
             </section>
             <section class="new_recipes_section">
+                {% if object_list.exists %}
                 <div class="cards_wrapper">
                     {% include "recipes/includes/recipe_cards.html" with recipes_list=object_list %}
                 </div>
+                {% else %}
+                    {{ empty_block }}
+                {% endif %}
             </section>
         </div>
         {% if is_paginated %}

@@ -60,6 +60,8 @@ input[type='checkbox'] {
 }
 .navigation_section > h3 {
     text-align: center;
+    text-wrap: nowrap;
+    word-break: keep-all;
 }
 .navigation_section > .links_wrapper {
     display: flex;

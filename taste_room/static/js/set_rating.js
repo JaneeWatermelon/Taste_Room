@@ -42,8 +42,6 @@ stars_wrapper.on("click", "img", function() {
     let data_url = stars_wrapper.attr("data-url");
     const new_rating = Number($(this).attr("data-order"));
 
-    const CSRF_TOKEN = $('meta[name="csrf-token"]').attr("content");
-
     if (user_review_rating && user_review_rating == new_rating) {
         data_url = stars_wrapper.attr("data-url-delete");
         $.ajax({

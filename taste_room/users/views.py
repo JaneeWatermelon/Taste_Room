@@ -9,19 +9,23 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.timezone import now, timedelta
-from django.views.decorators.http import require_POST, require_GET
+from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import DetailView, TemplateView
 
 from additions.models import EmailCode
+from additions.views import get_recipes_author_page, get_news_author_page
 from news.models import News
 from recipes.models import Recipe
-from users.forms import ChangeUserForm, UserLoginForm, UserRegistrationForm, ChangePasswordForm
+from users.forms import (ChangePasswordForm, ChangeUserForm, UserLoginForm,
+                         UserRegistrationForm)
 from users.models import (Achievement, CategoryAchievement, Color,
                           GeneralAchievementCondition, User)
+from  additions.tasks import send_email_code_task
 
 per_page = 100
 
 html_errors_template = "users/auth_errors_partial.html"
+empty_html_template = 'additions/empty_block.html'
 
 def format_form_errors(form_errors, form):
     formatted_errors = []
@@ -49,7 +53,6 @@ class ProfileView(TemplateView):
             form.save()
             return redirect('users:profile')
         return render(request, 'users/profile.html', {'settings_form': form})
-
 
     def get_context_data(self, **kwargs):
         context = super(ProfileView, self).get_context_data(**kwargs)
@@ -83,19 +86,20 @@ class AuthorPageView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(AuthorPageView, self).get_context_data(**kwargs)
-        user = self.object
-        context["recipes"] = Recipe.objects.filter(author=user, status=1, visibility=1).select_related("previews", "author").prefetch_related("recipereview_set", "recipeingredient_set", "recipeingredient_set__ingredient",)
+        user = self.request.user
+        author = self.object
+        context["recipes"] = get_recipes_author_page(user, author)
         context["published_recipes_count"] = context["recipes"].count()
 
-        context["articles"] = News.objects.filter(author=user, status=1, visibility=1).select_related("author").prefetch_related("newsreview_set")
+        context["articles"] = get_news_author_page(user, author)
         context["published_news_count"] = context["articles"].count()
 
         mult_use_category = get_object_or_404(CategoryAchievement, pk=1)
         one_use_category = get_object_or_404(CategoryAchievement, pk=2)
-        context["one_use_achivs"] = user.achivs.filter(category=one_use_category)
-        context["multiple_use_achivs"] = user.achivs.filter(category=mult_use_category)
+        context["one_use_achivs"] = author.achivs.filter(category=one_use_category)
+        context["multiple_use_achivs"] = author.achivs.filter(category=mult_use_category)
 
-        context["user"] = self.request.user
+        context["user"] = user
 
         return context
 
@@ -131,22 +135,23 @@ def _prepare_pagination_data(user, data_status, model=Recipe, page=1):
         'answer': "Данные успешно обновлены",
     }
 
-def _prepare_recipes_data(user, data_status, page=1):
-    recipes = Recipe.objects.filter(author=user, status=data_status).select_related("previews", "author")
+def _prepare_recipes_data(user, data_statuses, page=1):
+    recipes = Recipe.objects.filter(pk=0)
+    for status in data_statuses:
+        recipes |= Recipe.objects.filter(author=user, status=status).select_related("previews", "author").prefetch_related("recipereview_set", "recipeingredient_set", "recipeingredient_set__ingredient",)
 
     paginator = Paginator(recipes, per_page)
     page_obj = paginator.get_page(page)
 
     context = {
-        'my_recipes': page_obj,
+        'recipes_list': page_obj,
+        'is_buttons': True,
         'object': user,
         'user': user,
-        # 'my_recipes_is_paginated': page_obj.has_other_pages(),
-        # 'paginator': paginator,
     }
 
     # Рендерим HTML для новых комментариев
-    html = render_to_string('users/my_recipes_partial.html', context)
+    html = render_to_string('recipes/includes/recipe_cards.html', context)
 
     return {
         'html': html,
@@ -161,22 +166,28 @@ def load_my_recipes(request):
     user = request.user
     page = request.GET.get('page', 1)
 
-    return JsonResponse(_prepare_recipes_data(user, data_status, page))
+    data_statuses = data_status.split(",")
+
+    return JsonResponse(_prepare_recipes_data(user, data_statuses, page))
 
 
-def _prepare_articles_data(user, data_status, page=1):
-    articles = News.objects.filter(author=user, status=data_status).select_related("author")
+def _prepare_articles_data(user, data_statuses, page=1):
+    articles = News.objects.filter(pk=0)
+    print(data_statuses)
+    for status in data_statuses:
+        articles |= News.objects.filter(author=user, status=status).select_related("author")
 
     paginator = Paginator(articles, per_page)
     page_obj = paginator.get_page(page)
 
     context = {
-        'my_articles': page_obj,
+        'news_list': page_obj,
+        'is_buttons': True,
         'object': user,
         'user': user,
     }
 
-    html = render_to_string('users/my_articles_partial.html', context)
+    html = render_to_string('news/includes/news_cards.html', context)
 
     return {
         'html': html,
@@ -191,7 +202,9 @@ def load_my_articles(request):
     user = request.user
     page = request.GET.get('page', 1)
 
-    return JsonResponse(_prepare_articles_data(user, data_status, page))
+    data_statuses = data_status.split(",")
+
+    return JsonResponse(_prepare_articles_data(user, data_statuses, page))
 
 @require_POST
 def sub_unsub(request):
@@ -202,18 +215,13 @@ def sub_unsub(request):
     sub_user = get_object_or_404(User, id=data_id)
 
     user_subscriptions_exists = user.subscriptions.filter(id=data_id).exists()
-    sub_user_subscribers_exists = sub_user.subscribers.filter(id=data_id).exists()
 
     if data_type == 'sub':
         if not user_subscriptions_exists:
             user.subscriptions.add(sub_user)
-        if not sub_user_subscribers_exists:
-            sub_user.subscribers_id.append(user)
     elif data_type == 'unsub':
         if user_subscriptions_exists:
-            user.subscriptions_id.remove(sub_user)
-        if sub_user_subscribers_exists:
-            sub_user.subscribers_id.remove(user)
+            user.subscriptions.remove(sub_user)
 
     user.save()
     sub_user.save()
@@ -366,16 +374,10 @@ def send_email_code(request):
     for item in EmailCode.objects.filter(email=email):
         item.delete()
 
-    email_code_obj = EmailCode.objects.create(email=email)
-
     try:
-        mail = send_mail(
-            "Код восстановления пароля",
-            f"Ваш код для смены пароля: {email_code_obj.code}",
-            settings.EMAIL_HOST_USER,
-            [email],
-            fail_silently=False,
-        )
+        email_code_obj = EmailCode.objects.create(email=email)
+
+        send_email_code_task.delay(email_code_obj.code, email)
 
         return JsonResponse({
             "answer": "Письмо успешно отправлено",

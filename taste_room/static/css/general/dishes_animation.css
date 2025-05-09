@@ -1,12 +1,14 @@
 #double_circle {
     position: relative;
     left: 175px;
+    height: 100vh;
 }
-.dishes_wrapper {
+.dishes_wrapper, .plate_wrapper {
     display: flex;
     align-items: center;
     position: absolute;
-    height: 600px;
+    height: 80vh;
+    transition: opacity 0.3s ease-in;
 }
 .dishes_wrapper > * {
     height: 100%;
@@ -17,4 +19,14 @@
 #ragu {
     opacity: 1;
     transform: rotate(360deg);
+}
+
+
+.plate_wrapper {
+    opacity: 0;
+    z-index: 2;
+    justify-content: center;
+}
+#plate {
+    height: 100%;
 }

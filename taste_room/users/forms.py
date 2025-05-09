@@ -4,6 +4,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
 from additions.models import Socials
+from additions.validators import validate_telegram_url, validate_vk_url, validate_pinterest_url, validate_youtube_url, \
+    validate_rutube_url
 from users.models import User
 
 
@@ -92,18 +94,27 @@ class ChangeUserForm(UserChangeForm):
     telegram = forms.URLField(widget=forms.URLInput(attrs={
         'placeholder': 'https://t.me/your_user',
     }), required=False)
+    telegram.validators.append(validate_telegram_url)
+
     vk = forms.URLField(widget=forms.URLInput(attrs={
         'placeholder': 'https://vk.com/your_user',
     }), required=False)
+    vk.validators.append(validate_vk_url)
+
     pinterest = forms.URLField(widget=forms.URLInput(attrs={
         'placeholder': 'https://pinterest.com/your_user',
     }), required=False)
+    pinterest.validators.append(validate_pinterest_url)
+
     youtube = forms.URLField(widget=forms.URLInput(attrs={
         'placeholder': 'https://youtube.com/your_channel',
     }), required=False)
+    youtube.validators.append(validate_youtube_url)
+
     rutube = forms.URLField(widget=forms.URLInput(attrs={
         'placeholder': 'https://rutube.ru/channel/your_channel',
     }), required=False)
+    rutube.validators.append(validate_rutube_url)
 
     class Meta:
         model = User

@@ -1,19 +1,55 @@
 {% load static %}
 {% load custom_filters %}
+{% load cache %}
 
 {% for item in news_list %}
-<div class="news_item {% if swiper_slide %}swiper-slide{% endif %}">
+{% cache 60 news_list item.id item.cache_version swiper_slide is_buttons %}
+<div data-id="{{ item.id }}" class="card_item news_item {% if swiper_slide %}swiper-slide{% endif %}">
     <div class="news_item_header">
         <div class="image_wrapper">
-            <a href="{% url 'news:detail' item.id item.slug %}">
+            <a class="image_link" href="{% url 'news:detail' item.id item.slug %}">
                 <img class="back_image" src="{{ item.optimized_image_small.url }}">
             </a>
-            <div class="date_wrapper">
-                <h4>{{ item.formated_published_date }}</h4>
+            <div class="visibility_and_adds">
+                {% if is_buttons %}
+                <div class="visibility_wrapper">
+                    <img src="{% static 'svg/Random_icons/Eye_icon_black.svg' %}">
+                    <h4>{{ item.get_visibility_display }}</h4>
+                </div>
+                {% endif %}
+                <div class="date_wrapper">
+                    <h4>{{ item.formated_published_date }}</h4>
+                </div>
             </div>
+            {% if is_buttons %}
+            <div class="buttons">
+                {% if item.status != 1 %}
+                <a href="{% url 'news:edit' item.id %}" class="change">
+                    <img src="{% static 'svg/Random_icons/Edit_icon.svg' %}">
+                    <h4>Редактировать</h4>
+                </a>
+                {% endif %}
+                {% if item.status == 2 or item.status == 3 %}
+                <div data-url="{% url 'news:change_status_ajax' %}" class="public">
+                    <img src="{% static 'svg/Yes_No/Yes_no_shadow.svg' %}">
+                    <h4 class="medium_font white">Опубликовать</h4>
+                </div>
+                {% elif item.status == 1 %}
+                <div data-url="{% url 'news:change_status_ajax' %}" class="unpublic">
+                    <img src="{% static 'svg/Yes_No/No_no_shadow.svg' %}">
+                    <h4 class="medium_font white">Снять с публикации</h4>
+                </div>
+                {% elif item.status == 4 %}
+                <div class="moderator">
+                    <img src="{% static 'svg/Random_icons/Gear_icon_white.svg' %}">
+                    <h4 class="medium_font white">Проверяется модератором</h4>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
         <div class="info">
-            <div class="rating">
+            <a href="{% url 'news:detail' item.id item.slug %}#reviews_section" class="rating">
                 {% for _ in item.stars_on_count|repeat %}
                 <img src="{% static 'svg/Stars/Star_on.svg' %}">
                 {% endfor %}
@@ -21,7 +57,7 @@
                 <img src="{% static 'svg/Stars/Star_off.svg' %}">
                 {% endfor %}
                 <h4 class="black_75">({{ item.newsreview_set.count }})</h4>
-            </div>
+            </a>
             <div class="views">
                 <img src="{% static 'svg/Random_icons/Eye_icon.svg' %}">
                 <h4 class="green">{{ item.views }}</h4>
@@ -57,4 +93,5 @@
         </div>
     </div>
 </div>
+{% endcache %}
 {% endfor %}
