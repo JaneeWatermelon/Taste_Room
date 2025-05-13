@@ -202,6 +202,11 @@ main {
     display: flex;
     padding: var(--normal) var(--padding-window);
     justify-content: space-between;
+    gap: var(--padding-window);
+}
+.header_wrapper > .input_wrapper {
+    flex-grow: 1;
+    outline: none;
 }
 .header_sections {
     display: flex;
@@ -360,6 +365,9 @@ footer {
     .d_mobile_none {
         display: none !important;
     }
+    #main_cookie {
+        height: 40px;
+    }
     .bread_crumbs > img {
         height: 14px;
     }
@@ -378,9 +386,9 @@ footer {
         font-size: 2rem; /*32px*/
         line-height: 2.25rem; /*36px*/
     }
-    .header_buttons > a {
+    /* .header_buttons > a {
         display: none !important;
-    }
+    } */
     .header_buttons > .burger {
         display: flex;
         flex-direction: column;
@@ -421,7 +429,26 @@ footer {
         border-radius: 2px;
         background-color: var(--color-black);
     }
-
+    .header_wrapper > .input_wrapper {
+        gap: var(--small);
+        padding: var(--tiny) var(--tiny) var(--tiny) var(--normal);
+    }
+    .header_wrapper .input_wrapper input::placeholder {
+        font-size: 0.75rem; /*12px*/
+        line-height: 0.875rem; /*14px*/
+    }
+    .header_wrapper .input_wrapper.magnifier {
+        padding: var(--tiny);
+    }
+    .header_wrapper .input_wrapper .input_button {
+        padding: var(--normal) var(--mid);
+    }
+    .header_wrapper .input_wrapper .input_button.magnifier {
+        padding: 6px 22px;
+    }
+    .header_wrapper .input_wrapper .input_button.magnifier > img {
+        height: 22px;
+    }
 
     
 }

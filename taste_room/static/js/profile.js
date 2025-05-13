@@ -253,14 +253,14 @@ $(".profile_chapters > .chapter_wrapper > .chapter > .chapter_item").on("click",
 
     if (!$this.hasClass("active") && !$this.closest(".chapter").hasClass("add_button")) {
         all_buttons.removeClass("active");
-        $(".profile_header > .settings_wrapper > .settings > .settings_item.change_settings").removeClass("active");
+        $(".profile_header .settings > .settings_item.change_settings").removeClass("active");
         $this.addClass("active");
         
         possible_blocks.addClass("d_none");
         linked_block.removeClass("d_none");
     }
 })
-$(".profile_header > .settings_wrapper > .settings > .settings_item.change_settings").on("click", function() {
+$(".profile_header .settings > .settings_item.change_settings").on("click", function() {
     $this = $(this);
     all_buttons = $(".profile_chapters > .chapter_wrapper > .chapter > .chapter_item");
     linked_block = $(`#${$this.attr("data-for")}`);

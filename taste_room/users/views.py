@@ -13,7 +13,7 @@ from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import DetailView, TemplateView
 
 from additions.models import EmailCode
-from additions.views import get_recipes_author_page, get_news_author_page
+from additions.views import get_recipes_author_page, get_news_author_page, set_meta_tags
 from news.models import News
 from recipes.models import Recipe
 from users.forms import (ChangePasswordForm, ChangeUserForm, UserLoginForm,
@@ -46,6 +46,11 @@ def format_form_errors(form_errors, form):
 
 class ProfileView(TemplateView):
     template_name = "users/profile.html"
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+
+        return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
         form = ChangeUserForm(self.request.POST, instance=self.request.user)
@@ -82,6 +87,19 @@ class AuthorPageView(DetailView):
 
     def get_object(self, queryset=None):
         object = get_object_or_404(User, username=self.kwargs["username"])
+
+        item_preview = object.avatar if object.avatar else None
+        object_name = object.name if object.name else object.username
+
+        set_meta_tags(
+            self.request,
+            f"Автор: {object_name} | Рецепты на «Комната Вкуса»",
+            f"Все рецепты от {object_name} с подробными инструкциями и фото. Подпишитесь, чтобы не пропустить новое!",
+            f"{object_name} — авторские рецепты",
+            f"Готовьте по рецептам {object_name} — только проверенные блюда.",
+            image=item_preview,
+        )
+
         return object
 
     def get_context_data(self, **kwargs):
@@ -256,10 +274,11 @@ def change_back_fon(request):
     color_id = request.POST.get("data_id")
     user = request.user
 
-    color = get_object_or_404(Color, id=color_id)
+    if color_id:
+        color = get_object_or_404(Color, id=color_id)
 
-    user.background_color = color
-    user.save()
+        user.background_color = color
+        user.save()
 
     return JsonResponse({
         'answer': "Цвет фона успешно изменён",

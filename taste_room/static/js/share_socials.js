@@ -21,9 +21,13 @@ $(document).ready(function () {
         let data_url;
 
         const pop_up_share = $(this).closest(".pop_up_share");
-        if (pop_up_share) {
+        if (pop_up_share.length) {
             pageUrl = window.location.origin + pop_up_share.attr("data-url");  // URL текущей страницы
             setPageTitleDescr(pop_up_share.attr("data-title"), pageUrl);    // Заголовок страницы
+        }
+        else {
+            pageUrl = $("meta[property='og:url']").attr("content");
+            setPageTitleDescr($("meta[property='og:title']").attr("content"), pageUrl);
         }
 
         if ($(this).attr('data-social') == "tg") {
@@ -54,12 +58,27 @@ $(document).ready(function () {
         }, 1000)
 
         const pop_up_share = $(this).closest(".pop_up_share");
-        if (pop_up_share) {
+        console.log(pop_up_share);
+        if (pop_up_share.length) {
             pageUrl = window.location.origin + pop_up_share.attr("data-url");  // URL текущей страницы
-            setPageTitleDescr(pop_up_share.attr("data-title"), pageUrl);    // Заголовок страницы
+        }
+        else {
+            pageUrl = $("meta[property='og:url']").attr("content");
         }
 
-        navigator.clipboard.writeText(pageUrl.split("#")[0]);
+        navigator.clipboard.writeText(pageUrl);
+    });
+
+    $('#copy_email').on('click', function (e) {
+        e.preventDefault();
+        clearTimeout(setTimeout_id);
+        let copy_window = $(this).parent().find(".copy_window");
+        copy_window.addClass("show");
+        setTimeout_id = setTimeout(function() {
+            copy_window.removeClass("show");
+        }, 1000)
+
+        navigator.clipboard.writeText($(this).attr("data-email"));
     });
 
 });

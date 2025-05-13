@@ -13,6 +13,7 @@
 }
 .category_title_div > .lilita_font {
     color: var(--color-cookie);
+    text-align: center;
 }
 
 .category_section {

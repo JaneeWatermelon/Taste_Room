@@ -1,4 +1,4 @@
-const USER_AUTHENTICATED = $('meta[name="user-authenticated"]').attr("content") == "True";
+
 
 function setHideBackBlackOverWindowClickEventListener(popup) {
     $(document).off('click').on('click', function (event) {
@@ -36,7 +36,7 @@ function reloadPage() {
     location.reload();
 }
 
-function swapProfileWindows(current_popup, target_popup) {
+window.swapProfileWindows = function(current_popup, target_popup) {
     current_popup.css({
         "opacity": 0,
     });
@@ -60,8 +60,16 @@ $(document).ready(function() {
     
     // Обработчик для всех защищённых ссылок
     $authLinks.on('click', function(e) {
-        e.preventDefault();
         if (!USER_AUTHENTICATED) {
+            e.preventDefault();
+            // if (!$(".back_black").hasClass(".d_none")) {
+            //     const target_pop = $(`#${$(this).attr("data-target-id")}`);
+            //     window.swapProfileWindows(target_pop, popup)
+            // }
+            // else {
+
+                
+            // }
             window.showHideBackBlack(e, popup);
             
             // Сохраняем оригинальный URL и позицию прокрутки
@@ -78,8 +86,8 @@ $(document).ready(function() {
     });
 
     $(".sub_action_href").on('click', function(e) {
-        e.preventDefault();
         const $this = $(this);
+        e.preventDefault();
         console.log($this);
         const current_popup = $this.closest(".profile_window");
         const target_popup = $(`#${$this.attr("data-action-id")}`);

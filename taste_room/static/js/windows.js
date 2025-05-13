@@ -1,21 +1,29 @@
+function showBackBlack() {
+    $(".back_black").removeClass('d_none');
+    setTimeout(function() {
+        $(".back_black").css({
+            "opacity": 1,
+        });
+    }, 1);
+}
+function hideBackBlack_andPopup(popup) {
+    $(".back_black").css({
+        "opacity": 0,
+    });
+    setTimeout(function() {
+        $(".back_black").addClass('d_none');
+        popup.addClass('d_none');
+    }, 300);
+}
+
 window.showHideBackBlack = function(event, popup) {
     event.stopPropagation(); // Останавливаем всплытие события, чтобы оно не достигло document
+    $(".back_black > *").addClass("d_none");
     if (popup.hasClass('d_none')) {
         popup.removeClass('d_none');
-        $(".back_black").removeClass('d_none');
-        setTimeout(function() {
-            $(".back_black").css({
-                "opacity": 1,
-            });
-        }, 1);
+        showBackBlack();
     } else {
-        $(".back_black").css({
-            "opacity": 0,
-        });
-        setTimeout(function() {
-            $(".back_black").addClass('d_none');
-            popup.addClass('d_none');
-        }, 300);
+        hideBackBlack_andPopup(popup);
     }
 }
 window.HideBackBlackOverWindowClick = function(event, popup, hoverEl = null) {
@@ -155,7 +163,7 @@ $(document).ready(function () {
     }
 
 
-    const backFonEl = $(".profile_header > .settings_wrapper > .settings > .settings_item.change_fon");
+    const backFonEl = $(".profile_header .settings > .settings_item.change_fon");
     const backFonPop = $('.back_black > .profile_window.back_fon');
     setListenersWithBlackBack(backFonPop, backFonEl);
 

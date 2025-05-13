@@ -4,7 +4,7 @@
 
 {% with user_liked_recipes=user_liked_recipes %}
 {% for item in recipes_list %}
-{% cache 60 recipes_list_long item.id item.cache_version %}
+{% cache 60 recipes_list_long item.id item.cache_version user.is_authenticated %}
 <div class="recipe_and_art">
     <div data-id="{{ item.id }}" class="recipe_item_long">
         <div class="recipe_item_header">
@@ -103,11 +103,13 @@
             {% endfor %}
         </div>
     </div>
+    {% if art %}
     <div class="art_wrapper">
         <div class="art_info">
             <h2>Рекламный баннер</h2>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endcache %}
 {% endfor %}

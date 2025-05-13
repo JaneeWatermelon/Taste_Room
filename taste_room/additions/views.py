@@ -244,3 +244,18 @@ def _prepare_empty_block():
         'html': html,
         'answer': "Данные успешно обновлены",
     }
+
+def set_meta_tags(request, title, description, og_title=None, og_description=None, image=None,):
+    if image:
+        request.meta_og_image = image
+    request.meta_title = title
+    request.meta_description = description
+    if og_title:
+        request.meta_og_title = og_title
+    else:
+        request.meta_og_title = title
+
+    if og_description:
+        request.meta_og_description = og_description
+    else:
+        request.meta_og_description = description

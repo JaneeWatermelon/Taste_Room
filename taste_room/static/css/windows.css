@@ -224,7 +224,7 @@
     border-radius: var(--small);
     background-color: var(--color-white);
     outline: 1px solid var(--color-cookie);
-    width: 100%;
+    flex-grow: 1;
 }
 .burger_menu > .profile_info > .image_wrapper {
     display: flex;
@@ -233,6 +233,7 @@
     aspect-ratio: 1;
     border-radius: 50px;
     height: 50px;
+    overflow: hidden;
 }
 .burger_menu > .profile_info > .image_wrapper > img {
     height: 100%;
@@ -296,6 +297,9 @@
     gap: var(--small);
     align-items: center;
 }
+.copy_window > .inner_wrapper > h5 {
+    word-break: keep-all;
+}
 .copy_window.show {
     opacity: 1;
     visibility: visible;
@@ -325,7 +329,8 @@
         padding: 0 var(--padding-window);
     }
     .profile_window {
-        width: 100%;
+        width: -webkit-fill-available;
+        margin: var(--padding-window);
         padding: var(--big);
     }
     .profile_window > .info_form {
@@ -337,5 +342,14 @@
     .profile_window > .title > h2 {
         font-size: 2rem; /*32px*/
         line-height: 2.25rem; /*36px*/
+    }
+    .profile_window.unpublic_warning {
+        width: auto;
+    }
+    .profile_window.unpublic_warning > .buttons {
+        flex-direction: column-reverse;
+    }
+    .profile_window.unpublic_warning > .buttons > .button_item {
+        width: -webkit-fill-available;
     }
 }

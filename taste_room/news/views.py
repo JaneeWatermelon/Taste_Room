@@ -9,7 +9,8 @@ from django.views.decorators.http import require_GET, require_POST
 from django.views.generic import DetailView, ListView, TemplateView
 from docs.source.conf import author
 
-from additions.views import Status, Visibility, get_recs_news, get_news_PUBLISHED_ALL_SUBS, get_news_comments
+from additions.views import Status, Visibility, get_recs_news, get_news_PUBLISHED_ALL_SUBS, get_news_comments, \
+    set_meta_tags
 from categories.models import CategoryGroup, RecipeCategory
 from news.forms import CreateNewsCommentForm, CreateNewsForm
 from news.models import News, NewsComment, NewsReview
@@ -30,6 +31,16 @@ class NewsView(ListView):
         if (self.kwargs.get("slug", None)):
             category_obj = RecipeCategory.objects.get(slug=self.kwargs["slug"])
             queryset = queryset.filter(categories=category_obj)
+
+            slug_name = category_obj.name
+            set_meta_tags(
+                self.request,
+                f"«{slug_name}» — свежие статьи | Комната Вкуса",
+                f"Подборка статей в категории «{slug_name}». Полезные советы, лайфхаки и рекомендации.",
+                f"{slug_name} - лучшие статьи категории",
+                f"Читайте с Комнатой Вкуса — готовьте с удовольствием!",
+            )
+
         return queryset.order_by("-published_date")
 
     def get_context_data(self, **kwargs):
@@ -41,9 +52,6 @@ class NewsView(ListView):
         if (self.kwargs.get("slug", None)):
             context["kwargs"]["slug_name"] = RecipeCategory.objects.get(slug=self.kwargs["slug"]).name
         return context
-
-class CreateNewsView(TemplateView):
-    template_name = "news/add_news.html"
 
 def news_create_view(request):
     if request.method == "GET":
@@ -120,6 +128,16 @@ def news_edit_view(request, pk):
             'category_groups': CategoryGroup.objects.all(),
             'visibility_descriptions': Visibility.TypeAndDescr,
         }
+
+        item_title = item_object.title
+
+        set_meta_tags(
+            request,
+            f"Изменить статью «{item_title}» | Комната Вкуса",
+            f"Расскажите другим о ваших секретах и лайфхаках по приготовлению идеального блюда!",
+            f"Доработайте свою статью «{item_title}»",
+            f"Сделайте статью ещё более привлекательной и интересной!",
+        )
 
         return render(request, 'news/edit_news.html', context=context)
     elif request.method == "POST":
@@ -203,12 +221,17 @@ class DetailNewsView(DetailView):
                 self.object.views += 1
                 self.object.save()
 
-        if self.object.preview:
-            request.meta_og_image = self.object.preview
-        request.meta_title = self.object.title
-        request.meta_description = self.object.description_card
-        request.meta_og_title = self.object.title
-        request.meta_og_description = self.object.description_card
+        item_title = self.object.title
+        item_description_card = self.object.description_card
+        item_preview = self.object.preview if self.object.preview else None
+        set_meta_tags(
+            request,
+            f"{item_title} — кулинарные советы | Комната Вкуса",
+            f"{item_description_card}",
+            f"{item_title} - читайте на «Комнате Вкуса»",
+            f"{item_description_card}",
+            image=item_preview,
+        )
 
         return super().get(request, *args, **kwargs)
 

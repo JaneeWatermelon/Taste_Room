@@ -256,20 +256,7 @@
                     </div>
                     <div class="share_wrapper">
                         <h4 class="medium_font">Поделись рецептом с друзьями!</h4>
-                        <div class="socials">
-                            <img class="share_button" id="share_tg" src="{% static 'svg/Socials_Colorful/TG.svg' %}">
-                            <img class="share_button" id="share_vk" src="{% static 'svg/Socials_Colorful/VK.svg' %}">
-                            <img class="share_button" id="share_ws" src="{% static 'svg/Socials_Colorful/WS.svg' %}">
-                            <img class="share_button" id="share_pinterest" src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
-                            <div class="copy_wrapper">
-                                <img class="copy_button" id="share_copy" src="{% static 'svg/Socials_Colorful/Copy.svg' %}">
-                                <div class="copy_window">
-                                    <div class="inner_wrapper">
-                                        <h5>Ссылка скопирована!</h5>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {% include "additions/socials_block.html" %}
                     </div>
                 </div>
                 {% if recs_recipes %}

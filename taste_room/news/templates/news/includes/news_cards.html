@@ -3,7 +3,7 @@
 {% load cache %}
 
 {% for item in news_list %}
-{% cache 60 news_list item.id item.cache_version swiper_slide is_buttons %}
+{% cache 60 news_list item.id item.cache_version user.is_authenticated swiper_slide is_buttons %}
 <div data-id="{{ item.id }}" class="card_item news_item {% if swiper_slide %}swiper-slide{% endif %}">
     <div class="news_item_header">
         <div class="image_wrapper">
@@ -77,20 +77,8 @@
             <img class="share_button" src="{% static 'svg/Random_icons/Share_icon.svg' %}">
         </a>
 
-        <div class="socials pop_up_share d_none" data-title="{{ item.title }}" data-url="{% url 'news:detail' item.id item.slug %}">
-            <img class="share_option" data-social="tg" src="{% static 'svg/Socials_Colorful/TG.svg' %}">
-            <img class="share_option" data-social="vk" src="{% static 'svg/Socials_Colorful/VK.svg' %}">
-            <img class="share_option" data-social="ws" src="{% static 'svg/Socials_Colorful/WS.svg' %}">
-            <img class="share_option" data-social="pinterest" src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
-            <div class="copy_wrapper">
-                <img class="copy_option" data-social="copy" src="{% static 'svg/Socials_Colorful/Copy.svg' %}">
-                <div class="copy_window">
-                    <div class="inner_wrapper">
-                        <h5>Ссылка скопирована!</h5>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% url 'news:detail' item.id item.slug as item_url %}
+        {% include "additions/socials_block.html" with pop_up_share=True title=item.title url=item_url %}
     </div>
 </div>
 {% endcache %}

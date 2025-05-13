@@ -9,6 +9,7 @@ from categories.models import CategoryGroup, RecipeCategory
 class RecipeCategoryAdmin(ModelAdmin):
     list_display = ["name", "slug", "parent"]
     readonly_fields = ['slug']
+    ordering = ["parent", "name"]
 
 @admin.register(CategoryGroup)
 class CategoryGroupAdmin(ModelAdmin):

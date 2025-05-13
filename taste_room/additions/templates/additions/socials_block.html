@@ -1,0 +1,16 @@
+{% load static %}
+
+<div class="socials {% if pop_up_share %}pop_up_share d_none{% endif %}" data-title="{{ title }}" data-url="{{ url }}">
+    <img class="share_option" data-social="tg" src="{% static 'svg/Socials_Colorful/TG.svg' %}">
+    <img class="share_option" data-social="vk" src="{% static 'svg/Socials_Colorful/VK.svg' %}">
+    <img class="share_option" data-social="ws" src="{% static 'svg/Socials_Colorful/WS.svg' %}">
+    <img class="share_option" data-social="pinterest" src="{% static 'svg/Socials_Colorful/Pinterest.svg' %}">
+    <div class="copy_wrapper">
+        <img class="copy_option" data-social="copy" src="{% static 'svg/Socials_Colorful/Copy.svg' %}">
+        <div class="copy_window">
+            <div class="inner_wrapper">
+                <h5>Ссылка скопирована!</h5>
+            </div>
+        </div>
+    </div>
+</div>

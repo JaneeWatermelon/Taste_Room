@@ -5,8 +5,8 @@
 }
 
 .recipe_and_art {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
+    /* display: grid;
+    grid-template-columns: 3fr 1fr; */
     gap: var(--small);
 }
 .recipe_and_art > .art_wrapper {

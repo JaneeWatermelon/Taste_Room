@@ -50,35 +50,43 @@
     {% block header %}
     <header>
         <div class="header_wrapper">
-            <a href="{% url 'main' %}">
-                <img id="main_cookie" src="{% static 'svg/Cookie/TR.svg' %}">
-            </a>
-
+            <div class="header_buttons">
+                <a href="{% url 'main' %}">
+                    <img id="main_cookie" src="{% static 'svg/Cookie/TR.svg' %}">
+                </a>
+            </div>
+            <form action="{% url 'recipes:search' %}" method="get" class="input_wrapper">
+                <input required type="text" name="q" placeholder="Введите название блюда">
+                <button type="submit" class="input_button magnifier">
+                    <img src="{% static 'svg/Shapes/Magnifier.svg' %}">
+                </button>
+            </form>
             <div class="header_sections d_mobile_none">
                 <a href="{% url 'recipes:popular' %}"><h4 class="medium_font {% if active_popular %}active{% endif %}">Популярное</h4></a>
                 <a href="{% url 'recipes:index' %}"><h4 class="medium_font {% if active_recipes %}active{% endif %}">Рецепты по категориям</h4></a>
                 <a href="{% url 'news:index' %}"><h4 class="medium_font {% if active_news %}active{% endif %}">Статьи</h4></a>
             </div>
             <div class="header_buttons">
-                <a href="{% url 'recipes:create' %}" data-require-auth><img id="add_recipe" src="{% static 'svg/Plus_Minus/Plus_fill.svg' %}"></a>
-                <a href="{% url 'recipes:create' %}"><img id="tg_notif" src="{% static 'svg/Socials_WB/Notif.svg' %}"></a>
+                <a class="d_mobile_none" href="{% url 'recipes:create' %}" data-require-auth><img id="add_recipe" src="{% static 'svg/Plus_Minus/Plus_fill.svg' %}"></a>
+                <a class="d_mobile_none" href="https://t.me/taste_room_kv"><img id="tg_notif" src="{% static 'svg/Socials_WB/Notif.svg' %}"></a>
                 {% if user.is_authenticated %}
-                <a class="profile_icon_wrapper" href="{% url 'users:profile' %}">
+                <a class="d_mobile_none profile_icon_wrapper" href="{% url 'users:profile' %}">
                     {% if user.avatar %}
-                    <img class="d_mobile_none" id="profile" src="{{ user.optimized_image_small.url }}">
+                    <img id="profile" src="{{ user.optimized_image_small.url }}">
                     {% else %}
-                    <img class="d_mobile_none" id="profile" src="{% static 'img/Profile/author_default.png' %}">
+                    <img id="profile" src="{% static 'img/Profile/author_default.png' %}">
                     {% endif %}
                 </a>
                 {% else %}
-                <a href="{% url 'users:profile' %}" data-require-auth>
-                    <img class="d_mobile_none" id="profile" src="{% static 'svg/Cookie/Cookie_with_hat.svg' %}">
+                <a class="d_mobile_none" href="{% url 'users:profile' %}" data-require-auth>
+                    <img id="profile" src="{% static 'svg/Cookie/Cookie_with_hat.svg' %}">
                 </a>
                 {% endif %}
                 <div class="burger">
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
+                    <img src="{% static 'svg/Random_icons/Burger_menu_icon.svg' %}">
+<!--                    <span class="line"></span>-->
+<!--                    <span class="line"></span>-->
+<!--                    <span class="line"></span>-->
                 </div>
             </div>
         </div>
@@ -92,46 +100,53 @@
     {% endblock %}
     {% block back_black %}
     <div class="back_black d_none">
-        <div class="burger_menu d_none">
-            <div class="profile_info d_none">
-                <a href="" class="image_wrapper">
+        <div id="burger_menu" class="burger_menu d_none">
+            {% if user.is_authenticated %}
+            <div class="profile_info">
+                <a href="{% url 'users:profile' %}" class="image_wrapper">
+                    {% if user.avatar %}
+                    <img src="{{ user.optimized_image_small.url }}">
+                    {% else %}
                     <img src="{% static 'img/Profile/author_default.png' %}">
+                    {% endif %}
                 </a>
-                <a href="" class="name_and_tag">
-                    <h4>Дашка Мелешенко</h4>
-                    <h5 class="black_50">@dashka_meleshenko</h5>
+                <a href="{% url 'users:profile' %}" class="name_and_tag">
+                    <h4>{% if user.name %}{{ user.name }}{% else %}{{ user.username }}{% endif %}</h4>
+                    <h5 class="black_50">@{{ user.username }}</h5>
                 </a>
             </div>
+            {% else %}
             <div class="profile_info">
-                <a href="" class="name_and_tag">
+                <a data-require-auth data-target-id="burger_menu" href="{% url 'users:profile' %}" class="name_and_tag">
                     <h4>Войти в профиль</h4>
                     <h5 class="black_50">Ещё больше возможностей!</h5>
                 </a>
             </div>
+            {% endif %}
             <div class="chapters_list">
-                <a href="" class="chapter_item">
+                <a href="{% url 'main' %}" class="chapter_item">
                     <img src="{% static 'svg/Cookie/Smile_black.svg' %}">
                     <h3>Главная</h3>
                 </a>
-                <a href="" class="chapter_item">
+                <a href="{% url 'recipes:popular' %}" class="chapter_item">
                     <img src="{% static 'svg/Stars/Star_off_black.svg' %}">
                     <h3>Популярное</h3>
                 </a>
-                <a href="" class="chapter_item">
+                <a href="{% url 'recipes:index' %}" class="chapter_item">
                     <img src="{% static 'svg/Random_icons/Tree_icon.svg' %}">
                     <h3>Рецепты по категориям</h3>
                 </a>
-                <a href="" class="chapter_item">
+                <a href="{% url 'news:index' %}" class="chapter_item">
                     <img src="{% static 'svg/Random_icons/Article_black_icon.svg' %}">
                     <h3>Статьи</h3>
                 </a>
             </div>
             <div class="chapters_list">
-                <a href="" class="chapter_item">
+                <a data-require-auth data-target-id="burger_menu" href="{% url 'recipes:create' %}" class="chapter_item">
                     <img src="{% static 'svg/Plus_Minus/Plus_blank.svg' %}">
                     <h3>Добавить рецепт</h3>
                 </a>
-                <a href="" class="chapter_item">
+                <a data-require-auth data-target-id="burger_menu" href="{% url 'news:create' %}" class="chapter_item">
                     <img src="{% static 'svg/Plus_Minus/Plus_blank.svg' %}">
                     <h3>Добавить статью</h3>
                 </a>
@@ -139,8 +154,9 @@
             <div class="socials_info">
                 <h4 class="medium_font">Наши контакты:</h4>
                 <div class="socials_icons">
-                    <a href=""><img src="{% static 'svg/Socials_WB/TG_blank.svg' %}"></a>
-                    <a href=""><img src="{% static 'svg/Socials_WB/VK_blank.svg' %}"></a>
+                    <a href="https://t.me/taste_room_kv"><img src="{% static 'svg/Socials_WB/TG_blank.svg' %}"></a>
+                    <a href="https://vk.com/taste_room"><img src="{% static 'svg/Socials_WB/VK_blank.svg' %}"></a>
+                    <a href="https://ru.pinterest.com/taste_room/"><img src="{% static 'svg/Socials_WB/Pinterest_blank.svg' %}"></a>
                     <a href=""><img src="{% static 'svg/Socials_WB/Email_blank.svg' %}"></a>
                 </div>
             </div>
@@ -220,7 +236,7 @@
                 <div class="field_item">
                     <h4>Адрес электронной почты</h4>
                     <div data-url="{% url 'users:send_email_code_ajax' %}" class="input_wrapper">
-                        <input required name="email" type="email" id="send_code_reset_password" placeholder="Введите адрес электронной почты">
+                        <input required name="email" type="email" id="send_code_reset_password" placeholder="Введите адрес эл. почты">
                         <button name="send_code_reset_password" type="button">Отправить</button>
                     </div>
                 </div>
@@ -298,7 +314,7 @@
             <div class="footer_content">
                 <h3>Хочешь знать обо всех новинках?</h3>
                 <div class="footer_info">
-                    <h4>Подпишись на рассылку в <a href="" class="link_color">Телеграме</a></h4>
+                    <h4>Подпишись на рассылку в <a href="https://t.me/taste_room_kv" class="link_color">Телеграме</a></h4>
                 </div>
                 <h3>Понравился рецепт?</h3>
                 <div class="footer_info">
@@ -312,22 +328,33 @@
                 <h3>Остались вопросы?</h3>
                 <div class="footer_info">
                     <div class="social_div">
-                        <a href="">
+                        <a href="https://t.me/taste_room_kv">
                             <img src="{% static 'svg/Socials_WB/TG_blank.svg' %}">
                             <h4>Наш телеграм</h4>
                         </a>
                     </div>
                     <div class="social_div">
-                        <a href="">
+                        <a href="https://vk.com/taste_room">
                             <img src="{% static 'svg/Socials_WB/VK_blank.svg' %}">
                             <h4>ВКонтакте</h4>
                         </a>
                     </div>
                     <div class="social_div">
-                        <a href="">
+                        <a href="https://ru.pinterest.com/taste_room/">
+                            <img src="{% static 'svg/Socials_WB/Pinterest_blank.svg' %}">
+                            <h4>Пинтерест</h4>
+                        </a>
+                    </div>
+                    <div class="social_div" style="position: relative;">
+                        <a id="copy_email" href="" data-email="tasteroom@yandex.ru">
                             <img src="{% static 'svg/Socials_WB/Email_blank.svg' %}">
                             <h4>tasteroom@yandex.ru</h4>
                         </a>
+                        <div class="copy_window">
+                            <div class="inner_wrapper">
+                                <h5>Почта скопирована!</h5>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -345,6 +372,7 @@
         const CSRF_TOKEN = $('meta[name="csrf-token"]').attr("content");
         const heart_blank_icon = "{% static 'svg/Random_icons/Heart_blank.svg' %}";
         const heart_fill_icon = "{% static 'svg/Random_icons/Heart_fill.svg' %}";
+        const USER_AUTHENTICATED = $('meta[name="user-authenticated"]').attr("content") == "True";
     </script>
 
     <script src="{% static 'js/swiper.js' %}"></script>

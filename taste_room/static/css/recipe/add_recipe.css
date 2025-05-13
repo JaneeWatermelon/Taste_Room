@@ -189,10 +189,14 @@ input[type='checkbox'] {
     align-items: center;
     gap: var(--small);
 }
+.edit_section > .categories > .categories_list > .title_and_list > h4 {
+    text-align: center;
+}
 .edit_section > .categories > .categories_list > .title_and_list > .category_item {
     display: flex;
     flex-direction: column;
     gap: var(--tiny);
+    width: 100%;
 }
 .edit_section > .categories > .categories_list > .title_and_list > .category_item .category {
     display: flex;
@@ -203,6 +207,9 @@ input[type='checkbox'] {
     display: flex;
     align-items: center;
     gap: var(--tiny);
+}
+.edit_section > .categories > .categories_list > .title_and_list > .category_item > .first_category p {
+    font-family: "NTSomic_Medium";
 }
 .edit_section > .categories > .categories_list > .title_and_list > .category_item > .first_category > img {
     height: 16px;
@@ -267,6 +274,7 @@ input[type='checkbox'] {
 .edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper .back_image {
     border-radius: var(--small);
     height: 100%;
+    width: 100%;
     object-fit: cover;
     position: absolute;
 }
@@ -360,6 +368,7 @@ input[type='checkbox'] {
 .edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper .back_image {
     border-radius: var(--small);
     height: 100%;
+    width: 100%;
     object-fit: cover;
     position: absolute;
 }
@@ -459,6 +468,9 @@ input[type='checkbox'] {
 }
 
 @media (max-width: 720px) {
+    .input_wrapper.fit {
+        max-width: none;
+    }
     .edit_section > .sub_section {
         gap: var(--normal);
     }
@@ -478,10 +490,10 @@ input[type='checkbox'] {
         height: auto;
         width: 100%;
     }
-    .edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper .back_image {
+    /* .edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper .back_image {
         width: 100%;
         height: auto;
-    }
+    } */
     .edit_section > .step_photos > .steps_list > .step_item > .content > .field_wrapper > .input_wrapper {
         min-height: 100px;
     }
@@ -504,5 +516,9 @@ input[type='checkbox'] {
     }
     .edit_section .title > .sub_title_and_mark > img {
         height: 20px;
+    }
+    .edit_section > .cook_time .time_units > .time_unit_item {
+        flex-direction: column;
+        align-items: start;
     }
 }

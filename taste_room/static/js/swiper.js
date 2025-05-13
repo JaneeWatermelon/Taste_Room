@@ -99,10 +99,10 @@ else {
         keyboard: true,
         width: recipes_slidesPerView*0.4*recipe_recs_width,
         spaceBetween: 8,
-        // autoplay: {
-        //     delay: 3000,
-        //     pauseOnMouseEnter: true,
-        // },
+        autoplay: {
+            delay: 3000,
+            pauseOnMouseEnter: true,
+        },
         navigation: {
             nextEl: '.recipe_recs > .swiper_nav.next',
             prevEl: '.recipe_recs > .swiper_nav.prev',
@@ -152,24 +152,16 @@ $(document).ready(function () {
         },
     });
 
-    let recipe_image_height = $($($(".recipe_recs .recipe_item")[0]).find(".back_image")).height();
-    $(".recipe_recs.swiper > .swiper_nav").css({
-        'top': `${8 + (recipe_image_height - $(".recipe_recs > .swiper_nav").height())/2}px`,
-    })
+    function set_swiper_nav_top(items, swiper_nav) {
+        let image_height = $($(items[0]).find(".back_image")).height();
+        swiper_nav.css({
+            'top': `${8 + (image_height - swiper_nav.height())/2}px`,
+        });
+    }
 
-    let news_image_height = $($($(".news_recs .news_item")[0]).find(".back_image")).height();
-    $(".news_recs.swiper > .swiper_nav").css({
-        'top': `${8 + (news_image_height - $(".news_recs > .swiper_nav").height())/2}px`,
-    })
-
-    let news_recs_section_image_height = $($($(".news_recs_section .news_item")[0]).find(".back_image")).height();
-    $(".news_recs_section.swiper > .swiper_nav").css({
-        'top': `${8 + (news_recs_section_image_height - $(".news_recs_section > .swiper_nav").height())/2}px`,
-    })
-
-    let new_recipes_section_image_height = $($($(".new_recipes_section.swiper .recipe_item")[0]).find(".back_image")).height();
-    $(".new_recipes_section.swiper > .swiper_nav").css({
-        'top': `${8 + (new_recipes_section_image_height - $(".new_recipes_section.swiper > .swiper_nav").height())/2}px`,
-    })
+    set_swiper_nav_top($(".recipe_recs .recipe_item"), $(".recipe_recs.swiper > .swiper_nav"));
+    set_swiper_nav_top($(".news_recs .news_item"), $(".news_recs.swiper > .swiper_nav"));
+    set_swiper_nav_top($(".news_recs_section .news_item"), $(".news_recs_section.swiper > .swiper_nav"));
+    set_swiper_nav_top($(".new_recipes_section.swiper .recipe_item"), $(".new_recipes_section.swiper > .swiper_nav"));
 
 });

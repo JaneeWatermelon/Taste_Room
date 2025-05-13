@@ -74,7 +74,8 @@ class IngredientAdmin(ModelAdmin):
                         Ingredient.objects.create(
                             title=row['title'],
                             calory_count=row['calory_count'],
-                            weight_per_unit=row['weight_per_unit'],
+                            weight_per_unit=row['calory_count'],
+                            # weight_per_unit=row['weight_per_unit'],
                         )
                         done_titles += [row['title']]
                 self.message_user(request, "Ингредиенты успешно импортированы.")

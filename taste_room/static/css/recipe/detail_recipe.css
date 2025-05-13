@@ -113,6 +113,7 @@
 }
 .recipe_section > .recipe_stats > .column > .recipe_stats_item > img {
     height: 32px;
+    width: 32px;
 }
 .recipe_section > .recipe_stats > .column > .recipe_stats_item > .info {
     display: flex;

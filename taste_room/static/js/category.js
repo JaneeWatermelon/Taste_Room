@@ -27,7 +27,7 @@ $(".category_wrapper > .category_show_hide_wrapper").on("click", function() {
     let hide_wrapper = $(this).find(".hide_wrapper");
 
     if (hide_wrapper.hasClass("d_none")) {
-        $(".category_wrapper").css("height", `${category_wrapper_height_full}px`);
+        $(".category_wrapper").css("height", "auto");
     } else {
         $(".category_wrapper").css("height", `${$(".category_wrapper > .category_show_hide_wrapper").height()}`);
     }

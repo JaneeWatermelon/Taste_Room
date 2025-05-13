@@ -1,8 +1,9 @@
 from decimal import Decimal
+from difflib import SequenceMatcher
 
 from django.core.paginator import Paginator
-from django.db.models import Count, Q, prefetch_related_objects, F
-from django.db.models.functions import Lower
+from django.db.models import Count, Q, prefetch_related_objects, F, Case, When, Value, IntegerField
+from django.db.models.functions import Lower, Length, StrIndex
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.context_processors import csrf
@@ -16,13 +17,14 @@ from django.views.generic import (CreateView, DetailView, ListView,
 
 from additions.views import (Status, Visibility,
                              transliterate_russian_to_pseudo_english, get_recipes_PUBLISHED_ALL_SUBS, get_recs_recipes,
-                             get_recipes_related)
+                             get_recipes_related, set_meta_tags)
 from categories.models import CategoryGroup, RecipeCategory
 from news.views import get_news_PUBLISHED_ALL_SUBS, get_recs_news
 from recipes.forms import (CreateRecipeCommentForm, CreateRecipeForm)
 from recipes.models import (Difficulty, Ingredient, Recipe, RecipeComment,
                             RecipeIngredient, RecipePreview, RecipeReview,
                             RecipeStep, Scipy, Units)
+from recipes.templatetags.custom_filters import short_timedelta
 from users.views import _prepare_recipes_data, validate_image_extension
 
 
@@ -67,6 +69,30 @@ class CategoryRecipesView(ListView):
     model = Recipe
     paginate_by = paginate_by
 
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+        if (self.kwargs.get("slug")):
+            slug_name = RecipeCategory.objects.get(slug=self.kwargs["slug"]).name
+            set_meta_tags(
+                request,
+                f"«{slug_name}» — рецепты с фото | Комната Вкуса",
+                f"Подборка рецептов в категории «{slug_name}». Пошаговые инструкции, советы и рекомендации.",
+                f"{slug_name} - лучшие рецепты категории",
+                f"Идеи для {slug_name} — готовьте с удовольствием!",
+            )
+        else:
+            set_meta_tags(
+                request,
+                f"Рецепты на все случаи жизни | Комната Вкуса",
+                f"Подборка рецептов с фильтрацией по категориям. Пошаговые инструкции, советы и рекомендации.",
+                f"Лучшие рецепты по категории",
+                f"Выбирайте только то, что нравится — готовьте с удовольствием!",
+            )
+
+
+        return self.render_to_response(context)
+
     def get_queryset(self):
         user = self.request.user
         queryset = get_recipes_PUBLISHED_ALL_SUBS(user)
@@ -88,6 +114,95 @@ class CategoryRecipesView(ListView):
 
         return context
 
+
+def search_recipes(query):
+    search_query = query.strip().lower()
+
+    # Базовый QuerySet (учитывайте ваши фильтры)
+    recipes = Recipe.objects.all()
+
+    # Список для хранения результатов с релевантностью
+    temp_results = []
+
+    for recipe in recipes:
+        # 1. Проверка точного совпадения названия
+        exact_title_match = recipe.title.lower() == search_query
+
+        # 2. Проверка частичного совпадения в названии
+        title_ratio = SequenceMatcher(
+            None,
+            search_query,
+            recipe.title.lower()
+        ).ratio()
+
+        # 3. Проверка наличия в описании
+        in_description_inner = search_query in recipe.description_inner.lower()
+        in_description_card = search_query in recipe.description_card.lower()
+
+        # Вычисляем общий "вес" релевантности
+        relevance = 0
+        if exact_title_match:
+            relevance += 100  # Максимальный вес
+        relevance += title_ratio * 50  # Вес частичного совпадения
+        if in_description_inner:
+            relevance += 20  # Вес за упоминание в описании
+        if in_description_card:
+            relevance += 20  # Вес за упоминание в описании
+
+        temp_results.append({
+            'id': recipe.id,
+            'relevance': relevance
+        })
+
+    # Сортируем по релевантности
+    sorted_ids = [item['id'] for item in sorted(temp_results, key=lambda x: -x['relevance'])]
+
+    # Создаем условное выражение для сохранения порядка сортировки
+    preserved_order = Case(
+        *[When(pk=pk, then=pos) for pos, pk in enumerate(sorted_ids)],
+        default=len(sorted_ids),
+        output_field=IntegerField()
+    )
+
+    # Возвращаем QuerySet с сохранением порядка
+    queryset = Recipe.objects.filter(pk__in=sorted_ids).annotate(
+        relevance=preserved_order
+    )
+
+    return get_recipes_related(queryset).order_by('relevance', '-popularity', '-rating')
+
+def optimized_search(search_query):
+    query = search_query.strip().lower()
+
+    queryset = Recipe.objects.annotate(
+        exact_match=Case(
+            When(title__iexact=query, then=Value(100)),
+            default=Value(0),
+            output_field=IntegerField()
+        ),
+        partial_match=Case(
+            When(title__icontains=query, then=Value(50)),
+            default=Value(0),
+            output_field=IntegerField()
+        ),
+        in_description_inner=Case(
+            When(description_inner__icontains=query, then=Value(20)),
+            default=Value(0),
+            output_field=IntegerField()
+        ),
+        in_description_card=Case(
+            When(description_card__icontains=query, then=Value(20)),
+            default=Value(0),
+            output_field=IntegerField()
+        ),
+    ).annotate(
+        relevance=F('exact_match') + F('partial_match') + F('in_description_inner') + F('in_description_card')
+    )
+
+    return get_recipes_related(queryset).order_by(
+        '-relevance', '-popularity', '-rating'
+    )
+
 class SearchRecipesView(ListView):
     template_name = "recipes/search_recipes.html"
     model = Recipe
@@ -96,22 +211,52 @@ class SearchRecipesView(ListView):
     def get(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
         context = self.get_context_data()
+        q_param = self.request.GET.get("q")
         ingredients_ids = self.request.GET.get("ingredients_ids")
-        if ingredients_ids:
+        if q_param:
+            set_meta_tags(
+                request,
+                f"Результаты поиска: «{q_param}» — рецепты | Комната Вкуса",
+                f"Ищите рецепты по названию. Выбирайте блюда с фото и отзывами!",
+                f"Рецепты по запросу «{q_param}»",
+                f"Лучшие варианты блюд по вашим предпочтениям — готовьте с нами.",
+            )
+        elif ingredients_ids:
             ingredients_ids = ingredients_ids.split(",")
-            Ingredient.objects.filter(id__in=ingredients_ids).update(popularity=F("popularity")+1)
+            ingredients = Ingredient.objects.filter(id__in=ingredients_ids)
+            ingredients.update(popularity=F("popularity")+1)
+            formated_ingredients_names = ", ".join(ingredients.values_list("title", flat=True))
+
+            set_meta_tags(
+                request,
+                f"Рецепты с {formated_ingredients_names} | Комната Вкуса",
+                f"Подборка рецептов, где есть {formated_ingredients_names}. Быстро, вкусно и доступно!",
+                f"Что приготовить из {formated_ingredients_names}?",
+                f"Идеи для блюд из того что есть в холодильнике.",
+            )
+        else:
+            set_meta_tags(
+                request,
+                f"Рецепты на все случаи жизни | Комната Вкуса",
+                f"Подборка рецептов с фильтрацией по названию и ингредиентам. Пошаговые инструкции, советы и рекомендации.",
+                f"Лучшие рецепты по названию и ингредиентам",
+                f"Выбирайте только то, что нравится — готовьте с удовольствием!",
+            )
+
+
         return self.render_to_response(context)
 
     def get_queryset(self):
-        user = self.request.user
         q_param = self.request.GET.get("q")
         ingredients_ids = self.request.GET.get("ingredients_ids")
 
         if q_param:
-            by_title = find_similar_recipes(q_param, user).distinct()
-            by_icontains = word_search_recipes(q_param, user).distinct()
-
-            queryset = get_recipes_related((by_title | by_icontains).distinct())
+            # by_title = find_similar_recipes(q_param, user).distinct()
+            # by_icontains = word_search_recipes(q_param, user).distinct()
+            #
+            # queryset = get_recipes_related((by_title | by_icontains).distinct())
+            # queryset = optimized_search(q_param)
+            queryset = search_recipes(q_param)
         elif ingredients_ids:
             # Аннотируем количеством совпавших ингредиентов
             ingredients_ids = ingredients_ids.split(",")
@@ -287,6 +432,16 @@ def recipe_edit_view(request, pk):
             'visibility_descriptions': Visibility.TypeAndDescr,
             'units_choices': Units.List,
         }
+
+        item_title = recipe.title
+
+        set_meta_tags(
+            request,
+            f"Изменить рецепт «{item_title}» | Комната Вкуса",
+            f"Добавьте вашему рецепту ещё больше уникальности!",
+            f"Измените свой рецепт «{item_title}»",
+            f"Сделайте свой рецепт ещё более привлекательным и вкусным!",
+        )
 
         return render(request, 'recipes/edit_recipe.html', context=context)
     elif request.method == "POST":
@@ -520,6 +675,13 @@ class DetailRecipeView(DetailView):
                 subs_check = user in self.object.author.subscribers.all()
 
             elif self.object.status in (Status.UNPUBLISHED, Status.DRAFT) or not subs_check or only_me_check:
+                set_meta_tags(
+                    self.request,
+                    f"Страница не найдена | Комната Вкуса",
+                    f"Запрошенной страницы не существует. Попробуйте поискать рецепты через меню или вернитесь на главную.",
+                    f"Ой, кажется, мы потеряли эту страницу",
+                    f"Но у нас есть тысячи отличных рецептов! Перейдите в каталог и найдите что-то вкусное.",
+                )
                 raise Http404
 
         context['category_groups'] = CategoryGroup.objects.prefetch_related("categories", "categories__children")
@@ -559,15 +721,22 @@ class DetailRecipeView(DetailView):
         self.object = Recipe.objects.filter(id=self.kwargs.get("pk")).select_related("previews", "author").prefetch_related("recipereview_set", "recipeingredient_set", "recipeingredient_set__ingredient",).get()
         context = self.get_context_data(object=self.object)
 
-        if self.object.previews.preview_1:
-            request.meta_og_image = self.object.previews.preview_1
-        request.meta_title = self.object.title
-        request.meta_description = self.object.description_card
-        request.meta_og_title = self.object.title
-        request.meta_og_description = self.object.description_card
-
         if self.object.status == Status.MODERATION:
             self.template_name = "additions/error_moderator.html"
+
+        item_title = self.object.title
+        item_cook_time_active = short_timedelta(self.object.cook_time_active)
+        author_name = self.object.author.name if self.object.author.name else self.object.author.username
+        item_preview = self.object.previews.preview_1 if self.object.previews.preview_1 else None
+        set_meta_tags(
+            request,
+            f"«{item_title}» — пошаговый рецепт с фото | Комната Вкуса",
+            f"Пошаговый рецепт {item_title} с фото. Время приготовления: {item_cook_time_active}. Советы от автора!",
+            f"{item_title} — готовим вместе!",
+            f"Попробуйте этот рецепт от автора - {author_name}",
+            image=item_preview,
+        )
+
         return self.render_to_response(context)
 
 
@@ -868,7 +1037,18 @@ def ingredient_cards_autocomplete(request):
     if search_term != '':
         search_term = slugify(transliterate_russian_to_pseudo_english(search_term))
 
-        ingredients = Ingredient.objects.filter(slug__icontains=search_term)[:6]
+        # ingredients = Ingredient.objects.filter(slug__icontains=search_term)[:6]
+        ingredients = Ingredient.objects.annotate(
+            slug_length=Length('slug'),
+            search_term_length=Value(len(search_term)),
+            match_position=StrIndex('slug', Value(search_term))
+        ).filter(
+            slug__icontains=search_term
+        ).annotate(
+            match_quality=F('search_term_length') * 100 / F('slug_length') - F('match_position')
+        ).order_by(
+            '-match_quality'
+        )[:6]
         html_data = render_to_string("recipes/includes/ingredient_card_items.html", context={
             "ingredients": ingredients,
             "active_ids_list": active_ids_list,

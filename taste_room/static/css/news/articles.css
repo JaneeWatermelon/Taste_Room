@@ -459,6 +459,9 @@
     .main_content {
         display: flex;
     }
+    .articles_section {
+        width: 100%;
+    }
     .articles_section > .cards_wrapper {
         display: flex;
         flex-direction: column;

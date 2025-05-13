@@ -1,0 +1,1035 @@
+[
+{
+  "model": "categories.recipecategory",
+  "pk": 1,
+  "fields": {
+    "name": "Завтраки",
+    "slug": "breakfast",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 2,
+  "fields": {
+    "name": "Салаты",
+    "slug": "salads",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 3,
+  "fields": {
+    "name": "Супы",
+    "slug": "soups",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 4,
+  "fields": {
+    "name": "Основные блюда",
+    "slug": "main-courses",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 5,
+  "fields": {
+    "name": "Гарниры",
+    "slug": "side-dishes",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 6,
+  "fields": {
+    "name": "Выпечка",
+    "slug": "bakery",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 7,
+  "fields": {
+    "name": "Десерты",
+    "slug": "desserts",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 8,
+  "fields": {
+    "name": "Напитки",
+    "slug": "drinks",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 9,
+  "fields": {
+    "name": "Закуски",
+    "slug": "appetizers",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 10,
+  "fields": {
+    "name": "Вегетарианские",
+    "slug": "vegetarian",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 11,
+  "fields": {
+    "name": "Быстрые рецепты",
+    "slug": "quick-meals",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 12,
+  "fields": {
+    "name": "Праздничные блюда",
+    "slug": "holiday",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 13,
+  "fields": {
+    "name": "Детское питание",
+    "slug": "kids",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 14,
+  "fields": {
+    "name": "Яичницы и омлеты",
+    "slug": "yaichnitsy-i-omlety",
+    "parent": 1
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 15,
+  "fields": {
+    "name": "Каши и мюсли",
+    "slug": "kashi-i-myusli",
+    "parent": 1
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 16,
+  "fields": {
+    "name": "Блины и оладьи",
+    "slug": "bliny-i-oladi",
+    "parent": 1
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 17,
+  "fields": {
+    "name": "Смузи-боулы",
+    "slug": "smuzi-bouly",
+    "parent": 1
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 18,
+  "fields": {
+    "name": "Бутерброды и тосты",
+    "slug": "buterbrody-i-tosty",
+    "parent": 1
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 19,
+  "fields": {
+    "name": "Овощные салаты",
+    "slug": "ovoshchnye-salaty",
+    "parent": 2
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 20,
+  "fields": {
+    "name": "Мясные салаты",
+    "slug": "myasnye-salaty",
+    "parent": 2
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 21,
+  "fields": {
+    "name": "Фруктовые салаты",
+    "slug": "fruktovye-salaty",
+    "parent": 2
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 22,
+  "fields": {
+    "name": "Салаты с морепродуктами",
+    "slug": "salaty-s-moreproduktami",
+    "parent": 2
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 23,
+  "fields": {
+    "name": "Диетические салаты",
+    "slug": "dieticheskie-salaty",
+    "parent": 2
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 24,
+  "fields": {
+    "name": "Горячие супы",
+    "slug": "goryachie-supy",
+    "parent": 3
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 25,
+  "fields": {
+    "name": "Холодные супы",
+    "slug": "holodnye-supy",
+    "parent": 3
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 26,
+  "fields": {
+    "name": "Крем-супы",
+    "slug": "krem-supy",
+    "parent": 3
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 27,
+  "fields": {
+    "name": "Азиатские супы",
+    "slug": "aziatskie-supy",
+    "parent": 83
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 28,
+  "fields": {
+    "name": "Супы-пюре",
+    "slug": "supy-pyure",
+    "parent": 3
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 29,
+  "fields": {
+    "name": "Мясные блюда",
+    "slug": "myasnye-blyuda",
+    "parent": 4
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 30,
+  "fields": {
+    "name": "Рыбные блюда",
+    "slug": "rybnye-blyuda",
+    "parent": 4
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 31,
+  "fields": {
+    "name": "Овощные рагу",
+    "slug": "ovoshchnye-ragu",
+    "parent": 4
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 32,
+  "fields": {
+    "name": "Фаршированные овощи",
+    "slug": "farshirovannye-ovoshchi",
+    "parent": 4
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 33,
+  "fields": {
+    "name": "Тефтели и котлеты",
+    "slug": "tefteli-i-kotlety",
+    "parent": 4
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 34,
+  "fields": {
+    "name": "Картофельные гарниры",
+    "slug": "kartofelnye-garniry",
+    "parent": 5
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 35,
+  "fields": {
+    "name": "Крупы",
+    "slug": "krupy",
+    "parent": 5
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 36,
+  "fields": {
+    "name": "Овощные гарниры",
+    "slug": "ovoshchnye-garniry",
+    "parent": 5
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 37,
+  "fields": {
+    "name": "Паста и макароны",
+    "slug": "pasta-i-makarony",
+    "parent": 5
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 38,
+  "fields": {
+    "name": "Бобовые гарниры",
+    "slug": "bobovye-garniry",
+    "parent": 5
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 39,
+  "fields": {
+    "name": "Хлеб и булочки",
+    "slug": "hleb-i-bulochki",
+    "parent": 6
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 40,
+  "fields": {
+    "name": "Пироги и пирожки",
+    "slug": "pirogi-i-pirozhki",
+    "parent": 6
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 41,
+  "fields": {
+    "name": "Кексы и маффины",
+    "slug": "keksy-i-maffiny",
+    "parent": 6
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 42,
+  "fields": {
+    "name": "Печенье",
+    "slug": "pechene",
+    "parent": 6
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 43,
+  "fields": {
+    "name": "Пирожные",
+    "slug": "pirozhnye",
+    "parent": 6
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 44,
+  "fields": {
+    "name": "Торты",
+    "slug": "torty",
+    "parent": 7
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 45,
+  "fields": {
+    "name": "Чизкейки",
+    "slug": "chizkeyki",
+    "parent": 7
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 46,
+  "fields": {
+    "name": "Муссы и пудинги",
+    "slug": "mussy-i-pudingi",
+    "parent": 7
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 47,
+  "fields": {
+    "name": "Мороженое",
+    "slug": "morozhenoe",
+    "parent": 7
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 48,
+  "fields": {
+    "name": "Шоколадные десерты",
+    "slug": "shokoladnye-deserty",
+    "parent": 7
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 49,
+  "fields": {
+    "name": "Горячие напитки",
+    "slug": "goryachie-napitki",
+    "parent": 8
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 50,
+  "fields": {
+    "name": "Кофе",
+    "slug": "kofe",
+    "parent": 8
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 51,
+  "fields": {
+    "name": "Чай",
+    "slug": "chay",
+    "parent": 8
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 52,
+  "fields": {
+    "name": "Лимонады",
+    "slug": "limonady",
+    "parent": 8
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 53,
+  "fields": {
+    "name": "Коктейли алкогольные",
+    "slug": "kokteyli-alkogolnye",
+    "parent": 8
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 54,
+  "fields": {
+    "name": "Коктейли безалкогольные",
+    "slug": "kokteyli-bezalkogolnye",
+    "parent": 8
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 55,
+  "fields": {
+    "name": "Смузи",
+    "slug": "smuzi",
+    "parent": 8
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 56,
+  "fields": {
+    "name": "Канапе",
+    "slug": "kanape",
+    "parent": 9
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 57,
+  "fields": {
+    "name": "Рулеты и брускетты",
+    "slug": "rulety-i-brusketty",
+    "parent": 9
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 58,
+  "fields": {
+    "name": "Соусы и дипы",
+    "slug": "sousy-i-dipy",
+    "parent": 9
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 59,
+  "fields": {
+    "name": "Ореховые смеси",
+    "slug": "orehovye-smesi",
+    "parent": 9
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 60,
+  "fields": {
+    "name": "Снеки",
+    "slug": "sneki",
+    "parent": 9
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 61,
+  "fields": {
+    "name": "Вегетарианские супы",
+    "slug": "vegetarianskie-supy",
+    "parent": 10
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 62,
+  "fields": {
+    "name": "Овощные котлеты",
+    "slug": "ovoshchnye-kotlety",
+    "parent": 10
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 63,
+  "fields": {
+    "name": "Тофу-блюда",
+    "slug": "tofu-blyuda",
+    "parent": 10
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 64,
+  "fields": {
+    "name": "Веганские десерты",
+    "slug": "veganskie-deserty",
+    "parent": 10
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 65,
+  "fields": {
+    "name": "Блюда с грибами",
+    "slug": "blyuda-s-gribami",
+    "parent": 10
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 66,
+  "fields": {
+    "name": "Блюда на гриле",
+    "slug": "blyuda-na-grile",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 67,
+  "fields": {
+    "name": "Шашлыки",
+    "slug": "shashlyki",
+    "parent": 66
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 68,
+  "fields": {
+    "name": "Гриль-овощи",
+    "slug": "gril-ovoshchi",
+    "parent": 66
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 69,
+  "fields": {
+    "name": "Рыба на гриле",
+    "slug": "ryba-na-grile",
+    "parent": 66
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 70,
+  "fields": {
+    "name": "Стейки",
+    "slug": "steyki",
+    "parent": 66
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 71,
+  "fields": {
+    "name": "Бургеры",
+    "slug": "burgery",
+    "parent": 66
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 72,
+  "fields": {
+    "name": "Консервация",
+    "slug": "konservatsiya",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 73,
+  "fields": {
+    "name": "Варенья и джемы",
+    "slug": "varenya-i-dzhemy",
+    "parent": 72
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 74,
+  "fields": {
+    "name": "Соленья и маринады",
+    "slug": "solenya-i-marinady",
+    "parent": 72
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 75,
+  "fields": {
+    "name": "Компоты",
+    "slug": "kompoty",
+    "parent": 72
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 76,
+  "fields": {
+    "name": "Лечо и икра",
+    "slug": "lecho-i-ikra",
+    "parent": 72
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 77,
+  "fields": {
+    "name": "Ферментированные продукты",
+    "slug": "fermentirovannye-produkty",
+    "parent": 72
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 78,
+  "fields": {
+    "name": "Пюре",
+    "slug": "pyure",
+    "parent": 13
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 79,
+  "fields": {
+    "name": "Детские каши",
+    "slug": "detskie-kashi",
+    "parent": 13
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 80,
+  "fields": {
+    "name": "Полезные десерты",
+    "slug": "poleznye-deserty",
+    "parent": 13
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 81,
+  "fields": {
+    "name": "Супы для детей",
+    "slug": "supy-dlya-detey",
+    "parent": 13
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 82,
+  "fields": {
+    "name": "Фруктовые перекусы",
+    "slug": "fruktovye-perekusy",
+    "parent": 13
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 83,
+  "fields": {
+    "name": "Азиатская кухня",
+    "slug": "aziatskaya-kuhnya",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 84,
+  "fields": {
+    "name": "Суши и роллы",
+    "slug": "sushi-i-rolly",
+    "parent": 83
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 85,
+  "fields": {
+    "name": "Вок-блюда",
+    "slug": "vok-blyuda",
+    "parent": 83
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 86,
+  "fields": {
+    "name": "Лапша",
+    "slug": "lapsha",
+    "parent": 83
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 87,
+  "fields": {
+    "name": "Блюда с тофу",
+    "slug": "blyuda-s-tofu",
+    "parent": 83
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 88,
+  "fields": {
+    "name": "Итальянская кухня",
+    "slug": "italyanskaya-kuhnya",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 89,
+  "fields": {
+    "name": "Паста",
+    "slug": "pasta",
+    "parent": 88
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 90,
+  "fields": {
+    "name": "Пицца",
+    "slug": "pitstsa",
+    "parent": 88
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 91,
+  "fields": {
+    "name": "Риcотто",
+    "slug": "ricotto",
+    "parent": 88
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 92,
+  "fields": {
+    "name": "Лазанья",
+    "slug": "lazanya",
+    "parent": 88
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 93,
+  "fields": {
+    "name": "Тирамису",
+    "slug": "tiramisu",
+    "parent": 7
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 94,
+  "fields": {
+    "name": "Быстрые",
+    "slug": "bystrye",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 95,
+  "fields": {
+    "name": "5 минут",
+    "slug": "5-minut",
+    "parent": 94
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 96,
+  "fields": {
+    "name": "10 минут",
+    "slug": "10-minut",
+    "parent": 94
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 97,
+  "fields": {
+    "name": "15 минут",
+    "slug": "15-minut",
+    "parent": 94
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 98,
+  "fields": {
+    "name": "Нормальные",
+    "slug": "normalnye",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 99,
+  "fields": {
+    "name": "30 минут",
+    "slug": "30-minut",
+    "parent": 98
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 100,
+  "fields": {
+    "name": "45 минут",
+    "slug": "45-minut",
+    "parent": 98
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 101,
+  "fields": {
+    "name": "1 час",
+    "slug": "1-chas",
+    "parent": 98
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 102,
+  "fields": {
+    "name": "Долгие",
+    "slug": "dolgie",
+    "parent": null
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 103,
+  "fields": {
+    "name": "больше часа",
+    "slug": "bolshe-chasa",
+    "parent": 102
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 104,
+  "fields": {
+    "name": "2-3 часа",
+    "slug": "2-3-chasa",
+    "parent": 102
+  }
+},
+{
+  "model": "categories.recipecategory",
+  "pk": 105,
+  "fields": {
+    "name": "больше 3х часов",
+    "slug": "bolshe-3h-chasov",
+    "parent": 102
+  }
+},
+{
+  "model": "categories.categorygroup",
+  "pk": 1,
+  "fields": {
+    "title": "Кухни",
+    "slug": "kuhni",
+    "categories": [
+      10,
+      83,
+      88
+    ]
+  }
+},
+{
+  "model": "categories.categorygroup",
+  "pk": 2,
+  "fields": {
+    "title": "Особые",
+    "slug": "osobye",
+    "categories": [
+      12,
+      13,
+      66
+    ]
+  }
+},
+{
+  "model": "categories.categorygroup",
+  "pk": 3,
+  "fields": {
+    "title": "Лёгкое",
+    "slug": "lyogkoe",
+    "categories": [
+      1,
+      2,
+      9
+    ]
+  }
+},
+{
+  "model": "categories.categorygroup",
+  "pk": 4,
+  "fields": {
+    "title": "Домашнее",
+    "slug": "domashnee",
+    "categories": [
+      4,
+      5,
+      72
+    ]
+  }
+},
+{
+  "model": "categories.categorygroup",
+  "pk": 5,
+  "fields": {
+    "title": "На сладкое",
+    "slug": "na-sladkoe",
+    "categories": [
+      6,
+      7
+    ]
+  }
+},
+{
+  "model": "categories.categorygroup",
+  "pk": 6,
+  "fields": {
+    "title": "Время приготовления",
+    "slug": "vremya-prigotovleniya",
+    "categories": [
+      94,
+      98,
+      102
+    ]
+  }
+},
+{
+  "model": "categories.categorygroup",
+  "pk": 7,
+  "fields": {
+    "title": "Выпить",
+    "slug": "vypit",
+    "categories": [
+      8
+    ]
+  }
+}
+]

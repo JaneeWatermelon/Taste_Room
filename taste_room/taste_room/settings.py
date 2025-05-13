@@ -5,10 +5,15 @@ import environ
 from celery.schedules import crontab
 
 env = environ.Env(
-    # set casting, default value
     DEBUG=(bool, False),
     SECRET_KEY=(str, False),
     REDIS_LOCATION=(str, False),
+
+    DATABASES_NAME=(str, False),
+    DATABASES_USER=(str, False),
+    DATABASES_PASSWORD=(str, False),
+    DATABASES_PORT=(str, False),
+
     EMAIL_HOST=(str, False),
     EMAIL_HOST_PASSWORD=(str, False),
     EMAIL_HOST_USER=(str, False),
@@ -31,7 +36,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ["127.0.0.1"]
+ALLOWED_HOSTS = ["127.0.0.1", "45.131.40.35", "tasteroom.ru"]
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -71,6 +76,8 @@ INSTALLED_APPS = [
     'users',
     'arts',
     'api',
+
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
@@ -114,23 +121,23 @@ WSGI_APPLICATION = 'taste_room.wsgi.application'
 
 # Database
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'taste_room_db',
-#         'USER': 'taste_room_user',
-#         'PASSWORD': 'sj18s0agpmv8zfwr',
-#         'HOST': '127.0.0.1',
-#         'PORT': '5432',
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('DATABASES_NAME'),
+        'USER': env('DATABASES_USER'),
+        'PASSWORD': env('DATABASES_PASSWORD'),
+        'HOST': '127.0.0.1',
+        'PORT': env('DATABASES_PORT'),
+    }
+}
 
 
 # Password validation
@@ -174,7 +181,8 @@ CKEDITOR_CONFIGS = {
     'awesome_ckeditor': {
         'toolbar': [
             ['Undo', 'Redo',
-             '-', 'Bold', 'Italic', 'Underline', 'Strike', 'Link',
+             '-', 'Bold', 'Italic', 'Underline', 'Strike',
+             # 'Link',
              '-', 'Image',
              '-', 'Format',
              '-', 'NumberedList', 'BulletedList'
@@ -185,6 +193,14 @@ CKEDITOR_CONFIGS = {
         'disallowedContent': 'h1',
         'removeButtons': 'Heading',
         # 'width': '700px',
+
+        'removeDialogTabs': 'link:upload;image:Link;image:advanced;image:target',
+        'filebrowserUploadUrl': '/ckeditor/upload/',
+        'filebrowserBrowseUrl': None,
+
+        'image_previewText': ' ',
+        'image_removeLinkByEmptyURL': True,
+        'disableNativeSpellChecker': False,
     }
 }
 
@@ -227,10 +243,6 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 # static
 
 STATIC_URL = '/static/'
-
-# STATICFILES_DIRS = [
-#     BASE_DIR / 'static'
-# ]
 
 if DEBUG:
     STATICFILES_DIRS = [

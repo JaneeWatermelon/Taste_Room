@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from news.views import (CreateNewsView, DetailNewsView, NewsView,
+from news.views import (DetailNewsView, NewsView,
                         bluk_create_objects, change_rating, change_status,
                         comment_reaction_change, comments_partial_view,
                         create_comment, delete_comment, delete_rating,

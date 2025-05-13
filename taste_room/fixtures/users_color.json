@@ -1,0 +1,92 @@
+[
+{
+  "model": "users.color",
+  "pk": 1,
+  "fields": {
+    "title": "Оранжевый",
+    "hash": "#D68C45",
+    "text_hash": "#FFFFFF",
+    "sort_order": 1
+  }
+},
+{
+  "model": "users.color",
+  "pk": 2,
+  "fields": {
+    "title": "Зелёный",
+    "hash": "#E9A96D",
+    "text_hash": "#000000",
+    "sort_order": 2
+  }
+},
+{
+  "model": "users.color",
+  "pk": 3,
+  "fields": {
+    "title": "Светло-зелёный",
+    "hash": "#FFCD9C",
+    "text_hash": "#000000",
+    "sort_order": 3
+  }
+},
+{
+  "model": "users.color",
+  "pk": 4,
+  "fields": {
+    "title": "Насыщенно-зелёный",
+    "hash": "#4C956C",
+    "text_hash": "#FFFFFF",
+    "sort_order": 4
+  }
+},
+{
+  "model": "users.color",
+  "pk": 5,
+  "fields": {
+    "title": "Жёлтый",
+    "hash": "#C7E580",
+    "text_hash": "#000000",
+    "sort_order": 5
+  }
+},
+{
+  "model": "users.color",
+  "pk": 6,
+  "fields": {
+    "title": "Трава",
+    "hash": "#50DA8C",
+    "text_hash": "#000000",
+    "sort_order": 6
+  }
+},
+{
+  "model": "users.color",
+  "pk": 7,
+  "fields": {
+    "title": "Красный",
+    "hash": "#FF6766",
+    "text_hash": "#FFFFFF",
+    "sort_order": 7
+  }
+},
+{
+  "model": "users.color",
+  "pk": 8,
+  "fields": {
+    "title": "Розовый",
+    "hash": "#FF7BAC",
+    "text_hash": "#FFFFFF",
+    "sort_order": 8
+  }
+},
+{
+  "model": "users.color",
+  "pk": 9,
+  "fields": {
+    "title": "Серый",
+    "hash": "#FFC9B9",
+    "text_hash": "#000000",
+    "sort_order": 9
+  }
+}
+]
