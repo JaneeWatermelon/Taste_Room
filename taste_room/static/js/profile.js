@@ -23,7 +23,6 @@ color_items2.on("click", function() {
 
 function setAvatarAddImageEventHandler() {
     $(".settings_section > .settings > .background_and_avatar > .avatar > .image_item.add_image, .profile_header > .content > .image_wrapper").off("click").on("click", function() {
-        console.log("press to change image");
         $("#hidden_profile_image_input").click();
     });
     $("#hidden_profile_image_input").off("change").on("change", function() {
@@ -44,9 +43,6 @@ $(".settings_section > .settings > .background_and_avatar > form.avatar").on("su
 
     // Создаем объект FormData
     const formData = new FormData(this);
-
-    console.log(image);
-    console.log(image.files);
 
     if (image.files) {
         formData.append('image', image.files[0]);
@@ -230,14 +226,6 @@ $(".settings_section > .settings > form.fields_form").on("submit", function(even
 
 let max_width = 0;
 
-// $(".subs_section > .subs_wrapper > .subs_item > .sub_button").toArray().forEach(element => {
-//     if ($(element).width() > max_width) {
-//         max_width = $(element).width();
-//     }
-// });
-
-// $(".subs_section > .subs_wrapper > .subs_item > .sub_button").css("width", `${max_width}px`);
-
 function set_news_active_status(status) {
     news_active_status = status;
 }
@@ -290,7 +278,7 @@ function reloadMyRecipesAJAX(data_url, data_status, page=1) {
             window.setCardShareWindows();
             window.setCardIngredientAndCooktimeWindows();
             window.setHeartAnimEventHandler();
-            setCardButtonsEventHandler();
+            setMultipleCardButtonsEventHandler();
             
             if (data.html.trim()) {
                 $("#my_recipes_section > .empty_section").addClass("d_none");
@@ -344,7 +332,7 @@ $(".articles_section > .publish_types > .publish_type_item").on("click", functio
             success: function (data) {
                 $(".articles_section > .cards_wrapper").html(data.html);
                 window.setCardShareWindows();
-                setCardButtonsEventHandler();
+                setMultipleCardButtonsEventHandler();
                 if (data.html.trim()) {
                     $(".articles_section > .empty_section").addClass("d_none");
                 }
@@ -418,8 +406,6 @@ $("form#sub_search_form").on("submit", function(event) {
     const data_url = form.attr("action");
     const tagValue = form.find('input[name="tag"]').val();
 
-    console.log(tagValue);
-
     $.ajax({
         url: data_url,
         method: form.attr("method"),
@@ -449,138 +435,174 @@ $(".subs_section > .remove_filters").on("click", function() {
     });
 })
 
-function setCardButtonsEventHandler() {
-    const hover_el = $(".card_item .image_wrapper > .buttons > .unpublic");
-    const pop_up = $(".profile_window.unpublic_warning#card_unpublic_warning");
+$(".image_wrapper > .buttons > *").off("click").on("click", function(event) {
+    $this = $(this);
+    let action_status;
+    let data_status;
+    let card_type;
+    const data_url = $this.attr("data-url");
+    const card_item = $this.closest(".card_item");
+    const item_id = card_item.attr("data-id");
 
-    $(document).on('click', function (event) {
-        window.HideBackBlackOverWindowClick(event, pop_up, hover_el);
+    if (card_item.hasClass("recipe_item")) {
+        card_type = "recipe";
+    }
+    else {
+        card_type = "news";
+    }
+
+    if ($this.hasClass("public")) {
+        action_status = "4";
+        if (card_type == "recipe") {
+            data_status = recipes_active_status;
+        }
+        else {
+            data_status = news_active_status;
+        }
+        $.ajax({
+            url: data_url,
+            method: "POST",
+
+            headers: {
+                'X-CSRFToken': CSRF_TOKEN,
+            },
+            data: {
+                action_status: action_status,
+                data_status: data_status,
+                item_id: item_id,
+            },
+    
+            success: function (data) {
+                console.log('Ответ сервера:', data["answer"]);
+                $this.closest(".cards_wrapper").html(data.html);
+                window.setCardShareWindows();
+                setMultipleCardButtonsEventHandler();
+            },
+            error: function (error) {
+                console.error('Ошибка:', error);
+            },
+        });
+    }
+})
+
+function setElementAttrs(element, kwargs={}) {
+    Object.keys(kwargs).forEach(key => {
+        element.attr(key, kwargs[key]);
+    });
+}
+
+function setMultipleCardButtonsEventHandler() {
+    const unpublic_button = $(".image_wrapper > .buttons > .unpublic");
+    unpublic_button.off("click").on("click", function(event) {
+        const $this = $(this);
+        setCardButtonsEventHandler(
+            $this, 
+            $this.attr("data-url"),
+            $this.closest(".card_item").attr("data-id"),
+            {action_status: "3",},
+            event,
+        );
+    });
+
+    const delete_button = $(".image_wrapper > .visibility_and_adds > .delete");
+    delete_button.off("click").on("click", function(event) {
+        const $this = $(this);
+        setCardButtonsEventHandler(
+            $this, 
+            $this.attr("data-url"),
+            $this.closest(".card_item").attr("data-id"),
+            {},
+            event,
+        );
+    });
+
+}
+
+function setCardButtonsEventHandler(target_button, data_url, item_id, send_kwargs={}, target_event) {
+    const pop_up = $(`#${target_button.attr("data-popup-id")}`);
+
+    window.showHideBackBlack(target_event, pop_up);
+
+    if (target_button.closest(".card_item").hasClass("recipe_item")) {
+        card_type = "recipe";
+    }
+    else {
+        card_type = "news";
+    }
+
+    $(document).off('click').on('click', function (event) {
+        window.HideBackBlackOverWindowClick(event, pop_up, target_button);
     });
 
     pop_up.off("click").on('click', function (event) {
         event.stopPropagation(); // Останавливаем всплытие события
     });
 
-    $(".image_wrapper > .buttons > *").off("click").on("click", function(event) {
+    const agree_button = pop_up.find(".buttons > .button_item.agree");
+    
+    agree_button.off("click").on("click", function(event) {
         $this = $(this);
-        let action_status;
         let data_status;
-        let card_type;
-        const data_url = $this.attr("data-url");
-        const card_item = $this.closest(".card_item");
-        const item_id = card_item.attr("data-id");
 
-        if (card_item.hasClass("recipe_item")) {
-            card_type = "recipe";
+        console.log("clicked agree_button");
+
+        window.showHideBackBlack(event, pop_up);
+
+        if (card_type == "recipe") {
+            data_status = recipes_active_status;
         }
         else {
-            card_type = "news";
+            data_status = news_active_status;
         }
-    
-        if ($this.hasClass("unpublic")) {
-            action_status = "3";
 
-            window.showHideBackBlack(event, pop_up);
-
-            pop_up.attr("data-url", data_url);
-            pop_up.attr("data-id", item_id);
-            pop_up.attr("data-card-type", card_type);
-        }
-        else if ($this.hasClass("public")) {
-            action_status = "4";
-            if (card_type == "recipe") {
-                data_status = recipes_active_status;
-            }
-            else {
-                data_status = news_active_status;
-            }
-            $.ajax({
-                url: data_url,
-                method: "POST",
-    
-                headers: {
-                    'X-CSRFToken': CSRF_TOKEN,
-                },
-                data: {
-                    action_status: action_status,
-                    data_status: data_status,
-                    item_id: item_id,
-                },
-        
-                success: function (data) {
-                    console.log('Ответ сервера:', data["answer"]);
-                    $this.closest(".cards_wrapper").html(data.html);
-                    window.setCardShareWindows();
-                    setCardButtonsEventHandler();
-                },
-                error: function (error) {
-                    console.error('Ошибка:', error);
-                },
-            });
-        }
-    })
-}
-
-setCardButtonsEventHandler();
-
-$(".profile_window.unpublic_warning#card_unpublic_warning > .buttons > .button_item.unpublic").on("click", function(event) {
-    $this = $(this);
-    let action_status = "3";
-    let data_status;
-    const unpublic_warning = $this.closest(".unpublic_warning");
-    const data_url = unpublic_warning.attr("data-url");
-    const item_id = unpublic_warning.attr("data-id");
-    const card_type = unpublic_warning.attr("data-card-type");
-
-    window.showHideBackBlack(event, unpublic_warning);
-
-    if (card_type == "recipe") {
-        data_status = recipes_active_status;
-    }
-    else {
-        data_status = news_active_status;
-    }
-
-    $.ajax({
-        url: data_url,
-        method: "POST",
-
-        headers: {
-            'X-CSRFToken': CSRF_TOKEN,
-        },
-        data: {
-            action_status: action_status,
+        let pre_data = {
             data_status: data_status,
             item_id: item_id,
-        },
+        }
 
-        success: function (data) {
-            console.log('Ответ сервера:', data["answer"]);
-            if (card_type == "recipe") {
-                $("#my_recipes_section > .cards_wrapper").html(data.html);
-            }
-            else {
-                $("#articles_section > .cards_wrapper").html(data.html);
-            }
-            window.setCardShareWindows();
-            
-            setCardButtonsEventHandler();
-        },
-        error: function (error) {
-            console.error('Ошибка:', error);
-        },
-    });
-})
+        let data = Object.assign({}, pre_data, send_kwargs);
 
-$(".profile_window.unpublic_warning#card_unpublic_warning > .buttons > .button_item.save_public").on("click", function(event) {
-    const unpublic_warning = $this.closest(".unpublic_warning");
-    window.showHideBackBlack(event, unpublic_warning);
+        $.ajax({
+            url: data_url,
+            method: "POST",
+
+            headers: {
+                'X-CSRFToken': CSRF_TOKEN,
+            },
+            data: data,
+
+            success: function (data) {
+                console.log('Ответ сервера:', data["answer"]);
+                if (card_type == "recipe") {
+                    $("#my_recipes_section > .cards_wrapper").html(data.html);
+                }
+                else {
+                    $("#articles_section > .cards_wrapper").html(data.html);
+                }
+                window.setCardShareWindows();
+
+                window.hideBackBlack_andPopup(pop_up);
+                
+                setMultipleCardButtonsEventHandler();
+            },
+            error: function (error) {
+                console.error('Ошибка:', error);
+            },
+        });
+    })
+
+}
+
+setMultipleCardButtonsEventHandler();
+
+$(".profile_window.unpublic_warning > .buttons > .button_item.disagree").on("click", function(event) {
+    const unpublic_warning = $(this).closest(".unpublic_warning");
+    window.hideBackBlack_andPopup(unpublic_warning);
 })
 
 function setPaginationEventHandler() {
     $(".pagination a").off("click").on("click", function(event) {
         event.preventDefault();
-        console.log("in a");
         $this = $(this);
 
         const data_url = $this.attr("href");

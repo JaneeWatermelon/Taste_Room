@@ -27,20 +27,23 @@ class CreateNewsForm(forms.ModelForm):
     )
     title = forms.CharField(widget=forms.TextInput(attrs={
         'placeholder': 'Введите название статьи',
+        'class': 'with_marks',
         'minlength': 20,
         'maxlength': 40,
     }))
     content_start = forms.CharField(widget=CKEditorWidget(config_name="awesome_ckeditor"))
     content_middle = forms.CharField(widget=forms.Textarea(attrs={
         'placeholder': 'Интересный факт, статистика или какая-то полезная информация',
+        'class': 'with_marks',
         'minlength': 0,
         'maxlength': 200,
     }), required=False)
     content_end = forms.CharField(widget=CKEditorWidget(config_name="awesome_ckeditor"), required=False)
     description_card = forms.CharField(widget=forms.Textarea(attrs={
         'placeholder': 'Придумайте мини-описание для карточки рецепта',
+        'class': 'with_marks',
         'minlength': 30,
-        'maxlength': 50,
+        'maxlength': 60,
     }))
     visibility = forms.CharField(widget=forms.RadioSelect(choices=Visibility.List))
 
@@ -51,8 +54,3 @@ class CreateNewsForm(forms.ModelForm):
             'content_start', 'content_middle', 'content_end',
             'status', 'visibility', 'categories'
         ]
-        # widgets = {
-        #     'cook_time_full': forms.TimeInput(attrs={'type': 'time'}),
-        #     'cook_time_active': forms.TimeInput(attrs={'type': 'time'}),
-        #     'description_inner': forms.Textarea(attrs={'rows': 4}),
-        # }

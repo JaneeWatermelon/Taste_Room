@@ -38,7 +38,7 @@
         </div>
         <div data-url="{% url 'news:comment_reaction_change_ajax' %}" class="rating">
             <div class="likes">
-                {% if item in request.user.liked_recipe_comments.all %}
+                {% if item in request.user.liked_news_comments.all %}
                 <img class="active" src="{% static 'svg/Likes_Dislikes/Like_fill.svg' %}">
                 {% else %}
                 <img src="{% static 'svg/Likes_Dislikes/Like_blank.svg' %}">
@@ -49,7 +49,7 @@
                 {% endif %}
             </div>
             <div class="dislikes">
-                {% if item in request.user.disliked_recipe_comments.all %}
+                {% if item in request.user.disliked_news_comments.all %}
                 <img class="active" src="{% static 'svg/Likes_Dislikes/Dislike_fill.svg' %}">
                 {% else %}
                 <img src="{% static 'svg/Likes_Dislikes/Dislike_blank.svg' %}">
@@ -97,7 +97,7 @@
                 </div>
                 <div data-url="{% url 'news:comment_reaction_change_ajax' %}" class="rating">
                     <div class="likes">
-                        {% if answer in request.user.liked_recipe_comments.all %}
+                        {% if answer in request.user.liked_news_comments.all %}
                         <img class="active" src="{% static 'svg/Likes_Dislikes/Like_fill.svg' %}">
                         {% else %}
                         <img src="{% static 'svg/Likes_Dislikes/Like_blank.svg' %}">
@@ -108,7 +108,7 @@
                         {% endif %}
                     </div>
                     <div class="dislikes">
-                        {% if answer in request.user.disliked_recipe_comments.all %}
+                        {% if answer in request.user.disliked_news_comments.all %}
                         <img class="active" src="{% static 'svg/Likes_Dislikes/Dislike_fill.svg' %}">
                         {% else %}
                         <img src="{% static 'svg/Likes_Dislikes/Dislike_blank.svg' %}">
@@ -134,7 +134,7 @@
         {% csrf_token %}
         <div class="input_wrapper">
             <textarea required="required" name="text" placeholder="Ответьте на комментарий"></textarea>
-            <button type="submit" class="input_button">
+            <button name="button_answer_comment" type="submit" class="input_button">
                 <img src="{% static 'svg/Arrows/Send_comment.svg' %}">
             </button>
         </div>

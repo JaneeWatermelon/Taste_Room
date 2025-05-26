@@ -1,21 +1,3 @@
-function setChoosedCategoriesCount() {
-    const count = $(".edit_section > .categories > .categories_list > .title_and_list input[type='checkbox']:checked").length;
-    $(".edit_section > .categories .categories_count").html(`${count}/10`);
-
-    if (count >= 10) {
-        $(".edit_section > .categories > .categories_list > .title_and_list input[type='checkbox']:not(:checked)").attr("disabled", true);
-    } else {
-        $(".edit_section > .categories > .categories_list > .title_and_list input[type='checkbox']").removeAttr("disabled");
-    }
-}
-
-
-$(".edit_section > .categories > .categories_list > .title_and_list input[type='checkbox']").on("input", function () {
-    setChoosedCategoriesCount();
-});
-
-setChoosedCategoriesCount();
-
 $(document).ready(function () {
     const menuLinks = $('.navigation_section > .links_wrapper > .link_item > h4'); // Все ссылки меню
     const sections = $('.edit_section > .sub_section'); // Все разделы страницы

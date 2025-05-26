@@ -371,9 +371,6 @@ function setLikeDislikeCommentEventHandler() {
         else {
             loader = window.location.href + ` .comments > .comment_wrapper[data-parent-id=${data_id}] .comment_item[data-comment-id=${data_comment_id}] > .rating > *`;
         }
-
-        console.log(data_comment_id);
-        console.log(reaction_type);
     
         $.ajax({
             url: data_url,

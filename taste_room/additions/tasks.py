@@ -1,3 +1,4 @@
+import telebot
 from celery import shared_task
 from django.conf import settings
 from django.core.mail import send_mail
@@ -27,3 +28,15 @@ def send_email_code_task(email_code, email):
         fail_silently=False,
         html_message=html_content,
     )
+
+@shared_task
+def send_telegram_notification(message):
+    bot = telebot.TeleBot(token=settings.TELEGRAM_BOT_TOKEN)
+    try:
+        bot.send_message(
+            chat_id=settings.TELEGRAM_CHAT_ID,
+            text=message,
+            parse_mode='HTML'
+        )
+    except Exception as e:
+        print(f"Ошибка отправки в Telegram: {e}")

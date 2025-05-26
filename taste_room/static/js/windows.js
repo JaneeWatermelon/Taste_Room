@@ -6,9 +6,9 @@ function showBackBlack() {
         });
     }, 1);
 }
-function hideBackBlack_andPopup(popup) {
+window.hideBackBlack_andPopup = function(popup) {
     $(".back_black").css({
-        "opacity": 0,
+        "opacity": 0, 
     });
     setTimeout(function() {
         $(".back_black").addClass('d_none');
@@ -22,7 +22,9 @@ window.showHideBackBlack = function(event, popup) {
     if (popup.hasClass('d_none')) {
         popup.removeClass('d_none');
         showBackBlack();
+        console.log("if");
     } else {
+        console.log("else");
         hideBackBlack_andPopup(popup);
     }
 }
@@ -37,6 +39,24 @@ window.HideBackBlackOverWindowClick = function(event, popup, hoverEl = null) {
         }, 300);
     }
 }
+
+window.reloadPage = function(pop_up_id, redirect_url=null) {
+    sessionStorage.setItem("reloading", pop_up_id);
+    if (redirect_url != null) {
+        window.location.href = redirect_url;
+    }
+    else {
+        location.reload();
+    }
+}
+$(window).on('load', function(event) {
+    var reloading = sessionStorage.getItem("reloading");
+    if (reloading) {
+        sessionStorage.removeItem("reloading");
+        const pop_up = $(`#${reloading}`);
+        window.showHideBackBlack(event, pop_up)
+    }
+});
 
 window.setListenersWithBlackBack = function(popup, hoverEl) {
     // Обработчик клика на элемент, который открывает окно

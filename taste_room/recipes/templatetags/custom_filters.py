@@ -22,6 +22,10 @@ def repeat(n):
     return range(1, n+1)
 
 @register.filter
+def conc_strings(str1, str2):
+    return str(str1) + str(str2)
+
+@register.filter
 def round_ingredient_count(n):
     if n == int(n):
         return int(n)

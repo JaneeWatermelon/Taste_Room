@@ -1,0 +1,23 @@
+{% load static %}
+<div id="{{ id }}" class="profile_window unpublic_warning d_none">
+    <div class="titles">
+        {% if title %}
+        <h3 class="medium_font">{{ title }}</h3>
+        {% endif %}
+        {% if supp_title %}
+        <h4 class="medium_font">{{ supp_title }}</h4>
+        {% endif %}
+    </div>
+    <div class="buttons">
+        {% if agree_title %}
+        <div class="button_item agree">
+            <h4 class="medium_font">{{ agree_title }}</h4>
+        </div>
+        {% endif %}
+        {% if disagree_title %}
+        <div class="button_item disagree">
+            <h4 class="medium_font">{{ disagree_title }}</h4>
+        </div>
+        {% endif %}
+    </div>
+</div>

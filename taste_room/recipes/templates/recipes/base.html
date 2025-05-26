@@ -13,11 +13,12 @@
     <meta property="og:title" content="{{ request.meta_og_title }}" />
     <meta property="og:description" content="{{ request.meta_og_description }}" />
     <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}" />
-    <meta property="og:site_name" content="Комната Вкусов" />
-    <meta name="keywords" content="рецепты, кулинария, готовка, блюда, комната вкусов, комната вкуса, еда, кухня">
+    <meta property="og:site_name" content="Комната Вкуса" />
+    <meta name="keywords" content="рецепты, приготовить, кулинария, готовка, блюда, комната вкусов, комната вкуса, еда, кухня">
 
     <meta property="og:image" content="{% if request.meta_og_image %}{{ request.meta_og_image.url }}{% else %}{% static 'img/Default/Site_Preview.jpg' %}{% endif %}" />
 
+    <link rel="icon" type="image/svg+xml" href="{% static 'favicon/favicon.svg' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'favicon/favicon.ico' %}">
     <link rel="shortcut icon" href="{% static 'favicon/favicon.ico' %}" />
     <link rel="apple-touch-icon" href="{% static 'favicon/favicon.ico' %}" />
@@ -28,6 +29,24 @@
 
     <meta name="csrf-token" content="{{ csrf_token }}">
     <meta name="user-authenticated" content="{{ user.is_authenticated }}">
+
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript" >
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+       ym(101847031, "init", {
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true
+       });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/101847031" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
 
     {% block base_styles %}
     <link rel="stylesheet" href="{% static 'css/general/vars.css' %}">
@@ -57,7 +76,7 @@
             </div>
             <form action="{% url 'recipes:search' %}" method="get" class="input_wrapper">
                 <input required type="text" name="q" placeholder="Введите название блюда">
-                <button type="submit" class="input_button magnifier">
+                <button name="button_find_by_title" type="submit" class="input_button magnifier">
                     <img src="{% static 'svg/Shapes/Magnifier.svg' %}">
                 </button>
             </form>
@@ -157,7 +176,12 @@
                     <a href="https://t.me/taste_room_kv"><img src="{% static 'svg/Socials_WB/TG_blank.svg' %}"></a>
                     <a href="https://vk.com/taste_room"><img src="{% static 'svg/Socials_WB/VK_blank.svg' %}"></a>
                     <a href="https://ru.pinterest.com/taste_room/"><img src="{% static 'svg/Socials_WB/Pinterest_blank.svg' %}"></a>
-                    <a href=""><img src="{% static 'svg/Socials_WB/Email_blank.svg' %}"></a>
+                    <a id="copy_burger_email" data-email="tasteroom@yandex.ru" href=""><img src="{% static 'svg/Socials_WB/Email_blank.svg' %}"></a>
+                    <div class="copy_window">
+                        <div class="inner_wrapper">
+                            <h5>Почта скопирована!</h5>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -186,7 +210,7 @@
                         {{ registration_form.password }}
                     </div>
                 </div>
-                <button type="submit" class="success_button">
+                <button name="button_reg" type="submit" class="success_button">
                     <h4 class="medium_font white">Зарегистрироваться</h4>
                 </button>
                 <ul class="messages_wrapper d_none"></ul>
@@ -215,7 +239,7 @@
                         {{ login_form.password }}
                     </div>
                 </div>
-                <button type="submit" class="success_button">
+                <button name="button_login" type="submit" class="success_button">
                     <h4 class="medium_font white">Войти</h4>
                 </button>
                 <ul class="messages_wrapper d_none"></ul>
@@ -280,7 +304,7 @@
                         {{ change_password_form.password2 }}
                     </div>
                 </div>
-                <button type="submit" class="success_button">
+                <button name="button_change_password" type="submit" class="success_button">
                     <h4 class="medium_font white">Изменить</h4>
                 </button>
                 <ul class="messages_wrapper d_none"></ul>
@@ -293,8 +317,8 @@
     {% endblock %}
     {% block footer %}
     <a href="#body" id="go_up_wrapper">
-            <img src="{% static 'svg/Random_icons/Show_Hide_icon_gray.svg' %}">
-        </a>
+        <img src="{% static 'svg/Random_icons/Show_Hide_icon_gray.svg' %}">
+    </a>
     <footer>
         <img class="d_mobile_none" id="footer_waves" src="{% static 'svg/Shapes/Waves_footer_desktop.svg' %}">
         <img class="d_desktop_none" id="footer_waves" src="{% static 'svg/Shapes/Waves_footer_mobile.svg' %}">
@@ -346,7 +370,7 @@
                         </a>
                     </div>
                     <div class="social_div" style="position: relative;">
-                        <a id="copy_email" href="" data-email="tasteroom@yandex.ru">
+                        <a id="copy_footer_email" href="" data-email="tasteroom@yandex.ru">
                             <img src="{% static 'svg/Socials_WB/Email_blank.svg' %}">
                             <h4>tasteroom@yandex.ru</h4>
                         </a>
@@ -359,7 +383,7 @@
                 </div>
             </div>
             <img class="d_mobile_none" src="{% static 'svg/Shapes/Chocolates_footer_desktop.svg' %}" style="transform: rotate(180deg)">
-            <img class="d_desktop_none" src="{% static 'svg/Shapes/Chocolates_footer_mobile.svg' %}">
+            <img class="d_desktop_none" src="{% static 'svg/Shapes/Chocolates_footer_mobile.svg' %}" style="width: 100%">
         </div>
     </footer>
     {% endblock %}

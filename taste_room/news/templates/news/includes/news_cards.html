@@ -12,6 +12,9 @@
             </a>
             <div class="visibility_and_adds">
                 {% if is_buttons %}
+                <div class="icon_wrapper delete" data-popup-id="card_delete_warning" data-url="{% url 'news:news_delete_ajax' %}">
+                    <img src="{% static 'svg/Random_icons/Trash_icon.svg' %}">
+                </div>
                 <div class="visibility_wrapper">
                     <img src="{% static 'svg/Random_icons/Eye_icon_black.svg' %}">
                     <h4>{{ item.get_visibility_display }}</h4>

@@ -20,7 +20,7 @@ from additions.views import (Status, Visibility,
                              get_recipes_related, set_meta_tags)
 from categories.models import CategoryGroup, RecipeCategory
 from news.views import get_news_PUBLISHED_ALL_SUBS, get_recs_news
-from recipes.forms import (CreateRecipeCommentForm, CreateRecipeForm)
+from recipes.forms import (CreateRecipeCommentForm, CreateRecipeForm, validate_image_size)
 from recipes.models import (Difficulty, Ingredient, Recipe, RecipeComment,
                             RecipeIngredient, RecipePreview, RecipeReview,
                             RecipeStep, Scipy, Units)
@@ -59,6 +59,7 @@ class MainView(TemplateView):
         context['recipes_2'] = context['recipes'][support_paginate_by:]
         context['recipes_popular_1'] = context['recipes_popular'][:support_paginate_by]
         context['recipes_popular_2'] = context['recipes_popular'][support_paginate_by:]
+        context['recipes_popular_count'] = (context['recipes_popular_1'] | context['recipes_popular_2']).count()
 
         context['articles'] = get_news_PUBLISHED_ALL_SUBS(user)[:10]
 
@@ -270,7 +271,7 @@ class SearchRecipesView(ListView):
             queryset = get_recipes_related(recipes).order_by('-match_count', '-popularity', '-rating')
         else:
             queryset = super(SearchRecipesView, self).get_queryset()
-        return queryset
+        return get_recipes_PUBLISHED_ALL_SUBS(user=self.request.user, ready_queryset=queryset)
 
     def get_context_data(self, **kwargs):
         context = super(SearchRecipesView, self).get_context_data(**kwargs)
@@ -384,9 +385,6 @@ def recipe_create_view(request):
             "author": request.user,
         }
 
-        print(data)
-        print(recipe_data)
-
         recipe = Recipe(**recipe_data)
         recipe.full_clean()  # Валидация модели
         recipe.save()
@@ -413,6 +411,8 @@ def recipe_create_view(request):
                     unit=ingredient_measurement,
                     can_exclude=ingredient_checkbox,
                 )
+
+        print(recipe.title)
 
         return JsonResponse({
             'redirect': True,
@@ -490,6 +490,7 @@ def recipe_edit_view(request, pk):
             existing_image_position = data.get(f"existing_preview_position_{i}")
 
             if new_image:
+                validate_image_size(new_image)
                 setattr(recipe.previews, field_name, new_image)
             elif existing_image_position:
                 existing_image_index = int(existing_image_position) - 1
@@ -560,11 +561,16 @@ def recipe_edit_view(request, pk):
             except:
                 pass
 
+        new_recipe_ingredient_ids = {}
         for i in range(1, int(data.get("ingredients_count", 25)) + 1):
             ingredient_id = data.get(f"ingredient_id_{i}")
             recipe_ingredient_id = data.get(f"recipe_ingredient_id_{i}")
 
-            ingredient_count = int(data.get(f"ingredient_count_{i}", 0))
+            ingredient_count = data.get(f"ingredient_count_{i}", 0)
+            if not ingredient_count.isdigit():
+                ingredient_count = 0
+            else:
+                ingredient_count = min(int(ingredient_count), 10000)
             ingredient_measurement = data.get(f"ingredient_measurement_{i}", "гр")
             ingredient_checkbox = True if data.get(f"ingredient_checkbox_{i}") else False
 
@@ -577,20 +583,19 @@ def recipe_edit_view(request, pk):
                         can_exclude=ingredient_checkbox,
                     )
                 else:
-                    RecipeIngredient.objects.create(
+                    new_recipe_ingredient = RecipeIngredient.objects.create(
                         recipe=recipe,
                         ingredient=ingredient,
                         quantity=ingredient_count,
                         unit=ingredient_measurement,
                         can_exclude=ingredient_checkbox,
                     )
+                    new_recipe_ingredient_ids[f"recipe_ingredient_id_{i}"] = new_recipe_ingredient.id
 
         delete_recipe_ingredient_ids = data.get(f"delete_recipe_ingredient_ids")
         for ingredient_id in delete_recipe_ingredient_ids.split(','):
             try:
-                print(ingredient_id)
                 recipe_ingredient = get_object_or_404(RecipeIngredient, id=ingredient_id)
-                print(recipe_ingredient)
                 recipe_ingredient.delete()
             except:
                 pass
@@ -599,18 +604,21 @@ def recipe_edit_view(request, pk):
             return JsonResponse({
                 'answer': 'Рецепт успешно создан или изменён',
                 'new_step_ids': new_step_ids,
+                'new_recipe_ingredient_ids': new_recipe_ingredient_ids,
                 'redirect': False,
             })
         elif "publish" in data:
             return JsonResponse({
                 'answer': 'Рецепт успешно создан или изменён',
                 'redirect': True,
+                'is_published': True,
                 'url': reverse("users:profile")
             })
         else:
             return JsonResponse({
                 'answer': 'Рецепт успешно создан или изменён',
                 'new_step_ids': new_step_ids,
+                'new_recipe_ingredient_ids': new_recipe_ingredient_ids,
                 'redirect': False,
             })
 
@@ -664,7 +672,7 @@ class DetailRecipeView(DetailView):
         user = self.request.user
 
 
-        if self.object.author != user:
+        if self.object.author != user and not user.is_superuser:
             if self.object.status == Status.MODERATION:
                 return context
 
@@ -721,7 +729,7 @@ class DetailRecipeView(DetailView):
         self.object = Recipe.objects.filter(id=self.kwargs.get("pk")).select_related("previews", "author").prefetch_related("recipereview_set", "recipeingredient_set", "recipeingredient_set__ingredient",).get()
         context = self.get_context_data(object=self.object)
 
-        if self.object.status == Status.MODERATION:
+        if self.object.status == Status.MODERATION and not self.request.user.is_superuser:
             self.template_name = "additions/error_moderator.html"
 
         item_title = self.object.title
@@ -770,6 +778,18 @@ def recipe_like_change(request):
             return JsonResponse({"answer": "Рецепт добавлен в понравившиеся"})
     else:
         return JsonResponse({"answer": "Пользователь не авторизован"})
+
+@require_POST
+def recipe_delete(request):
+    item_id = request.POST.get("item_id")
+    data_status = request.POST.get("data_status")
+    data_statuses = data_status.split(",")
+    page = request.POST.get('page', 1)
+
+    item = get_object_or_404(Recipe, id=item_id)
+    item.delete()
+
+    return JsonResponse(_prepare_recipes_data(request.user, data_statuses, page))
 
 @require_POST
 def change_recipe_ingredients(request):
@@ -1006,7 +1026,7 @@ def load_more_comments(request):
 
     comments = RecipeComment.objects.filter(recipe=item, parent=None).order_by('-published_date')
 
-    paginator = Paginator(comments, 2)  # 20 комментариев на страницу
+    paginator = Paginator(comments, 2)  # 2 комментариев на страницу
     page_obj = paginator.get_page(page)
 
     # Добавляем CSRF-токен в контекст
@@ -1086,9 +1106,9 @@ def ingredient_autocomplete(request):
     search_term = request.GET.get('data_term', '').lower()  # Приводим к нижнему регистру
 
     if search_term != '':
-        search_term = slugify(transliterate_russian_to_pseudo_english(search_term))
+        # search_term = slugify(transliterate_russian_to_pseudo_english(search_term))
 
-        ingredients = Ingredient.objects.filter(slug__icontains=search_term)[:10]
+        ingredients = Ingredient.objects.filter(title__icontains=search_term)[:25]
         results = [{'id': ing.id, 'value': ing.title} for ing in ingredients]
     else:
         results = []
@@ -1100,6 +1120,7 @@ def ingredient_autocomplete(request):
 @require_GET
 def add_ingredient_item(request):
     data_id = request.GET.get('data_id', '')
+    print(data_id)
     next_item_number = request.GET.get('next_item_number', '')
     if data_id:
         ingredient = get_object_or_404(Ingredient, id=data_id)
@@ -1118,5 +1139,5 @@ def add_ingredient_item(request):
     else:
         return JsonResponse({
             "error": "Ингредиент не найден",
-        }, 400)
+        }, status=400)
 

@@ -3,7 +3,9 @@
 {% load custom_filters %}
 
 {% block custom_styles %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
     <link rel="stylesheet" href="{% static 'css/recipe/add_recipe.css' %}">
+    <link rel="stylesheet" href="{% static 'css/recipe/ui_autocomplete.css' %}">
 {% endblock %}
 
 {% block main %}
@@ -16,7 +18,7 @@
             <a href="{% url 'recipes:edit' object.id %}"><p>Редактирование рецепта</p></a>
         </section>
         <div class="main_content">
-            <form action="{% url 'recipes:edit' object.id %}" method="post" class="edit_section">
+            <form action="{% url 'recipes:edit' object.id %}" method="post" class="edit_section edit">
                 {% csrf_token %}
                 <div class="main_title">
                     <span class="line"></span>
@@ -31,11 +33,7 @@
                         <div class="input_wrapper">
                             {{ form.title }}
                         </div>
-                        <div class="marks_limits">
-                            <h4>Мин. знаков: <span class="orange">20</span></h4>
-                            <h4>Макс. знаков: <span class="orange">40</span></h4>
-                            <h4>Ваши знаки: <span class="my_symbols heart">0</span></h4>
-                        </div>
+                        {% include "additions/marks_progress_bar.html" with input_id=form.title.id_for_label min=20 max=40 %}
                     </div>
                     <div class="opacity">
                         <h3>Кто видит опубликованный рецепт</h3>
@@ -45,28 +43,10 @@
                                 {{ radio.tag }}
                                 {% with selected_value=forloop.counter %}
                                 <label for="{{ radio.id_for_label }}"><h4>{{ visibility_descriptions|get_first_value:selected_value }}</h4></label>
-                                <label for="{{ radio.id_for_label }}"><h4 class="black_50">{{ visibility_descriptions|get_second_value:selected_value }}</h4></label>
+                                <label for="{{ radio.id_for_label }}"><h4 class="black_50 d_mobile_none">{{ visibility_descriptions|get_second_value:selected_value }}</h4></label>
                                 {% endwith %}
                             </div>
                             {% endfor %}
-<!--                            <div class="opacity_item">-->
-<!--                                <input id="visibility_2" type="radio" name="visibility" value="2"-->
-<!--                                   {% if form.visibility.value == 2 %}checked{% endif %}>-->
-<!--                                <label for="visibility_2"><h4>Только в профиле</h4></label>-->
-<!--                                <label for="visibility_2"><h4 class="black_50">(виден всем у вас на странице)</h4></label>-->
-<!--                            </div>-->
-<!--                            <div class="opacity_item">-->
-<!--                                <input id="visibility_3" type="radio" name="visibility" value="3"-->
-<!--                                   {% if form.visibility.value == 3 %}checked{% endif %}>-->
-<!--                                <label for="visibility_3"><h4>Только подписчики</h4></label>-->
-<!--                                <label for="visibility_3"><h4 class="black_50">(виден только подписчикам)</h4></label>-->
-<!--                            </div>-->
-<!--                            <div class="opacity_item">-->
-<!--                                <input id="visibility_4" type="radio" name="visibility" value="4"-->
-<!--                                   {% if form.visibility.value == 4 %}checked{% endif %}>-->
-<!--                                <label for="visibility_4"><h4>Только я</h4></label>-->
-<!--                                <label for="visibility_4"><h4 class="black_50">(приватный, виден только вам)</h4></label>-->
-<!--                            </div>-->
                         </fieldset>
                     </div>
                 </div>
@@ -78,7 +58,7 @@
                         <h3>Ингредиенты</h3>
                         <h4 class="black_50">Если добавленный ингредиент можно исключить из блюда, или добавить по желанию - поставьте галочку рядом с ним</h4>
                         <div class="input_wrapper fit">
-                            <input autocomplete="off" list="ingredients_choices" data-url="{% url 'recipes:ingredient_autocomplete_ajax' %}" data-url-click="{% url 'recipes:add_ingredient_item_ajax' %}" id="ingredient-search" placeholder="Введите ингредиент">
+                            <input type="text" autocomplete="off" list="ingredients_choices" data-url="{% url 'recipes:ingredient_autocomplete_ajax' %}" data-url-click="{% url 'recipes:add_ingredient_item_ajax' %}" id="ingredient-search" placeholder="Введите ингредиент">
                             <datalist id="ingredients_choices">
                             </datalist>
                         </div>
@@ -93,30 +73,6 @@
                             {{ form.portions }}
                         </div>
                     </div>
-                    <template id="ingredient-template">
-                        <div class="ingredient_item">
-                            <h4 class="lilita_font ingredient-number"></h4>
-                            <h4 class="ingredient-name"></h4>
-                            <div class="input_wrapper">
-                                <input type="number" min="0" max="100000" class="ingredient-quantity" placeholder="Кол-во">
-                            </div>
-                            <div class="input_wrapper">
-                                <select class="ingredient-unit">
-                                    <option value="гр">Граммы</option>
-                                    <option value="кг">Килограммы</option>
-                                    <option value="шт">Штуки</option>
-                                    <option value="мл">Миллилитры</option>
-                                    <option value="л">Литры</option>
-                                    <option value="ст.л.">Столовые ложки</option>
-                                    <option value="ч.л.">Чайные ложки</option>
-                                    <option value="стак.">Стаканы</option>
-                                    <option value="щеп.">Щепотки</option>
-                                </select>
-                            </div>
-                            <input type="checkbox" class="ingredient-optional">
-                            <img class="trash_icon" src="{% static 'svg/Random_icons/Trash_icon.svg' %}" onclick="removeIngredient(this)">
-                        </div>
-                    </template>
                 </div>
                 <span class="line"></span>
                 <div class="sub_section difficulty_and_spicy">
@@ -143,7 +99,7 @@
                     <h2>Категории рецепта</h2>
                     <div class="title">
                         <h3>Категории</h3>
-                        <h4 class="black_50">Выбрано категорий: <span class="categories_count black medium_font">0/10</span></h4>
+                        {% include "additions/marks_progress_bar.html" with min=0 max=10 title="Выбрано категорий:" %}
                     </div>
                     <div class="categories_list">
                         {% for category_group in category_groups %}
@@ -178,14 +134,24 @@
                     <h2>Пошаговые фото</h2>
                     <div class="title">
                         <h4 class="black_50">Добавьте от 3 до 20 пошаговых фото. Условия:</h4>
-                        <div class="condition">
-                            <h4 class="medium_font">1.</h4>
-                            <h4>Горизонтальный формат изображения.</h4>
-                            <img src="{% static 'svg/Yes_No/Horizontal_vertical.svg' %}">
-                        </div>
-                        <div class="condition">
-                            <h4 class="medium_font">2.</h4>
-                            <h4>Каждое изображение отображает один из этапов приготовления.</h4>
+                        <div class="conditions">
+                            <div class="condition">
+                                <h4 class="order medium_font">1.</h4>
+                                <h4>Горизонтальный формат изображения.</h4>
+                                <div class="info_graphics">
+                                    <img src="{% static 'svg/Instuctions_infographics/Yes.svg' %}">
+                                    <img style="transform: rotate(90deg);" src="{% static 'svg/Instuctions_infographics/No.svg' %}">
+                                </div>
+                            </div>
+                            <div class="condition">
+                                <h4 class="order medium_font">2.</h4>
+                                <h4>Каждое изображение отображает один из этапов приготовления.</h4>
+                                <div class="info_graphics">
+                                    <img src="{% static 'svg/Instuctions_infographics/1.svg' %}">
+                                    <img src="{% static 'svg/Instuctions_infographics/2.svg' %}">
+                                    <img src="{% static 'svg/Instuctions_infographics/3.svg' %}">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="steps_list" data-delete-ids="">
@@ -195,7 +161,7 @@
                             {% include "recipes/includes/preview_step_item.html" with steps='123' %}
                         {% endif %}
                     </div>
-                    <button data-url="{% url 'recipes:add_recipe_step_ajax' %}" type="button" class="add_step_button">
+                    <button name="button_add_step" data-url="{% url 'recipes:add_recipe_step_ajax' %}" type="button" class="add_step_button">
                         <img src="{% static 'svg/Plus_Minus/Plus_white.svg' %}">
                         <h3 class="white medium_font">Добавить следующий шаг</h3>
                     </button>
@@ -206,18 +172,31 @@
                     <h2>Фото готового блюда</h2>
                     <div class="title">
                         <h4 class="black_50">Добавьте от 1 до 3 фотографий готового блюда. Помните про условия:</h4>
-                        <div class="condition">
-                            <h4 class="medium_font">1.</h4>
-                            <h4>Горизонтальный формат изображения.</h4>
-                            <img src="{% static 'svg/Yes_No/Horizontal_vertical.svg' %}">
-                        </div>
-                        <div class="condition">
-                            <h4 class="medium_font">2.</h4>
-                            <h4>Не добавляйте одинаковые изображения</h4>
-                        </div>
-                        <div class="condition">
-                            <h4 class="medium_font">3.</h4>
-                            <h4>Блюдо должно быть хорошо видно</h4>
+                        <div class="conditions">
+                            <div class="condition">
+                                <h4 class="order medium_font">1.</h4>
+                                <h4>Горизонтальный формат изображения.</h4>
+                                <div class="info_graphics">
+                                    <img src="{% static 'svg/Instuctions_infographics/Yes.svg' %}">
+                                    <img style="transform: rotate(90deg);" src="{% static 'svg/Instuctions_infographics/No.svg' %}">
+                                </div>
+                            </div>
+                            <div class="condition">
+                                <h4 class="order medium_font">2.</h4>
+                                <h4>Не добавляйте одинаковые изображения</h4>
+                                <div class="info_graphics">
+                                    <img src="{% static 'svg/Instuctions_infographics/Yes_1.svg' %}">
+                                    <img src="{% static 'svg/Instuctions_infographics/No_1.svg' %}">
+                                </div>
+                            </div>
+                            <div class="condition">
+                                <h4 class="order medium_font">3.</h4>
+                                <h4>Блюдо должно быть хорошо видно</h4>
+                                <div class="info_graphics">
+                                    <img src="{% static 'svg/Instuctions_infographics/Yes_image.svg' %}">
+                                    <img src="{% static 'svg/Instuctions_infographics/No_image.svg' %}">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="photo_list">
@@ -254,10 +233,7 @@
                         <div class="input_wrapper">
                             {{ form.description_inner }}
                         </div>
-                        <div class="marks_limits">
-                            <h4>Мин. знаков: <span class="orange">350</span></h4>
-                            <h4>Ваши знаки: <span class="my_symbols heart">0</span></h4>
-                        </div>
+                        {% include "additions/marks_progress_bar.html" with input_id=form.description_inner.id_for_label min=350 max="&infin;" %}
                     </div>
                     <div class="title">
                         <label for="{{ form.description_card.id_for_label }}"><h3>Мини-описание для карточки рецепта</h3></label>
@@ -265,11 +241,7 @@
                         <div class="input_wrapper">
                             {{ form.description_card }}
                         </div>
-                        <div class="marks_limits">
-                            <h4>Мин. знаков: <span class="orange">30</span></h4>
-                            <h4>Макс. знаков: <span class="orange">50</span></h4>
-                            <h4>Ваши знаки: <span class="my_symbols heart">0</span></h4>
-                        </div>
+                        {% include "additions/marks_progress_bar.html" with input_id=form.description_card.id_for_label min=30 max=60 %}
                     </div>
                 </div>
                 <span class="line"></span>
@@ -359,11 +331,9 @@
                 </div>
                 <div class="continue_and_drafts publish_and_drafts">
                     <button name="publish" value="submit" type="submit" class="continue_button">
-                        <img src="{% static 'svg/Yes_No/Yes_no_shadow.svg' %}">
                         <h3 class="medium_font white">Опубликовать</h3>
                     </button>
                     <button name="save" value="submit" type="submit" class="drafts_button">
-                        <img src="{% static 'svg/Random_icons/Edit_icon_half_black.svg' %}">
                         <h3 class="black_50">Сохранить</h3>
                     </button>
                 </div>
@@ -443,9 +413,10 @@
 
 {% block custom_scripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.6/Sortable.min.js" integrity="sha512-csIng5zcB+XpulRUa+ev1zKo7zRNGpEaVfNB9On1no9KYTEY/rLGAEEpvgdw6nim1WdTuihZY1eqZ31K7/fZjw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
     <script src="{% static 'js/profile.js' %}"></script>
     <script src="{% static 'js/recipe_create/sortable_images.js' %}"></script>
     <script src="{% static 'js/create_page/general.js' %}"></script>
     <script src="{% static 'js/recipe_create/add_recipe.js' %}"></script>
-    <script src="{% static 'js/recipe_create/change_symbols_count.js' %}"></script>
+    <script src="{% static 'js/create_page/change_symbols_count.js' %}"></script>
 {% endblock %}

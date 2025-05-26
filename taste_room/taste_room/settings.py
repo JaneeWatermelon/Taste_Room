@@ -6,6 +6,7 @@ from celery.schedules import crontab
 
 env = environ.Env(
     DEBUG=(bool, False),
+    DOMAIN_NAME=(str, False),
     SECRET_KEY=(str, False),
     REDIS_LOCATION=(str, False),
 
@@ -36,6 +37,8 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
+DOMAIN_NAME = env('DOMAIN_NAME')
+
 ALLOWED_HOSTS = ["127.0.0.1", "45.131.40.35", "tasteroom.ru"]
 
 INTERNAL_IPS = [
@@ -61,6 +64,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.sitemaps',
 
     'ckeditor',
     'ckeditor_uploader',
@@ -230,6 +234,10 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': crontab(hour=0, minute=0),
     },
 }
+
+# Telegram
+TELEGRAM_BOT_TOKEN = env('TELEGRAM_BOT_TOKEN')
+TELEGRAM_CHAT_ID = env('TELEGRAM_CHAT_ID')
 
 # email
 EMAIL_HOST = env('EMAIL_HOST')

@@ -1,0 +1,191 @@
+{% load static %}
+{% load custom_filters %}
+{% load humanize %}
+
+<div class="main_title">
+    <span class="line"></span>
+    <h1 class="lilita_font green">Добавление новой статьи</h1>
+    <span class="line"></span>
+</div>
+<div class="sub_section title_and_opacity">
+    <span class="anchor_hidden" id="title_and_opacity"></span>
+    <h2>Название и видимость</h2>
+    <div class="title">
+        <h3>Название статьи</h3>
+        <div class="input_wrapper">
+            {{ form.title }}
+        </div>
+        {% include "additions/marks_progress_bar.html" with input_id=form.title.id_for_label min=20 max=40 %}
+    </div>
+    <div class="opacity">
+        <h3>Кто видит опубликованную статью</h3>
+        <fieldset id="opacity_radios">
+            {% for radio in form.visibility %}
+            <div class="opacity_item">
+                {{ radio.tag }}
+                {% with selected_value=forloop.counter %}
+                <label for="{{ radio.id_for_label }}"><h4>{{ visibility_descriptions|get_first_value:selected_value }}</h4></label>
+                <label for="{{ radio.id_for_label }}"><h4 class="black_50 d_mobile_none">{{ visibility_descriptions|get_second_value:selected_value }}</h4></label>
+                {% endwith %}
+            </div>
+            {% endfor %}
+        </fieldset>
+    </div>
+</div>
+<span class="line"></span>
+<div class="sub_section news_content">
+    <span class="anchor_hidden" id="news_content"></span>
+    <h2>Содержание статьи</h2>
+    <div class="title">
+        <h4 class="black_50">Содержание статьи разбито на <span class="black">3 блока</span>:</h4>
+        <div class="conditions">
+            <div class="condition">
+                <h4 class="order medium_font">Начало</h4>
+                <p>Текст, который будет показваться в первую очередь</p>
+                <div class="info_graphics">
+                    <img src="{% static 'svg/Instuctions_infographics/1.svg' %}">
+                </div>
+            </div>
+            <div class="condition">
+                <h4 class="order medium_font">Вставка</h4>
+                <p>Интересный факт, дополнение, справочная информация, показывается в выделенном блоке</p>
+                <div class="info_graphics">
+                    <img src="{% static 'svg/Instuctions_infographics/2.svg' %}">
+                </div>
+            </div>
+            <div class="condition">
+                <h4 class="order medium_font">Конец</h4>
+                <p>Текст, который будет заключительным</p>
+                <div class="info_graphics">
+                    <img src="{% static 'svg/Instuctions_infographics/3.svg' %}">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="title">
+        <div class="sub_title_and_mark">
+            <h3>Первая часть*</h3>
+            <img class="part_1" src="{% static 'svg/Random_icons/Question_mark.svg' %}">
+        </div>
+        <div class="input_wrapper">
+            {{ form.media }}
+            {{ form.content_start }}
+        </div>
+    </div>
+    <div class="title">
+        <div class="sub_title_and_mark">
+            <h3>Вставка</h3>
+            <img class="insertion" src="{% static 'svg/Random_icons/Question_mark.svg' %}">
+        </div>
+        <div class="input_wrapper">
+            {{ form.content_middle }}
+        </div>
+        {% include "additions/marks_progress_bar.html" with input_id=form.content_middle.id_for_label min=0 max=200 %}
+    </div>
+    <div class="title">
+        <div class="sub_title_and_mark">
+            <h3>Вторая часть</h3>
+            <img class="part_2" src="{% static 'svg/Random_icons/Question_mark.svg' %}">
+        </div>
+        <div class="input_wrapper">
+            {{ form.content_end }}
+        </div>
+    </div>
+</div>
+<span class="line"></span>
+<div class="sub_section ready_dish_photo">
+    <span class="anchor_hidden" id="ready_dish_photo"></span>
+    <h2>Главное фото статьи</h2>
+    <div class="title">
+        <h4 class="black_50">Добавьте фото, которое будет показываться на карточке и внутри статьи на самом верху. Помните про условия:</h4>
+        <div class="conditions">
+            <div class="condition">
+                <h4 class="order medium_font">1.</h4>
+                <h4>Горизонтальный формат изображения.</h4>
+                <div class="info_graphics">
+                    <img src="{% static 'svg/Instuctions_infographics/Yes.svg' %}">
+                    <img style="transform: rotate(90deg);" src="{% static 'svg/Instuctions_infographics/No.svg' %}">
+                </div>
+            </div>
+            <div class="condition">
+                <h4 class="order medium_font">2.</h4>
+                <h4>Фото должно соответствовать содержанию статьи.</h4>
+                <div class="info_graphics">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="photo_list">
+        {% if object.preview %}
+            {% include "news/includes/news_main_photo.html" with ready_photo=object.preview next_item_number=1 %}
+        {% else %}
+            {% include "news/includes/news_main_photo.html" with next_item_number=1 %}
+        {% endif %}
+    </div>
+<!--                    <div data-url="{% url 'recipes:add_ready_photo_ajax' %}" class="add_photo_button {% if object.preview %}d_none{% endif %}">-->
+<!--                        <img src="{% static 'svg/Cookie/Add_image_half_black.svg' %}">-->
+<!--                        <div class="info">-->
+<!--                            <p class="black_50">Добавь фото своей статьи</p>-->
+<!--                            <p class="black_50">Перетащи или нажми, чтобы выбрать</p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+</div>
+<span class="line"></span>
+<div class="sub_section description_to_recipe">
+    <span class="anchor_hidden" id="description_to_recipe"></span>
+    <h2>Описание статьи</h2>
+    <div class="title">
+        <label for="{{ form.description_card.id_for_label }}"><h3>Мини-описание для карточки статьи</h3></label>
+        <h4 class="black_50">Старайтесь кратко описать чем интересна ваша статья, так больше вероятность, что её посмотрит больше людей</h4>
+        <div class="input_wrapper">
+            {{ form.description_card }}
+        </div>
+        {% include "additions/marks_progress_bar.html" with input_id=form.description_card.id_for_label min=30 max=60 %}
+    </div>
+</div>
+<span class="line"></span>
+<div class="sub_section categories">
+    <span class="anchor_hidden" id="categories"></span>
+    <h2>Категории статьи</h2>
+    <div class="title">
+        <h4 class="black_50">Добавьте категории к своей статье, старайтесь добавлять только то, что упоминается в вашей статье</h4>
+    </div>
+    <div class="title">
+        <h3>Категории</h3>
+        {% include "additions/marks_progress_bar.html" with min=0 max=10 title="Выбрано категорий:" %}
+    </div>
+    <div class="categories_list">
+        {% for category_group in category_groups %}
+        <div class="title_and_list">
+            <h4 class="lilita_font">{{ category_group.title }}</h4>
+            <span class="line"></span>
+            {% for category in category_group.categories.all %}
+            <div class="category_item">
+                <div class="category first_category">
+                    {{ form.categories|get_checkbox:category.id }}
+                    <label for="id_categories_{{ category.id }}"><p>{{ category.name }}</p></label>
+                    <img class="plus d_none" src="{% static 'svg/Plus_Minus/Plus_blank.svg' %}">
+                    <img class="minus" src="{% static 'svg/Plus_Minus/Minus_blank.svg' %}">
+                </div>
+                <div class="second_categories">
+                    {% for sub_category in category.children.all %}
+                    <div class="category">
+                        {{ form.categories|get_checkbox:sub_category.id }}
+                        <label for="id_categories_{{ sub_category.id }}"><p>{{ sub_category.name }}</p></label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="continue_and_drafts publish_and_drafts">
+    <button name="publish" value="submit" type="submit" class="continue_button">
+        <h3 class="medium_font white">Опубликовать</h3>
+    </button>
+    <button name="save" value="submit" type="submit" class="drafts_button">
+        <h3 class="black_50">Сохранить</h3>
+    </button>
+</div>

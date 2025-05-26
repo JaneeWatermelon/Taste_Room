@@ -14,6 +14,7 @@ from additions.views import Status, Visibility, get_recs_news, get_news_PUBLISHE
 from categories.models import CategoryGroup, RecipeCategory
 from news.forms import CreateNewsCommentForm, CreateNewsForm
 from news.models import News, NewsComment, NewsReview
+from recipes.forms import validate_image_size
 from recipes.models import Recipe
 from recipes.views import get_recs_recipes
 from users.views import (_prepare_articles_data, validate_image_extension)
@@ -163,6 +164,7 @@ def news_edit_view(request, pk):
         preview = item_object.preview
 
         if new_image:
+            validate_image_size(new_image)
             preview = new_image
         elif preview_deleted:
             preview = None
@@ -211,7 +213,7 @@ class DetailNewsView(DetailView):
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
         user = self.request.user
-        if self.object.author_id != user.id:
+        if self.object.author_id != user.id and not self.request.user.is_superuser:
             if self.object.status == Status.MODERATION:
                 self.template_name = "additions/error_moderator.html"
                 return self.render_to_response(context)
@@ -241,7 +243,7 @@ class DetailNewsView(DetailView):
 
         user = self.request.user
 
-        if self.object.author_id != user.id:
+        if self.object.author_id != user.id and not self.request.user.is_superuser:
             if self.object.status == Status.MODERATION:
                 return context
 
@@ -349,6 +351,17 @@ def delete_rating(request):
             "answer": "Пользователь не авторизован"
         })
 
+@require_POST
+def news_delete(request):
+    item_id = request.POST.get("item_id")
+    data_status = request.POST.get("data_status")
+    data_statuses = data_status.split(",")
+    page = request.POST.get('page', 1)
+
+    item = get_object_or_404(News, id=item_id)
+    item.delete()
+
+    return JsonResponse(_prepare_articles_data(request.user, data_statuses, page))
 
 @require_POST
 def create_comment(request):

@@ -3,12 +3,13 @@ from uuid import uuid4
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.shortcuts import get_object_or_404
 from django.utils.text import slugify
 from django.utils.timezone import now, timedelta
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
-from additions.views import Status, Visibility, get_unique_slug
+from additions.views import Status, Visibility, get_unique_slug, add_watermark
 from categories.models import RecipeCategory
 from users.models import User
 
@@ -79,7 +80,7 @@ def recipe_comments_image_path(instance, filename):
 class Ingredient(models.Model):
     title = models.CharField(max_length=64, verbose_name="Название")
     slug = models.SlugField(blank=True, default=slugify(title), verbose_name="Ссылочное название")
-    icon = models.FileField(upload_to=ingredient_image_path, verbose_name="Иконка")
+    icon = models.FileField(upload_to=ingredient_image_path, blank=True, null=True, verbose_name="Иконка")
     calory_count = models.PositiveSmallIntegerField(default=0, verbose_name="Кол-во калорий")
     weight_per_unit = models.PositiveSmallIntegerField(default=0, verbose_name="Вес 1 штуки")
     popularity = models.PositiveSmallIntegerField(default=0, verbose_name="Популярность")
@@ -282,7 +283,11 @@ class Recipe(models.Model):
             self.popularity = int(result)
 
     def change_cache_version(self):
-        self.cache_version = abs(1 - self.cache_version)
+        if self.pk:
+            if self.cache_version >= 100:
+                self.cache_version = 0
+            else:
+                self.cache_version += 1
 
     class Meta:
         ordering = ["title"]
@@ -298,7 +303,7 @@ class Recipe(models.Model):
         self.set_popularity()
         self.change_cache_version()
         if self.pk:
-            old_status = self.__class__.objects.get(pk=self.pk).status
+            old_status = get_object_or_404(self.__class__, pk=self.pk).status
             if old_status != self.status:
                 self.status_updated_at = now()
         super().save(*args, **kwargs)
@@ -306,11 +311,18 @@ class Recipe(models.Model):
 class RecipeStep(models.Model):
     recipe = models.ForeignKey(to=Recipe, on_delete=models.CASCADE, verbose_name="Рецепт")
     image = models.ImageField(upload_to=recipe_step_image_path, verbose_name="Изображение")
+    image_watermark = models.ImageField(upload_to=recipe_step_image_path, blank=True, null=True, verbose_name="Изображение с водяным знаком")
     text = models.TextField(max_length=512, verbose_name="Текст")
     sort_order = models.PositiveSmallIntegerField(default=0, verbose_name="Позиция")
 
     optimized_image = ImageSpecField(
         source='image',
+        processors=[ResizeToFill(1536, 1024)],  # Размер оптимизированного изображения
+        format='WebP',
+        options={'quality': 85}
+    )
+    optimized_image_watermark = ImageSpecField(
+        source='image_watermark',
         processors=[ResizeToFill(1536, 1024)],  # Размер оптимизированного изображения
         format='WebP',
         options={'quality': 85}
@@ -322,17 +334,24 @@ class RecipeStep(models.Model):
         ordering = ["sort_order"]
 
     def save(self, *args, **kwargs):
-        # Удаляем старое изображение при обновлении
         if self.pk:
             old_item = self.__class__.objects.get(pk=self.pk)
+            added = False
+            if self.image and not self.image_watermark:
+                self.image_watermark = add_watermark(self.image)
+                added = True
             if old_item.image and old_item.image != self.image:
                 old_item.image.delete(save=False)
+                if not added:
+                    old_item.image_watermark.delete(save=False)
+                    self.image_watermark = add_watermark(self.image)
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         # Удаляем файл изображения при удалении шага
         if self.image:
             self.image.delete(save=False)
+            self.image_watermark.delete(save=False)
         super().delete(*args, **kwargs)
 
     def __str__(self):

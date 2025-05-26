@@ -4,20 +4,29 @@
 {% for item in recipe_ingredients %}
 <div class="ingredient_item" data-id="{{ item.ingredient.id }}">
     <input class="ingredient_id_input" hidden="hidden" name="ingredient_id_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}" value="{{ item.ingredient.id }}">
-    <h4 class="order lilita_font">{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}.</h4>
-    <h4 class="title">{{ item.ingredient.title }}</h4>
-    <div class="input_wrapper">
-        <input value="{{ item.quantity|_int }}" type="number" min="0" max="100000" name="ingredient_count_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}" placeholder="Кол-во">
-    </div>
-    <div class="input_wrapper">
-        <select name="ingredient_measurement_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}">
-            {% for choice in choices %}
-            <option value="{{ choice.0 }}" {% if item.unit == choice.0 %}selected="selected"{% endif %}>{{ choice.1 }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <input {% if item.can_exclude %}checked{% endif %} class="ingredient_checkbox_input" type="checkbox" name="ingredient_checkbox_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}">
     <input class="recipe_ingredient_id_input" hidden="hidden" type="text" value="{{ item.id }}" name="recipe_ingredient_id_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}">
-    <img class="trash_icon" src="{% static 'svg/Random_icons/Trash_icon.svg' %}">
+    <div class="info_wrapper">
+        <h3 class="order lilita_font">{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}.</h3>
+        <div class="info">
+            <div class="info_inner">
+                <h4 class="title">{{ item.ingredient.title }}</h4>
+                <div class="settings">
+                    <input value="{{ item.quantity|_int }}" type="number" min="0" max="9999" name="ingredient_count_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}" placeholder="Кол-во">
+                    <select name="ingredient_measurement_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}">
+                        {% for choice in choices %}
+                        <option value="{{ choice.0 }}" {% if item.unit == choice.0 %}selected="selected"{% endif %}>{{ choice.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <img src="{% static 'svg/Ingredients/Default.svg' %}">
+        </div>
+    </div>
+    <div class="supp_buttons_wrapper">
+        <input {% if item.can_exclude %}checked{% endif %} class="ingredient_checkbox_input" type="checkbox" name="ingredient_checkbox_{% if next_item_number %}{{ next_item_number }}{% else %}{{ forloop.counter }}{% endif %}">
+        <button class="remove_recipe_ingredient" name="button_remove_recipe_ingredient" type="button">
+            <img class="trash_icon" src="{% static 'svg/Random_icons/Trash_icon_for_checkbox.svg' %}">
+        </button>
+    </div>
 </div>
 {% endfor %}

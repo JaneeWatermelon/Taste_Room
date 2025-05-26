@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /ckeditor/
+Disallow: /*/page/
+Disallow: /ajax/
+Disallow: /comments_partial_view/
+Disallow: /registration/
+Disallow: /logout/
+Disallow: /api/
+Disallow: /additions/
+Disallow: /users/profile
+Allow: /sitemap.xml
+Sitemap: https://tasteroom.ru/sitemap.xml

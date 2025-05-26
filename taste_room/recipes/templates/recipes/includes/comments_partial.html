@@ -134,7 +134,7 @@
         {% csrf_token %}
         <div class="input_wrapper">
             <textarea required="required" name="text" placeholder="Ответьте на комментарий"></textarea>
-            <button type="submit" class="input_button">
+            <button name="button_answer_comment" type="submit" class="input_button">
                 <img src="{% static 'svg/Arrows/Send_comment.svg' %}">
             </button>
         </div>

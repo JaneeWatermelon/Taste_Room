@@ -17,25 +17,6 @@ function setHideBackBlackOverWindowClickEventListener(popup) {
     });
 }
 
-$(window).on('load', function() {
-    var reloading = sessionStorage.getItem("reloading");
-    if (reloading) {
-        sessionStorage.removeItem("reloading");
-        $('#login_window').removeClass('d_none');
-        $(".back_black").removeClass('d_none');
-        setTimeout(function() {
-            $(".back_black").css({
-                "opacity": 1,
-            });
-        }, 1);
-    }
-});
-
-function reloadPage() {
-    sessionStorage.setItem("reloading", "true");
-    location.reload();
-}
-
 window.swapProfileWindows = function(current_popup, target_popup) {
     current_popup.css({
         "opacity": 0,
@@ -62,14 +43,6 @@ $(document).ready(function() {
     $authLinks.on('click', function(e) {
         if (!USER_AUTHENTICATED) {
             e.preventDefault();
-            // if (!$(".back_black").hasClass(".d_none")) {
-            //     const target_pop = $(`#${$(this).attr("data-target-id")}`);
-            //     window.swapProfileWindows(target_pop, popup)
-            // }
-            // else {
-
-                
-            // }
             window.showHideBackBlack(e, popup);
             
             // Сохраняем оригинальный URL и позицию прокрутки
@@ -88,7 +61,6 @@ $(document).ready(function() {
     $(".sub_action_href").on('click', function(e) {
         const $this = $(this);
         e.preventDefault();
-        console.log($this);
         const current_popup = $this.closest(".profile_window");
         const target_popup = $(`#${$this.attr("data-action-id")}`);
 
@@ -115,7 +87,7 @@ $(document).ready(function() {
     
             success: function (data) {
                 console.log('Ответ сервера:', data["answer"]);
-                reloadPage();
+                window.reloadPage("login_window");
             },
             error: function (error) {
                 console.error('Ошибка:', error);
@@ -240,7 +212,6 @@ $(document).ready(function() {
     
             success: function (data) {
                 console.log('Ответ сервера:', data["answer"]);
-                console.log(data.accepted);
 
                 const current_popup = form.closest(".profile_window");
                 const target_popup = $(`#set_new_password`);
@@ -277,7 +248,7 @@ $(document).ready(function() {
             success: function (data) {
                 console.log('Ответ сервера:', data["answer"]);
 
-                reloadPage();
+                window.reloadPage("login_window");
             },
             error: function (error) {
                 console.error('Ошибка:', error);

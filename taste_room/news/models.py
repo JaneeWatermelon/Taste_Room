@@ -114,7 +114,10 @@ class News(models.Model):
         self.headings = headings
 
     def change_cache_version(self):
-        self.cache_version = abs(1 - self.cache_version)
+        if self.cache_version >= 100:
+            self.cache_version = 0
+        else:
+            self.cache_version += 1
 
     @property
     def stars_on_count(self):
@@ -126,7 +129,7 @@ class News(models.Model):
 
     @property
     def formated_published_date(self):
-        return self.published_date.strftime('%d.%m.%Y')
+        return self.published_date.strftime('%d.%m.%y')
 
     class Meta:
         ordering = ["title"]
@@ -144,7 +147,6 @@ class News(models.Model):
         self.set_total_rating()
         self.set_popularity()
         self.change_cache_version()
-        print(self.cache_version)
 
         # Удаляем старое изображение при обновлении
         if self.pk:

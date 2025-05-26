@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth.password_validation import validate_password
@@ -23,6 +25,13 @@ class UserRegistrationForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password',]
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if not re.match(r'^[-a-zA-Z0-9_]+$', username):
+            self.add_error('username', "Username может содержать только латинские буквы, цифры, дефисы и подчёркивания.")
+        else:
+            return username
 
     def clean_password(self):
         password = self.cleaned_data.get('password')

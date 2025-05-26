@@ -8,6 +8,9 @@
     outline: var(--tiny) dashed var(--color-green) !important;
     outline-offset: -4px !important;
 }
+.swiper .empty_wrapper {
+    margin: 0 var(--padding-window);
+}
 .empty_wrapper > .info {
     display: flex;
     flex-direction: column;

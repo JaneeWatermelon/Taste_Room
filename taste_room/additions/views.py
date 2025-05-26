@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.contrib.staticfiles import finders
 from django.db.models import Q
 from django.shortcuts import render
 from django.template.loader import render_to_string
@@ -38,6 +40,12 @@ class Visibility:
         ME: ["Только я", "приватный, виден только вам"],
     }
 
+class YandexWebMasterView(TemplateView):
+    template_name = "additions/yandex_7de2f9bee8148ab5.html"
+
+class RobotsView(TemplateView):
+    template_name = "additions/robots.txt"
+
 class Error404View(TemplateView):
     template_name = "additions/error_404.html"
 
@@ -76,19 +84,30 @@ def get_recipes_related(queryset):
             "recipeingredient_set__ingredient",
         )
 
-def get_recipes_PUBLISHED_ALL_SUBS(user):
+def get_recipes_PUBLISHED_ALL_SUBS(user, ready_queryset=None):
     from recipes.models import Recipe
     model_class = Recipe
     if user.is_authenticated:
         subscribed_ids = user.subscriptions.values_list('id', flat=True)
-        queryset = model_class.objects.filter(
-            Q(visibility=Visibility.ALL, status=Status.PUBLISHED) |
-            Q(visibility=Visibility.SUBS, author_id__in=subscribed_ids, status=Status.PUBLISHED)
-        ).distinct()
+        if ready_queryset:
+            queryset = ready_queryset.filter(
+                Q(visibility=Visibility.ALL, status=Status.PUBLISHED) |
+                Q(visibility=Visibility.SUBS, author_id__in=subscribed_ids, status=Status.PUBLISHED)
+            ).distinct()
+        else:
+            queryset = model_class.objects.filter(
+                Q(visibility=Visibility.ALL, status=Status.PUBLISHED) |
+                Q(visibility=Visibility.SUBS, author_id__in=subscribed_ids, status=Status.PUBLISHED)
+            ).distinct()
     else:
-        queryset = model_class.objects.filter(
-            Q(visibility=Visibility.ALL, status=Status.PUBLISHED)
-        ).distinct()
+        if ready_queryset:
+            queryset = ready_queryset.filter(
+                Q(visibility=Visibility.ALL, status=Status.PUBLISHED)
+            ).distinct()
+        else:
+            queryset = model_class.objects.filter(
+                Q(visibility=Visibility.ALL, status=Status.PUBLISHED)
+            ).distinct()
 
     return queryset.select_related("previews", "author").prefetch_related(
             "recipereview_set",
@@ -259,3 +278,61 @@ def set_meta_tags(request, title, description, og_title=None, og_description=Non
         request.meta_og_description = og_description
     else:
         request.meta_og_description = description
+
+
+from PIL import Image, ImageDraw, ImageFont
+import os
+from io import BytesIO
+from django.core.files import File
+
+
+def add_watermark(image_field, watermark_text="tasteroom.ru"):
+    """Добавляет водяной знак на изображение"""
+
+
+    def text_sizes(text_message, fontsize=28, img_width=100):
+        # Create a blank canvas
+        canvas = Image.new('RGB', (img_width, 100))
+
+        # Get a drawing context
+        text_draw = ImageDraw.Draw(canvas)
+        text_font = ImageFont.load_default(fontsize)
+
+        white = (255, 255, 255)
+        text_draw.text((10, 10), text_message, font=text_font, fill=white)
+
+        # Find bounding box
+        bbox = canvas.getbbox()
+        return int(bbox[2]-bbox[0]), int(bbox[3]-bbox[1])
+
+    # Открываем оригинальное изображение
+    img = Image.open(image_field)
+
+    # Создаем прозрачный слой для водяного знака
+    watermark = Image.new("RGBA", img.size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(watermark)
+
+    font_size = int(img.width / 20)
+    font = ImageFont.load_default(font_size)
+
+    # Позиционирование текста (по центру)
+    text_width, text_height = text_sizes(watermark_text, font_size, img.width)
+    x = (img.width - text_width) / 2
+    y = (img.height - text_height) / 2
+
+    # Добавляем текст с прозрачностью
+    draw.text((x, y), watermark_text, font=font, fill=(255, 255, 255, 32))
+
+    # Совмещаем изображения
+    watermarked = Image.alpha_composite(img.convert("RGBA"), watermark)
+
+    # Конвертируем обратно в RGB (если исходное было JPG)
+    if img.format == 'JPEG':
+        watermarked = watermarked.convert("RGB")
+
+    # Сохраняем в память
+    buffer = BytesIO()
+    watermarked.save(buffer, format=img.format)
+
+    # Создаем Django File объект
+    return File(buffer, name=image_field.name)

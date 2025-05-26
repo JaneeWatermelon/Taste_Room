@@ -13,35 +13,33 @@
     padding: 0;
     gap: var(--small);
 }
-.new_recipes_section > .publish_types,
-.articles_section > .publish_types {
+.publish_types {
     display: flex;
-    gap: var(--small);
+    border-radius: var(--small);
+    outline: 1px solid var(--color-light-ghost);
+    overflow: hidden;
 }
-.new_recipes_section > .publish_types > .publish_type_item,
-.articles_section > .publish_types > .publish_type_item {
+.publish_types > .publish_type_item {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: var(--small);
-    border-radius: var(--small);
+    border-right: 1px solid var(--color-light-ghost);
     background-color: var(--color-white);
-    outline: 1px solid var(--color-light-ghost);
     flex-grow: 1;
     cursor: pointer;
     flex-basis: 25%;
 }
-.new_recipes_section > .publish_types > .publish_type_item.active,
-.articles_section > .publish_types > .publish_type_item.active {
-    background-color: rgba(76, 149, 108, 0.75);
-    outline: none;
+.publish_types > .publish_type_item:last-child {
+    border-right: none;
 }
-.new_recipes_section > .publish_types > .publish_type_item > *,
-.articles_section > .publish_types > .publish_type_item > * {
+.publish_types > .publish_type_item.active {
+    background-color: rgba(76, 149, 108, 0.75);
+}
+.publish_types > .publish_type_item > *{
     color: var(--color-black-50);
 }
-.new_recipes_section > .publish_types > .publish_type_item.active > *,
-.articles_section > .publish_types > .publish_type_item.active > * {
+.publish_types > .publish_type_item.active > * {
     color: var(--color-white);
 }
 
@@ -181,7 +179,7 @@
     align-items: center;
     width: 100%;
 }
-.profile_chapters > .chapter_wrapper > .chapter {
+.profile_chapters .chapter_wrapper > .chapter {
     display: flex;
     align-items: center;
     background-color: var(--color-white);
@@ -191,12 +189,17 @@
     flex-grow: 1;
     overflow: hidden;
 }
-.profile_chapters > .chapter_wrapper > .chapter.add_button {
+.profile_chapters .chapter_wrapper > .chapter.add_button {
     width: 25%;
-    background-color: var(--color-cookie);
     overflow: visible;
 }
-.profile_chapters > .chapter_wrapper > .chapter > .chapter_item {
+.profile_chapters .chapter_wrapper > .chapter.add_button:first-child {
+    background-color: var(--color-cookie);
+}
+.profile_chapters .chapter_wrapper > .chapter.add_button:last-child {
+    background-color: var(--color-green);
+}
+.profile_chapters .chapter_wrapper > .chapter > .chapter_item {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -205,29 +208,29 @@
     padding: var(--small);
     cursor: pointer;
 }
-.profile_chapters > .chapter_wrapper > .chapter > .chapter_item > svg {
+.profile_chapters .chapter_wrapper > .chapter > .chapter_item > svg {
     aspect-ratio: 1;
     width: auto;
 }
-.profile_chapters > .chapter_wrapper > .chapter > .chapter_item.active {
+.profile_chapters .chapter_wrapper > .chapter > .chapter_item.active {
     background-color: rgba(76, 149, 108, 0.75);
 }
-.profile_chapters > .chapter_wrapper > .chapter > .chapter_item.active > svg.fill_svg > path {
+.profile_chapters .chapter_wrapper > .chapter > .chapter_item.active > svg.fill_svg > path {
     fill: var(--color-white);
     fill-opacity: 1;
 }
-.profile_chapters > .chapter_wrapper > .chapter > .chapter_item.active > svg.stroke_svg > path {
+.profile_chapters .chapter_wrapper > .chapter > .chapter_item.active > svg.stroke_svg > path {
     stroke: var(--color-white);
     stroke-opacity: 1;
 }
-.profile_chapters > .chapter_wrapper > .chapter > .chapter_item > h4 {
+.profile_chapters .chapter_wrapper > .chapter > .chapter_item > h4 {
     font-family: "NTSomic_Medium";
     color: var(--color-black-50);
 }
-.profile_chapters > .chapter_wrapper > .chapter > .chapter_item.active > h4 {
+.profile_chapters .chapter_wrapper > .chapter > .chapter_item.active > h4 {
     color: var(--color-white);
 }
-.profile_chapters > .chapter_wrapper > .chapter.add_button > .chapter_item > h4 {
+.profile_chapters .chapter_wrapper > .chapter.add_button > .chapter_item > h4 {
     color: var(--color-white);
 }
 
@@ -592,6 +595,28 @@
         gap: var(--small);
         align-items: start;
     }
+    .profile_chapters .chapter_wrapper.navigation {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        border-radius: var(--small);
+        outline: 1px solid var(--color-light-ghost);
+        width: 100%;
+        overflow: hidden;
+    }
+    .profile_chapters .chapter_wrapper.navigation.inner {
+        border-radius: 0;
+        outline: none;
+    }
+    .profile_chapters .chapter_wrapper.navigation > .chapter {
+        width: 100%;
+        outline: none;
+        border-radius: 0;
+        border-bottom: 1px solid var(--color-light-ghost);
+    }
+    .profile_chapters .chapter_wrapper.navigation > .chapter:last-child {
+        border-bottom: none;
+    }
     .profile_header > .content > .info {
         display: flex;
         flex-direction: column;
@@ -616,10 +641,14 @@
         align-items: start;
         gap: var(--small);
     }
-    .new_recipes_section > .publish_types,
-    .articles_section > .publish_types {
+    .publish_types {
         flex-direction: column;
-        gap: var(--small);
+    }
+    .publish_types > .publish_type_item {
+        border-bottom: 1px solid var(--color-light-ghost);
+    }
+    .publish_types > .publish_type_item:last-child {
+        border-bottom: none;
     }
     .articles_section > .cards_wrapper {
         display: flex;

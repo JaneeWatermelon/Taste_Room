@@ -13,7 +13,7 @@ from recipes.views import (CategoryRecipesView, DetailRecipeView,
                            ingredient_autocomplete,
                            ingredient_cards_autocomplete, load_more_comments,
                            recipe_create_view, recipe_edit_view,
-                           recipe_like_change)
+                           recipe_like_change, recipe_delete)
 
 app_name = "recipes"
 
@@ -30,7 +30,7 @@ urlpatterns = [
     path('popular', PopularRecipesView.as_view(), name="popular"),
     path('popular/page/<int:page>', PopularRecipesView.as_view(), name="paginator_popular"),
 
-    path('create', recipe_create_view, name="create"),
+    path('create/', recipe_create_view, name="create"),
     path('<int:pk>/edit', recipe_edit_view, name="edit"),
     path('<int:pk>/<slug:slug>', DetailRecipeView.as_view(), name="detail"),
 
@@ -45,6 +45,7 @@ urlpatterns = [
 
     path('ajax/recipe_like', recipe_like_change, name="recipe_like_ajax"),
     path('ajax/recipe_portions', change_recipe_ingredients, name="recipe_portions_ajax"),
+    path('ajax/recipe_delete', recipe_delete, name="recipe_delete_ajax"),
 
     path('ajax/ingredient-autocomplete/', ingredient_autocomplete, name='ingredient_autocomplete_ajax'),
     path('ajax/ingredient_cards_autocomplete/', ingredient_cards_autocomplete, name='ingredient_cards_autocomplete_ajax'),

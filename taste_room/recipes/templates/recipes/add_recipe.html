@@ -16,7 +16,7 @@
             <a href="{% url 'recipes:create' %}"><p>Добавление рецепта</p></a>
         </section>
         <div class="main_content">
-            <form action="{% url 'recipes:create' %}" method="post" class="edit_section">
+            <form action="{% url 'recipes:create' %}" method="post" class="edit_section create">
                 {% csrf_token %}
                 <div class="main_title">
                     <span class="line"></span>
@@ -31,11 +31,7 @@
                         <div class="input_wrapper">
                             {{ form.title }}
                         </div>
-                        <div class="marks_limits">
-                            <h4>Мин. знаков: <span class="orange">20</span></h4>
-                            <h4>Макс. знаков: <span class="orange">40</span></h4>
-                            <h4>Ваши знаки: <span class="my_symbols heart">0</span></h4>
-                        </div>
+                        {% include "additions/marks_progress_bar.html" with input_id=form.title.id_for_label min=20 max=40 %}
                     </div>
                     <div class="opacity">
                         <h3>Кто видит опубликованный рецепт</h3>
@@ -45,293 +41,15 @@
                                 {{ radio.tag }}
                                 {% with selected_value=forloop.counter %}
                                 <label for="{{ radio.id_for_label }}"><h4>{{ visibility_descriptions|get_first_value:selected_value }}</h4></label>
-                                <label for="{{ radio.id_for_label }}"><h4 class="black_50">{{ visibility_descriptions|get_second_value:selected_value }}</h4></label>
+                                <label for="{{ radio.id_for_label }}"><h4 class="black_50 d_mobile_none">{{ visibility_descriptions|get_second_value:selected_value }}</h4></label>
                                 {% endwith %}
                             </div>
                             {% endfor %}
                         </fieldset>
                     </div>
                 </div>
-                {% if show %}
-                <span class="line"></span>
-                <div class="sub_section ingredients_and_portions">
-                    <span class="anchor_hidden" id="ingredients_and_portions"></span>
-                    <h2>Ингредиенты и порции</h2>
-                    <div class="title">
-                        <h3>Ингредиенты</h3>
-                        <h4 class="black_50">Если добавленный ингредиент можно исключить из блюда, или добавить по желанию - поставьте галочку рядом с ним</h4>
-                        <div class="input_wrapper fit">
-                            <input autocomplete="off" list="ingredients_choices" data-url="{% url 'recipes:ingredient_autocomplete_ajax' %}" data-url-click="{% url 'recipes:add_ingredient_item_ajax' %}" id="ingredient-search" placeholder="Введите ингредиент">
-                            <datalist id="ingredients_choices">
-                            </datalist>
-                        </div>
-                    </div>
-                    <div class="ingredients" id="ingredients-container"></div>
-                    <div class="portions">
-                        <label for="{{ form.portions.id_for_label }}"><h3>Количество порций</h3></label>
-                        <h4 class="black_50">Для правильного подсчёта количества ингредиентов и калорийности блюда введи количество порций, на которое расчитан рецепт</h4>
-                        <div class="input_wrapper fit">
-                            {{ form.portions }}
-                        </div>
-                    </div>
-                    <template id="ingredient-template">
-                        <div class="ingredient_item">
-                            <h4 class="lilita_font ingredient-number"></h4>
-                            <h4 class="ingredient-name"></h4>
-                            <div class="input_wrapper">
-                                <input type="number" min="0" max="100000" class="ingredient-quantity" placeholder="Кол-во">
-                            </div>
-                            <div class="input_wrapper">
-                                <select class="ingredient-unit">
-                                    <option value="гр">Граммы</option>
-                                    <option value="кг">Килограммы</option>
-                                    <option value="шт">Штуки</option>
-                                    <option value="мл">Миллилитры</option>
-                                    <option value="л">Литры</option>
-                                    <option value="ст.л.">Столовые ложки</option>
-                                    <option value="ч.л.">Чайные ложки</option>
-                                    <option value="стак.">Стаканы</option>
-                                    <option value="щеп.">Щепотки</option>
-                                </select>
-                            </div>
-                            <input type="checkbox" class="ingredient-optional">
-                            <img class="trash_icon" src="{% static 'svg/Random_icons/Trash_icon.svg' %}" onclick="removeIngredient(this)">
-                        </div>
-                    </template>
-                </div>
-                <span class="line"></span>
-                <div class="sub_section difficulty_and_spicy">
-                    <span class="anchor_hidden" id="difficulty_and_spicy"></span>
-                    <h2>Сложность и острота блюда</h2>
-                    <div class="title">
-                        <h3>Сложность</h3>
-                        <h4 class="black_50">Укажите сложность приготовления данного блюда, которая на ваш взгляд больше всего подходит ему</h4>
-                        <div class="input_wrapper fit">
-                            {{ form.difficulty }}
-                        </div>
-                    </div>
-                    <div class="title">
-                        <h3>Острота</h3>
-                        <h4 class="black_50">Укажите насколько острое(перчёное) ваше блюдо</h4>
-                        <div class="input_wrapper fit">
-                            {{ form.scipy }}
-                        </div>
-                    </div>
-                </div>
-                <span class="line"></span>
-                <div class="sub_section categories">
-                    <span class="anchor_hidden" id="categories"></span>
-                    <h2>Категории рецепта</h2>
-                    <div class="title">
-                        <h3>Категории</h3>
-                        <h4 class="black_50">Выбрано категорий: <span class="categories_count black medium_font">0/10</span></h4>
-                    </div>
-                    <div class="categories_list">
-                        {% for category_group in category_groups %}
-                        <div class="title_and_list">
-                            <h4 class="lilita_font">{{ category_group.title }}</h4>
-                            <span class="line"></span>
-                            {% for category in category_group.categories.all %}
-                            <div class="category_item">
-                                <div class="category first_category">
-                                    {{ form.categories|get_checkbox:category.id }}
-                                    <label for="id_categories_{{ category.id }}"><p>{{ category.name }}</p></label>
-                                    <img class="plus d_none" src="{% static 'svg/Plus_Minus/Plus_blank.svg' %}">
-                                    <img class="minus" src="{% static 'svg/Plus_Minus/Minus_blank.svg' %}">
-                                </div>
-                                <div class="second_categories">
-                                    {% for sub_category in category.children.all %}
-                                    <div class="category">
-                                        {{ form.categories|get_checkbox:sub_category.id }}
-                                        <label for="id_categories_{{ sub_category.id }}"><p>{{ sub_category.name }}</p></label>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <span class="line"></span>
-                <div class="sub_section step_photos">
-                    <span class="anchor_hidden" id="step_photos"></span>
-                    <h2>Пошаговые фото</h2>
-                    <div class="title">
-                        <h4 class="black_50">Добавьте от 3 до 20 пошаговых фото. Условия:</h4>
-                        <div class="condition">
-                            <h4 class="medium_font">1.</h4>
-                            <h4>Горизонтальный формат изображения.</h4>
-                            <img src="{% static 'svg/Yes_No/Horizontal_vertical.svg' %}">
-                        </div>
-                        <div class="condition">
-                            <h4 class="medium_font">2.</h4>
-                            <h4>Каждое изображение отображает один из этапов приготовления.</h4>
-                        </div>
-                    </div>
-                    <div class="steps_list">
-                        {% include "recipes/includes/preview_step_item.html" with steps='123' %}
-                    </div>
-                    <button data-url="{% url 'recipes:add_recipe_step_ajax' %}" type="button" class="add_step_button">
-                        <img src="{% static 'svg/Plus_Minus/Plus_white.svg' %}">
-                        <h3 class="white medium_font">Добавить следующий шаг</h3>
-                    </button>
-                </div>
-                <span class="line"></span>
-                <div class="sub_section ready_dish_photo">
-                    <span class="anchor_hidden" id="ready_dish_photo"></span>
-                    <h2>Фото готового блюда</h2>
-                    <div class="title">
-                        <h4 class="black_50">Добавьте от 1 до 3 фотографий готового блюда. Помните про условия:</h4>
-                        <div class="condition">
-                            <h4 class="medium_font">1.</h4>
-                            <h4>Горизонтальный формат изображения.</h4>
-                            <img src="{% static 'svg/Yes_No/Horizontal_vertical.svg' %}">
-                        </div>
-                        <div class="condition">
-                            <h4 class="medium_font">2.</h4>
-                            <h4>Не добавляйте одинаковые изображения</h4>
-                        </div>
-                        <div class="condition">
-                            <h4 class="medium_font">3.</h4>
-                            <h4>Блюдо должно быть хорошо видно</h4>
-                        </div>
-                    </div>
-                    <div class="photo_list">
-                        {% include "recipes/includes/ready_photo_item.html" %}
-                    </div>
-                    <div data-url="{% url 'recipes:add_ready_photo_ajax' %}" class="add_photo_button">
-                        <img src="{% static 'svg/Cookie/Add_image_half_black.svg' %}">
-                        <div class="info">
-                            <p class="black_50">Добавь фото готового блюда к своему рецепту</p>
-                            <p class="black_50">Перетащи или нажми, чтобы выбрать</p>
-                        </div>
-                    </div>
-                </div>
-                <span class="line"></span>
-                <div class="sub_section description_to_recipe">
-                    <span class="anchor_hidden" id="description_to_recipe"></span>
-                    <h2>Описание рецепта</h2>
-                    <div class="title">
-                        <label for="{{ form.description_inner.id_for_label }}"><h3>Описание к рецепту</h3></label>
-                        <h4 class="black_50">Старайтесь писать как можно подробнее, избегайте копирования сюда списка ингредиентов, описания шагов и т.п.</h4>
-                        <h4 class="black_50">Можете написать, кому подходит блюдо, с чем можно сочетать, какие ингредиенты можно заменить и т.д.</h4>
-                        <div class="input_wrapper">
-                            {{ form.description_inner }}
-                        </div>
-                        <div class="marks_limits">
-                            <h4>Мин. знаков: <span class="orange">350</span></h4>
-                            <h4>Ваши знаки: <span class="my_symbols heart">0</span></h4>
-                        </div>
-                    </div>
-                    <div class="title">
-                        <label for="{{ form.description_card.id_for_label }}"><h3>Мини-описание для карточки рецепта</h3></label>
-                        <h4 class="black_50">Старайтесь кратко описать чем хорош ваш рецепт, так больше вероятность, что его оценит больше людей</h4>
-                        <div class="input_wrapper">
-                            {{ form.description_card }}
-                        </div>
-                        <div class="marks_limits">
-                            <h4>Мин. знаков: <span class="orange">30</span></h4>
-                            <h4>Макс. знаков: <span class="orange">50</span></h4>
-                            <h4>Ваши знаки: <span class="my_symbols heart">0</span></h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="continue_and_drafts">
-                    <button type="submit" class="continue_button">
-                        <img src="{% static 'svg/Yes_No/Yes_no_shadow.svg' %}">
-                        <h3 class="medium_font white">Сохранить и продолжить</h3>
-                    </button>
-<!--                    <button class="drafts_button">-->
-<!--                        <img src="{% static 'svg/Random_icons/Edit_icon_half_black.svg' %}">-->
-<!--                        <h3 class="black_50 d_mobile_none">Сохранить в черновики</h3>-->
-<!--                        <h3 class="black_50 d_desktop_none">Сохранить</h3>-->
-<!--                    </button>-->
-                </div>
-                <span class="line"></span>
-                <div class="sub_section recipe_links">
-                    <span class="anchor_hidden" id="recipe_links"></span>
-                    <h2>Ссылки на видео-рецепт</h2>
-                    <div class="title">
-                        <div class="sub_title_and_mark">
-                            <label for="{{ form.video_url_first.id_for_label }}"><h3>Ссылка на видео-рецепт</h3></label>
-                            <img class="supported_link" src="{% static 'svg/Random_icons/Question_mark.svg' %}">
-                        </div>
-                        <div class="input_wrapper">
-                            {{ form.video_url_first }}
-                        </div>
-                    </div>
-                    <div class="title">
-                        <div class="sub_title_and_mark">
-                            <label for="{{ form.video_url_first.id_for_label }}"><h3>Запасная ссылка</h3></label>
-                            <img class="alt_link" src="{% static 'svg/Random_icons/Question_mark.svg' %}">
-                        </div>
-                        <h4 class="black_50">Если не указывать запасную ссылку, будет использоваться только основная</h4>
-                        <div class="input_wrapper">
-                            {{ form.video_url_second }}
-                        </div>
-                    </div>
-                </div>
-                <span class="line"></span>
-                <div class="sub_section cook_time">
-                    <span class="anchor_hidden" id="cook_time"></span>
-                    <h2>Время приготовления</h2>
-                    <div class="title">
-                        <div class="sub_title_and_mark">
-                            <h3>Общее время приготовления</h3>
-                        </div>
-                        <h4 class="black_50">Период с момента начала приготовления блюда до его полной готовности</h4>
-                        <div class="time_units">
-                            <div class="time_unit_item">
-                                <h4>Дней:</h4>
-                                <div class="input_wrapper">
-                                    <input type="number" min="0" name="days_general" value="0">
-                                </div>
-                            </div>
-                            <div class="time_unit_item">
-                                <h4>Часов:</h4>
-                                <div class="input_wrapper">
-                                    <input type="number" min="0" name="hours_general" value="0">
-                                </div>
-                            </div>
-                            <div class="time_unit_item">
-                                <h4>Минут:</h4>
-                                <div class="input_wrapper">
-                                    <input type="number" min="0" name="minutes_general" value="0">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="title">
-                        <div class="sub_title_and_mark">
-                            <h3>Активное время приготовления</h3>
-                        </div>
-                        <h4 class="black_50">Период, требующий активного участия в приготовлении (Мытьё, чистка, нарезание, взбивание, жарка, варка и т.п.)</h4>
-                        <div class="time_units">
-                            <div class="time_unit_item">
-                                <h4>Дней:</h4>
-                                <div class="input_wrapper">
-                                    <input type="number" min="0" name="days_active" value="0">
-                                </div>
-                            </div>
-                            <div class="time_unit_item">
-                                <h4>Часов:</h4>
-                                <div class="input_wrapper">
-                                    <input type="number" min="0" name="hours_active" value="0">
-                                </div>
-                            </div>
-                            <div class="time_unit_item">
-                                <h4>Минут:</h4>
-                                <div class="input_wrapper">
-                                    <input type="number" min="0" name="seconds_active" value="0">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
                 <div class="continue_and_drafts publish_and_drafts">
-                    <button type="submit" class="continue_button">
+                    <button name="button_save_and_continue" type="submit" class="continue_button">
                         <img src="{% static 'svg/Yes_No/Yes_no_shadow.svg' %}">
                         <h3 class="medium_font white">Сохранить и продолжить</h3>
                     </button>
@@ -382,37 +100,6 @@
             </section>
             {% endif %}
         </div>
-        <div class="pop_up_window supported_links_window d_none">
-            <div class="inner_wrapper">
-                <p>Поддерживаются платформы:</p>
-            </div>
-            <div class="inner_wrapper">
-                <h5 class="green">YouTube</h5>
-            </div>
-            <div class="inner_wrapper">
-                <h5 class="green">VK видео</h5>
-            </div>
-            <div class="inner_wrapper">
-                <h5 class="green">Vimeo</h5>
-            </div>
-            <div class="inner_wrapper">
-                <h5 class="green">RuTube</h5>
-            </div>
-        </div>
-        <div class="pop_up_window alt_links_window d_none">
-            <div class="inner_wrapper">
-                <p>В связи с замедлением сервиса YouTube, можете указать дополнительную ссылку на видео из указанных источников:</p>
-            </div>
-            <div class="inner_wrapper">
-                <h5 class="green">VK видео</h5>
-            </div>
-            <div class="inner_wrapper">
-                <h5 class="green">Vimeo</h5>
-            </div>
-            <div class="inner_wrapper">
-                <h5 class="green">RuTube</h5>
-            </div>
-        </div>
     </main>
     <span class="d_none" id="object_info" data-id="{% if object_id %}{{ object_id }}{% else %}0{% endif %}" data-type="recipe"></span>
 {% endblock %}
@@ -422,5 +109,5 @@
     <script src="{% static 'js/profile.js' %}"></script>
     <script src="{% static 'js/create_page/general.js' %}"></script>
     <script src="{% static 'js/recipe_create/add_recipe.js' %}"></script>
-    <script src="{% static 'js/recipe_create/change_symbols_count.js' %}"></script>
+    <script src="{% static 'js/create_page/change_symbols_count.js' %}"></script>
 {% endblock %}

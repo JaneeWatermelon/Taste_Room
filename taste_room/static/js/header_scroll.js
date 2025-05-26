@@ -4,8 +4,6 @@ if (screen.width <= 720) {
   $(".d_desktop_none").remove();
 }
 
-console.log(screen.width);
-
 let top_waves_height = $('#top_waves').height();
 let header_height = $('header').height();
 let header_wrapper_height = $('.header_wrapper').height();

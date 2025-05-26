@@ -7,7 +7,7 @@ from news.views import (DetailNewsView, NewsView,
                         bluk_create_objects, change_rating, change_status,
                         comment_reaction_change, comments_partial_view,
                         create_comment, delete_comment, delete_rating,
-                        load_more_comments, news_create_view, news_edit_view)
+                        load_more_comments, news_create_view, news_edit_view, news_delete)
 
 app_name = "news"
 
@@ -23,6 +23,7 @@ urlpatterns = [
 
     path('ajax/change_rating', change_rating, name="change_rating_ajax"),
     path('ajax/delete_rating', delete_rating, name="delete_rating_ajax"),
+    path('ajax/news_delete', news_delete, name="news_delete_ajax"),
 
     path('ajax/comment_reaction_change', comment_reaction_change, name="comment_reaction_change_ajax"),
     path('ajax/delete_comment', delete_comment, name="delete_comment_ajax"),

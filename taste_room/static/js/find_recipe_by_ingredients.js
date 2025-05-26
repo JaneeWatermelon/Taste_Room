@@ -57,8 +57,6 @@ $(document).ready(function () {
                 }
             });
 
-            console.log(active_ids_list);
-
             // Отправляем AJAX-запрос
             $.ajax({
                 url: data_url, // URL для загрузки комментариев

@@ -7,21 +7,17 @@
     height: 28px;
 }
 
-.input_wrapper {
+main .input_wrapper {
     padding: var(--small);
     border-radius: var(--small);
 }
-.input_wrapper.fit {
+main .input_wrapper.fit {
     max-width: 25%;
 }
 
 textarea.fixed {
     height: 100%;
     max-height: 100%;
-}
-
-input[type='checkbox'] {
-    height: 20px;
 }
 
 .input_wrapper.disabled {
@@ -31,10 +27,39 @@ input[type='checkbox'] {
 .marks_limits {
     display: flex;
     align-items: center;
-    gap: var(--mid);
+    gap: var(--small);
 }
 .marks_limits > h4 {
     color: var(--color-black-50);
+}
+.marks_limits > .progress_bar {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    height: 100%;
+    border-radius: var(--tiny);
+    outline: 1px solid var(--color-light-ghost);
+    background-color: var(--color-white);
+    position: relative;
+    overflow: hidden;
+}
+.marks_limits > .progress_bar > .limits {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--tiny);
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+.marks_limits > .progress_bar > .limits > h5 {
+    color: var(--color-black-50);
+}
+.marks_limits > .progress_bar > .filler_bar {
+    background-color: var(--color-cream);
+    width: 50%;
+    height: 100%;
+    position: absolute;
 }
 
 .main_content {
@@ -130,19 +155,29 @@ input[type='checkbox'] {
     flex-direction: column;
     gap: var(--small);
 }
-.edit_section > .sub_section > .title > .condition {
+.edit_section > .sub_section > .title > .conditions {
+    display: flex;
+    flex-direction: column;
+    outline: 1px dashed var(--color-light-gray);
+    border-radius: var(--tiny);
+}
+.edit_section > .sub_section > .title > .conditions > .condition {
     display: flex;
     align-items: center;
     gap: var(--small);
-    padding-left: var(--small);
+    padding: var(--small);
+    border-bottom: 1px dashed var(--color-light-gray);
 }
-.edit_section > .sub_section > .title > .marks_limits {
+.edit_section > .sub_section > .title > .conditions > .condition:last-child {
+    border-bottom: none;
+}
+.edit_section > .sub_section > .title > .conditions > .condition > .order {
+    word-break: keep-all;
+}
+.edit_section > .sub_section > .title > .conditions > .condition > .info_graphics {
     display: flex;
     align-items: center;
-    gap: var(--mid);
-}
-.edit_section > .sub_section > .title > .marks_limits > h4 {
-    color: var(--color-black-50);
+    gap: var(--small);
 }
 .edit_section > .title_and_opacity > .opacity {
     display: flex;
@@ -169,9 +204,66 @@ input[type='checkbox'] {
     align-items: center;
     gap: var(--small);
 }
-.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .trash_icon {
-    height: 20px;
-    cursor: pointer;
+.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .info_wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--normal);
+    padding: var(--small) var(--normal);
+    border-radius: var(--small);
+    outline: 1px solid var(--color-light-ghost);
+    background-color: var(--color-white);
+}
+.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .info_wrapper > .order {
+    word-break: keep-all;
+}
+.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .info_wrapper > .info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: var(--huge);
+}
+.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .info_wrapper > .info > .info_inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+}
+.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .info_wrapper > .info > .info_inner > h4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .info_wrapper > .info > .info_inner > .settings {
+    display: flex;
+    gap: var(--normal);
+}
+.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .info_wrapper > .info > .info_inner > .settings > input {
+    width: 40px;
+}
+.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .supp_buttons_wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--small);
+    height: 100%;
+    width: fit-content;
+}
+.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .supp_buttons_wrapper > * {
+    flex-basis: 50%;
+    aspect-ratio: 1;
+    width: fit-content;
+}
+.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .supp_buttons_wrapper > .remove_recipe_ingredient {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--tiny);
+    outline: 1px solid var(--color-light-gray);
+    background-color: var(--color-white);
+}
+.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .supp_buttons_wrapper > .remove_recipe_ingredient > img {
+    height: 100%;
 }
 .edit_section > .ingredients_and_portions > .portions {
     display: flex;
@@ -468,7 +560,7 @@ input[type='checkbox'] {
 }
 
 @media (max-width: 720px) {
-    .input_wrapper.fit {
+    main .input_wrapper.fit {
         max-width: none;
     }
     .edit_section > .sub_section {
@@ -520,5 +612,11 @@ input[type='checkbox'] {
     .edit_section > .cook_time .time_units > .time_unit_item {
         flex-direction: column;
         align-items: start;
+    }
+    .edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .info_wrapper {
+        flex-grow: 1;
+    }
+    .edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .info_wrapper > .info {
+        gap: none;
     }
 }

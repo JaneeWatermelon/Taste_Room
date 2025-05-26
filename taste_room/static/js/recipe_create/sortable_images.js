@@ -1,3 +1,5 @@
+const max_image_size_Bytes = 1048576;
+
 function readURL(input, place_target) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
@@ -21,7 +23,6 @@ function updateStepsOrder() {
     const new_steps = $('.edit_section > .step_photos > .steps_list > .step_item');
     for (let i = 0; i < new_steps.length; i++) {
         $(new_steps[i]).attr("data-order", i + 1);
-        // $(new_steps[i]).find("label").attr("for", `id_text_${i+1}`);
         $(new_steps[i]).find("textarea").attr("name", `text_${i + 1}`);
         $(new_steps[i]).find(".step_id_input").attr("name", `step_id_${i + 1}`);
         $(new_steps[i]).find(".action_item").attr("data-order", i + 1);
@@ -89,7 +90,7 @@ function addRecipeStep(add_button) {
                 setChangeStepImageEventHandler();
                 setClickStepImageEventHandler();
                 setDeleteStepEventHandler();
-
+                window.setChangeSymbolsCountEventListener();
             }
         },
         error: function (error) {
@@ -105,7 +106,13 @@ $(".edit_section > .step_photos > .add_step_button").on("click", function () {
 
 function setChangeStepImageEventHandler() {
     $(".edit_section > .step_photos > .steps_list > .step_item > .content > .photo_wrapper > .image_wrapper > .image_input").off("change").on("change", function () {
-        readURL(this, $(this).closest(".image_wrapper").find(".back_image"));
+        if(this.files[0].size > max_image_size_Bytes) {
+            alert("Размер файла не должен превышать 1 МБ");
+            this.value = "";
+        }
+        else {
+            readURL(this, $(this).closest(".image_wrapper").find(".back_image"));
+        }
     });
 }
 function setDeleteStepEventHandler() {
@@ -174,7 +181,13 @@ $(".edit_section > .ready_dish_photo > .add_photo_button").on("click", function 
 
 function setChangeReadyImageEventHandler() {
     $(".edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper > .image_input").off("change").on("change", function () {
-        readURL(this, $(this).closest(".image_wrapper").find(".back_image"));
+        if(this.files[0].size > max_image_size_Bytes) {
+            alert("Размер файла не должен превышать 1 МБ");
+            this.value = "";
+        }
+        else {
+            readURL(this, $(this).closest(".image_wrapper").find(".back_image"));
+        }
     });
 }
 

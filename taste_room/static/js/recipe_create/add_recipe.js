@@ -1,64 +1,78 @@
 $(document).ready(function () {
     function setAutocompleteIngredientsEventHandler() {
-        $("#ingredient-search").off("input").on("input", function () {
-            const $this = $(this);
-            const data_term = $this.val(); // ID рецепта
-            const data_url = $this.attr("data-url"); // ID рецепта
+        const $input = $("#ingredient-search");
+        const data_url = $input.attr("data-url");
+        let isProcessing = false;
 
-            // Отправляем AJAX-запрос
-            $.ajax({
-                url: data_url, // URL для загрузки комментариев
-                method: "GET",
-                data: {
-                    data_term: data_term,
-                },
-                success: function (data) {
-                    console.log("added");
-                    $("#ingredients_choices").html("");
-                    let result_str = '';
-                    data.ingredients_choices.forEach(element => {
-                        result_str += `<option data-id="${element.id}" value="${element.value}">`;
-                    });
-                    $("#ingredients_choices").html(result_str);
-                },
-                error: function (error) {
-                    console.error("Ошибка при загрузке ингредиентов:", error);
-                },
-            });
+        // Удаляем старые обработчики и datalist (если был)
+        $input.off("input").autocomplete({
+            source: function(request, response) {
+                if (isProcessing) return;
+                isProcessing = true;
+
+                $.ajax({
+                    url: data_url,
+                    method: "GET",
+                    data: { data_term: request.term },
+                    success: function(data) {
+                        // Преобразуем данные для Autocomplete
+                        const suggestions = data.ingredients_choices.map(item => ({
+                            label: item.value,  // Отображаемый текст
+                            value: item.value,  // Значение для input
+                            id: item.id         // Дополнительные данные
+                        }));
+                        response(suggestions);
+                    },
+                    error: function(error) {
+                        console.error("Ошибка:", error);
+                        response([]); // Возвращаем пустой список при ошибке
+                    },
+                    complete: function() {
+                        isProcessing = false;
+                    }
+                });
+            },
+            minLength: 2, // Минимальное количество символов для запроса
+            select: function(event, ui) {
+                // Обработка выбора элемента
+                console.log("Выбран ингредиент:", ui.item.label, "ID:", ui.item.id);
+                const data_url = $input.attr("data-url-click"); // ID рецепта
+                const next_item_number = $("#ingredients-container > *").length + 1; // ID рецепта
+
+                // Отправляем AJAX-запрос
+                $.ajax({
+                    url: data_url, // URL для загрузки комментариев
+                    method: "GET",
+                    data: {
+                        data_id: ui.item.id,
+                        next_item_number: next_item_number,
+                    },
+                    success: function (data) {
+                        $input.val("");
+                        $("#ingredients_choices").html("");
+                        $("#ingredients-container").append(data.html_data);
+                        delete_ingredient_event_handler();
+                    },
+                    error: function (error) {
+                        console.error("Ошибка при загрузке ингредиентов:", error);
+                    },
+                });
+            },
+            focus: function(event, ui) {
+                // Предотвращаем автоматическую подстановку значения при фокусировке
+                event.preventDefault();
+            }
         });
+
+        // Стилизация для мобильных устройств
+        $input.autocomplete("instance")._renderItem = function(ul, item) {
+            return $("<li>")
+                .append(`<div>${item.label}</div>`)
+                .appendTo(ul);
+        };
     }
 
     setAutocompleteIngredientsEventHandler();
-
-    function setAddIngredientsEventHandler() {
-        $("#ingredient-search").off("change").on("change", function () {
-            const $this = $(this);
-            const data_id = $(`#ingredients_choices > option[value='${$this.val()}']`).attr("data-id"); // ID рецепта
-            const data_url = $this.attr("data-url-click"); // ID рецепта
-            const next_item_number = $("#ingredients-container > *").length + 1; // ID рецепта
-
-            // Отправляем AJAX-запрос
-            $.ajax({
-                url: data_url, // URL для загрузки комментариев
-                method: "GET",
-                data: {
-                    data_id: data_id,
-                    next_item_number: next_item_number,
-                },
-                success: function (data) {
-                    $this.val("");
-                    $("#ingredients_choices").html("");
-                    $("#ingredients-container").append(data.html_data);
-                    delete_ingredient_event_handler();
-                },
-                error: function (error) {
-                    console.error("Ошибка при загрузке ингредиентов:", error);
-                },
-            });
-        });
-    }
-
-    setAddIngredientsEventHandler();
 
     function reorder_ingredients() {
         const ingredients_list = $("#ingredients-container > *");
@@ -91,6 +105,8 @@ $("form.edit_section").on("submit", function (event) {
     const $this = $(this);
     const data_url = $this.attr("action"); // ID рецепта
 
+    console.log(data_url);
+
     const button = $(document.activeElement);
     const isPublish = button.attr('name') === 'publish';
 
@@ -115,13 +131,22 @@ $("form.edit_section").on("submit", function (event) {
         contentType: false, // Не устанавливать тип содержимого
         success: function (data) {
             if (data.redirect) {
-                window.location.href = data.url;  // Перенаправление в браузере
+                if (data.is_published) {
+                    window.reloadPage("recipe_in_moderation_message", data.url);
+                } 
+                else {
+                    window.location.href = data.url;
+                }
             } else {
                 console.log("added");
                 $(".edit_section > .step_photos > .steps_list").attr("data-delete-ids", "");
                 $("#ingredients-container").attr("data-delete-ids", "");
                 Object.keys(data.new_step_ids).forEach(name => {
                     $(`input[name='${name}']`).prop("value", `${data.new_step_ids[name]}`);
+                });
+                console.log(data.new_recipe_ingredient_ids);
+                Object.keys(data.new_recipe_ingredient_ids).forEach(name => {
+                    $(`input[name='${name}']`).prop("value", `${data.new_recipe_ingredient_ids[name]}`);
                 });
             }
         },

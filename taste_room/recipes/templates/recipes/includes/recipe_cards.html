@@ -13,6 +13,9 @@
             </a>
             <div class="visibility_and_adds">
                 {% if is_buttons %}
+                <div class="heart_wrapper delete" data-popup-id="card_delete_warning" data-url="{% url 'recipes:recipe_delete_ajax' %}" data-id="{{ item.id }}">
+                    <img src="{% static 'svg/Random_icons/Trash_icon.svg' %}">
+                </div>
                 <div class="visibility_wrapper">
                     <img src="{% static 'svg/Random_icons/Eye_icon_black.svg' %}">
                     <h4>{{ item.get_visibility_display }}</h4>
@@ -48,7 +51,7 @@
                     <h4 class="medium_font white">Опубликовать</h4>
                 </div>
                 {% elif item.status == 1 %}
-                <div data-url="{% url 'recipes:change_status_ajax' %}" class="unpublic">
+                <div data-popup-id="card_unpublic_warning" data-url="{% url 'recipes:change_status_ajax' %}" class="unpublic">
                     <img src="{% static 'svg/Yes_No/No_no_shadow.svg' %}">
                     <h4 class="medium_font white">Снять с публикации</h4>
                 </div>

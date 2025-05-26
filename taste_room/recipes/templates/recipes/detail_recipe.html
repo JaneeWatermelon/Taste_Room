@@ -102,11 +102,14 @@
                     <h1>{{ object.title }}</h1>
                     <h4>{{ object.description_inner }}</h4>
                 </div>
+                {% if object.video_url_first or object.video_url_second %}
                 <div class="recipe_videos">
+                    {% if object.video_url_first %}
                     <a href="{{ object.video_url_first }}" class="main_video">
                         <h3>Посмотреть видео-рецепт</h3>
                         <img src="{% static 'svg/Shapes/Play_video_black.svg' %}">
                     </a>
+                    {% endif %}
                     {% if object.video_url_second %}
                     <a href="{{ object.video_url_second }}" class="alt_video">
                         <h4>Запасная ссылка на видео-рецепт</h4>
@@ -114,6 +117,7 @@
                     </a>
                     {% endif %}
                 </div>
+                {% endif %}
                 <div class="recipe_stats">
                     <div class="column">
                         <div class="recipe_stats_item">
@@ -183,13 +187,13 @@
                         <div class="portions">
                             <h4>На кол-во порций:</h4>
                             <div class="counter" data-id="{{ object.id }}" data-url="{% url 'recipes:recipe_portions_ajax' %}">
-                                <button id="minus_portions_button" type="button" class="minus">
+                                <button name="button_minus_portions" id="minus_portions_button" type="button" class="minus">
                                     <img src="{% static 'svg/Plus_Minus/Minus_white.svg' %}">
                                 </button>
                                 <div class="number default">
                                     <h5 id="portions_number">{{ object.portions }}</h5>
                                 </div>
-                                <button id="plus_portions_button" type="button" class="plus">
+                                <button name="button_plus_portions" id="plus_portions_button" type="button" class="plus">
                                     <img src="{% static 'svg/Plus_Minus/Plus_white.svg' %}">
                                 </button>
                             </div>
@@ -202,7 +206,7 @@
                                 {% if item.ingredient.icon %}
                                 <img src="{{ item.ingredient.icon.url }}">
                                 {% else %}
-                                <img src="{% static 'svg/Ingredients/Question_mark.svg' %}">
+                                <img src="{% static 'svg/Ingredients/Default.svg' %}">
                                 {% endif %}
                             </div>
                             <h4>{{ item.ingredient.title }} - {{ item.quantity|round_ingredient_count }} {{ item.unit }}</h4>
@@ -224,7 +228,7 @@
                         <div class="info">
                             <h4>{{ item.text }}</h4>
                             <div class="image_wrapper">
-                                <img src="{{ item.optimized_image.url }}">
+                                <img src="{{ item.optimized_image_watermark.url }}">
                             </div>
                         </div>
                     </div>
@@ -259,7 +263,7 @@
                         {% include "additions/socials_block.html" %}
                     </div>
                 </div>
-                {% if recs_recipes %}
+                {% if recs_recipes.exists and recs_recipes.count > 3 %}
                 <div class="recipe_chapter">
                     <span class="line"></span>
                     <h2 class="lilita_font">Рекомендуем попробовать</h2>
@@ -274,16 +278,16 @@
                 </div>
                 {% for item in recs_recipes %}
                 <div data-id="{{ item.id }}" class="pop_up_window cook_time_window d_none">
-                                <p>Время приготовления</p>
-                                <div class="inner_wrapper">
-                                    <img src="{% static 'svg/Random_icons/Clock_icon.svg' %}">
-                                    <h5 class="green">Общее - {{ item.cook_time_full|short_timedelta }}</h5>
-                                </div>
-                                <div class="inner_wrapper">
-                                    <img src="{% static 'svg/Random_icons/Clock_icon_red.svg' %}">
-                                    <h5 class="red">Активное - {{ item.cook_time_active|short_timedelta }}</h5>
-                                </div>
-                            </div>
+                    <p>Время приготовления</p>
+                    <div class="inner_wrapper">
+                        <img src="{% static 'svg/Random_icons/Clock_icon.svg' %}">
+                        <h5 class="green">Общее - {{ item.cook_time_full|short_timedelta }}</h5>
+                    </div>
+                    <div class="inner_wrapper">
+                        <img src="{% static 'svg/Random_icons/Clock_icon_red.svg' %}">
+                        <h5 class="red">Активное - {{ item.cook_time_active|short_timedelta }}</h5>
+                    </div>
+                </div>
                 <div data-id="{{ item.id }}" class="pop_up_window ingredients_window d_none">
                     <p>Ингредиенты</p>
                     {% for ingredient in item.recipeingredient_set.all %}
@@ -293,7 +297,7 @@
                     {% endfor %}
                 </div>
                 {% endfor %}
-                {% if recs_news %}
+                {% if recs_news.exists and recs_news.count > 3 %}
                 <div class="recipe_chapter">
                     <span class="line"></span>
                     <h2 class="lilita_font">Интересно почитать</h2>
@@ -337,151 +341,13 @@
                     </div>
                     <div class="input_wrapper">
                         <textarea required="required" name="text" placeholder="Поделитесь своими мыслями"></textarea>
-                        <button data-require-auth type="submit" class="input_button">
+                        <button name="button_send_comment" data-require-auth type="submit" class="input_button">
                             <img src="{% static 'svg/Arrows/Send_comment.svg' %}">
                         </button>
                     </div>
                 </form>
                 <div class="recipe_comments comments {% if not comments %}d_none{% endif %}">
-                    {% for item in comments %}
-                    <div data-parent-id="{{ item.id }}" class="comment_wrapper">
-                        <div data-comment-id="{{ item.id }}" class="comment_item parent">
-                            <div class="author_info">
-                                <a href="{% url 'users:author' item.author.username %}" class="image_wrapper">
-                                    {% if item.author.avatar %}
-                                    <img src="{{ item.author.optimized_image_small.url }}">
-                                    {% else %}
-                                    <img src="{% static 'img/Profile/author_default.png' %}">
-                                    {% endif %}
-                                </a>
-                                <div class="info">
-                                    <h4>{% if item.author.name %}{{ item.author.name }}{% else %}{{ item.author.username }}{% endif %}</h4>
-                                    <h5 class="black_75">{{ item.published_date|naturaltime }}</h5>
-                                </div>
-                                <div class="comment_actions d_none">
-                                    <div class="action answer">
-                                        <h5 class="medium_font black_50">Ответить</h5>
-                                    </div>
-                                    {% if item.author == user %}
-                                    <div data-url="{% url 'recipes:delete_comment_ajax' %}" class="action delete">
-                                        <h5 class="medium_font black_50">Удалить</h5>
-                                    </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="content">
-                                {% if item.image %}
-                                <div class="image_wrapper">
-                                    <img src="{{ item.optimized_image_small.url }}">
-                                </div>
-                                {% endif %}
-                                <h5>{{ item.text }}</h5>
-                            </div>
-                            <div data-url="{% url 'recipes:comment_reaction_change_ajax' %}" class="rating">
-                                <div class="likes">
-                                    {% if item in request.user.liked_recipe_comments.all %}
-                                    <img class="active" src="{% static 'svg/Likes_Dislikes/Like_fill.svg' %}">
-                                    {% else %}
-                                    <img src="{% static 'svg/Likes_Dislikes/Like_blank.svg' %}">
-                                    {% endif %}
-
-                                    {% if item.likes %}
-                                    <h5>{{ item.likes }}</h5>
-                                    {% endif %}
-                                </div>
-                                <div class="dislikes">
-                                    {% if item in request.user.disliked_recipe_comments.all %}
-                                    <img class="active" src="{% static 'svg/Likes_Dislikes/Dislike_fill.svg' %}">
-                                    {% else %}
-                                    <img src="{% static 'svg/Likes_Dislikes/Dislike_blank.svg' %}">
-                                    {% endif %}
-
-                                    {% if item.dislikes %}
-                                    <h5>{{ item.dislikes }}</h5>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                        {% if item.children.exists %}
-                        <div class="answers d_none">
-                            <span class="line"></span>
-                            <div class="answers_list">
-                                {% for answer in item.children.all|published_date_minus %}
-                                <div data-comment-id="{{ answer.id }}" class="comment_item">
-                                    <div class="author_info">
-                                        <a href="{% url 'users:author' answer.author.username %}" class="image_wrapper">
-                                            {% if answer.author.avatar %}
-                                            <img src="{{ answer.author.optimized_image_small.url }}">
-                                            {% else %}
-                                            <img src="{% static 'img/Profile/author_default.png' %}">
-                                            {% endif %}
-                                        </a>
-                                        <div class="info">
-                                            <h4>{% if answer.author.name %}{{ answer.author.name }}{% else %}{{ answer.author.username }}{% endif %}</h4>
-                                            <h5 class="black_75">{{ answer.published_date|naturaltime }}</h5>
-                                        </div>
-                                        <div class="comment_actions d_none">
-                                            {% if item.author == user %}
-                                            <div data-url="{% url 'recipes:delete_comment_ajax' %}" class="action delete">
-                                                <h5 class="medium_font black_50">Удалить</h5>
-                                            </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                    <div class="content">
-                                        {% if answer.image %}
-                                        <div class="image_wrapper">
-                                            <img src="{{ answer.optimized_image_small.url }}">
-                                        </div>
-                                        {% endif %}
-                                        <h5>{{ answer.text }}</h5>
-                                    </div>
-                                    <div data-url="{% url 'recipes:comment_reaction_change_ajax' %}" class="rating">
-                                        <div class="likes">
-                                            {% if answer in request.user.liked_recipe_comments.all %}
-                                            <img class="active" src="{% static 'svg/Likes_Dislikes/Like_fill.svg' %}">
-                                            {% else %}
-                                            <img src="{% static 'svg/Likes_Dislikes/Like_blank.svg' %}">
-                                            {% endif %}
-
-                                            {% if answer.likes %}
-                                            <h5>{{ answer.likes }}</h5>
-                                            {% endif %}
-                                        </div>
-                                        <div class="dislikes">
-                                            {% if answer in request.user.disliked_recipe_comments.all %}
-                                            <img class="active" src="{% static 'svg/Likes_Dislikes/Dislike_fill.svg' %}">
-                                            {% else %}
-                                            <img src="{% static 'svg/Likes_Dislikes/Dislike_blank.svg' %}">
-                                            {% endif %}
-
-                                            {% if answer.dislikes %}
-                                            <h5>{{ answer.dislikes }}</h5>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <div class="change_visibility_answers hide_answers d_none">
-                            <h5 class="black_75">Скрыть ответы</h5>
-                        </div>
-                        <div class="change_visibility_answers show_answers">
-                            <h5 class="black_75">Показать ответы ({{ item.children.count }})</h5>
-                        </div>
-                        {% endif %}
-                        <form data-parent-id="{{ item.id }}" action="{% url 'recipes:add_comment_ajax' %}" method="post" enctype="multipart/form-data" class="add_answer_comment d_none">
-                            {% csrf_token %}
-                            <div class="input_wrapper">
-                                <textarea required="required" name="text" placeholder="Ответьте на комментарий"></textarea>
-                                <button type="submit" class="input_button">
-                                    <img src="{% static 'svg/Arrows/Send_comment.svg' %}">
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                    {% endfor %}
+                    {% include "recipes/includes/comments_partial.html" with comments=comments %}
                     {% if comments.has_next %}
                     <div data-page="{{ comments.next_page_number }}" data-url="{% url 'recipes:load_more_comments_ajax' %}" class="show_more">
                         <h5 class="black_75">Показать ещё</h5>
@@ -561,7 +427,7 @@
 
 {% block custom_scripts %}
     <script>
-        const default_ingredient_icon = "{% static 'svg/Ingredients/Question_mark.svg' %}";
+        const default_ingredient_icon = "{% static 'svg/Ingredients/Default.svg' %}";
         const star_on_icon = "{% static 'svg/Stars/Star_on.svg' %}";
         const user_review_exists = Boolean({{ user_review_exists }});
         let user_review_rating;

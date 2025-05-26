@@ -99,17 +99,17 @@
                         </div>
                         {% if object != user %}
                             {% if object in user.subscriptions.all %}
-                            <button data-require-auth type="button" data-type="unsub" class="sub_action_wrapper">
+                            <button name="button_unsub_user" data-require-auth type="button" data-type="unsub" class="sub_action_wrapper">
                                 <p class="medium_font">Отказаться от подписки</p>
                             </button>
-                            <button data-require-auth type="button" data-type="sub" class="sub_action_wrapper active d_none">
+                            <button name="button_sub_user" data-require-auth type="button" data-type="sub" class="sub_action_wrapper active d_none">
                                 <p class="medium_font">Подписаться</p>
                             </button>
                             {% else %}
-                            <button data-require-auth type="button" data-type="unsub" class="sub_action_wrapper d_none">
+                            <button name="button_unsub_user" data-require-auth type="button" data-type="unsub" class="sub_action_wrapper d_none">
                                 <p class="medium_font">Отказаться от подписки</p>
                             </button>
-                            <button data-require-auth type="button" data-type="sub" class="sub_action_wrapper active">
+                            <button name="button_sub_user" data-require-auth type="button" data-type="sub" class="sub_action_wrapper active">
                                 <p class="medium_font">Подписаться</p>
                             </button>
                             {% endif %}
@@ -144,29 +144,29 @@
                             </div>
                             {% if object != user %}
                                 {% if object in user.subscriptions.all %}
-                                <button data-require-auth type="button" data-type="unsub" class="sub_action_wrapper">
+                                <button name="button_unsub_user" data-require-auth type="button" data-type="unsub" class="sub_action_wrapper">
                                     <p class="medium_font">Отказаться от подписки</p>
                                 </button>
-                                <button data-require-auth type="button" data-type="sub" class="sub_action_wrapper active d_none">
+                                <button name="button_sub_user" data-require-auth type="button" data-type="sub" class="sub_action_wrapper active d_none">
                                     <p class="medium_font">Подписаться</p>
                                 </button>
                                 {% else %}
-                                <button data-require-auth type="button" data-type="unsub" class="sub_action_wrapper d_none">
+                                <button name="button_unsub_user" data-require-auth type="button" data-type="unsub" class="sub_action_wrapper d_none">
                                     <p class="medium_font">Отказаться от подписки</p>
                                 </button>
-                                <button data-require-auth type="button" data-type="sub" class="sub_action_wrapper active">
+                                <button name="button_sub_user" data-require-auth type="button" data-type="sub" class="sub_action_wrapper active">
                                     <p class="medium_font">Подписаться</p>
                                 </button>
                                 {% endif %}
                             {% endif %}
                             <div class="settings_item">
                                 <img src="{% static 'svg/Cookie/Smile_green.svg' %}">
-                                <p>Опубликовано рецептов:</p>
+                                <p>Рецептов:</p>
                                 <p class="medium_font">{{ published_recipes_count }}</p>
                             </div>
                             <a class="settings_item">
                                 <img src="{% static 'svg/Random_icons/Article_icon.svg' %}">
-                                <p>Опубликовано статей:</p>
+                                <p>Статей:</p>
                                 <p class="medium_font">{{ published_news_count }}</p>
                             </a>
                         </div>
@@ -245,8 +245,6 @@
                             <h4 class="active">Рецепты</h4>
                         </div>
                     </div>
-                </div>
-                <div class="chapter_wrapper">
                     <div class="chapter">
                         <div class="chapter_item" data-for="articles_section">
                             <svg class="fill_svg" width="26" height="25" viewBox="0 0 26 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -256,8 +254,6 @@
                             <h4 class="active">Статьи</h4>
                         </div>
                     </div>
-                </div>
-                <div class="chapter_wrapper">
                     <div class="chapter">
                         <div class="chapter_item" data-for="achievements_section">
                             <svg class="stroke_svg" width="22" height="21" viewBox="0 0 22 21" fill="none" xmlns="http://www.w3.org/2000/svg">

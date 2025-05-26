@@ -19,7 +19,33 @@
 .profile_header .settings_wrapper > .settings > .sub_action_wrapper.active > p {
     color: var(--color-white);
 }
-
+.profile_chapters > .chapter_wrapper {
+    gap: 0;
+    border-radius: var(--small);
+    outline: 1px solid var(--color-light-ghost);
+    overflow: hidden;
+}
+.profile_chapters .chapter_wrapper > .chapter {
+    border-right: 1px solid var(--color-light-ghost);
+    outline: none;
+    border-radius: 0;
+    width: 100%;
+}
+.profile_chapters .chapter_wrapper > .chapter:last-child {
+    border-right: none;
+}
 @media (max-width: 720px) {
-    
+    .profile_chapters > .chapter_wrapper {
+        flex-direction: column;
+        gap: 0;
+        border-radius: var(--small);
+        outline: 1px solid var(--color-light-ghost);
+        overflow: hidden;
+    }
+    .profile_chapters .chapter_wrapper > .chapter {
+        border-bottom: 1px solid var(--color-light-ghost);
+    }
+    .profile_chapters .chapter_wrapper > .chapter:last-child {
+        border-bottom: none;
+    }
 }

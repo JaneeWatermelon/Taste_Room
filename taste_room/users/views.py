@@ -48,9 +48,11 @@ class ProfileView(TemplateView):
     template_name = "users/profile.html"
 
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-
-        return self.render_to_response(context)
+        if self.request.user.is_authenticated:
+            context = self.get_context_data(**kwargs)
+            return self.render_to_response(context)
+        else:
+            raise Http404
 
     def post(self, request, *args, **kwargs):
         form = ChangeUserForm(self.request.POST, instance=self.request.user)

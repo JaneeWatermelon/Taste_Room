@@ -23,7 +23,7 @@ class UserAdmin(BaseUserAdmin, admin.ModelAdmin):
                     'socials',
                     ('liked_recipes', 'liked_recipe_comments', 'disliked_recipe_comments',),
                     ('liked_news_comments', 'disliked_news_comments',),
-                    ('subscribers', 'subscriptions'),
+                    ('subscriptions',),
                     ('choosed_achiv', 'achivs'),
                 )
             }
@@ -38,7 +38,7 @@ class UserAdmin(BaseUserAdmin, admin.ModelAdmin):
                     'socials',
                     ('liked_recipes', 'liked_recipe_comments', 'disliked_recipe_comments',),
                     ('liked_news_comments', 'disliked_news_comments',),
-                    ('subscribers', 'subscriptions'),
+                    ('subscriptions',),
                     ('choosed_achiv', 'achivs'),
                 )
             }

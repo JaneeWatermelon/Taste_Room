@@ -1,6 +1,7 @@
 from random import choices
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
 
 from additions.views import Status, Visibility
@@ -21,6 +22,10 @@ class CreateRecipeCommentForm(forms.ModelForm):
         model = RecipeComment
         fields = ['text', 'image']
 
+def validate_image_size(image):
+    max_size = 1 * 1024 * 1024
+    if image.size > max_size:
+        raise ValidationError("Размер изображения не должен превышать 1 МБ")
 
 class CreateRecipeForm(forms.ModelForm):
     categories = forms.ModelMultipleChoiceField(
@@ -40,6 +45,7 @@ class CreateRecipeForm(forms.ModelForm):
     )
     title = forms.CharField(widget=forms.TextInput(attrs={
         'placeholder': 'Введите название рецепта',
+        'class': 'with_marks',
         'minlength': 20,
         'maxlength': 40,
     }))
@@ -50,13 +56,15 @@ class CreateRecipeForm(forms.ModelForm):
     }), required=False)
     description_inner = forms.CharField(widget=forms.Textarea(attrs={
         'placeholder': 'Придумайте описание к рецепту',
+        'class': 'with_marks',
         'minlength': 350,
         'maxlength': 1000,
     }), required=False)
     description_card = forms.CharField(widget=forms.Textarea(attrs={
         'placeholder': 'Придумайте мини-описание для карточки рецепта',
+        'class': 'with_marks',
         'minlength': 30,
-        'maxlength': 50,
+        'maxlength': 60,
     }), required=False)
     video_url_first = forms.URLField(widget=forms.URLInput(attrs={
         'placeholder': 'Введите ссылку на видео-рецепт',

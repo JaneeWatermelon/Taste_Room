@@ -1,3 +1,5 @@
+const max_image_size_Bytes = 1048576;
+
 function readURL(input, place_target) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
@@ -30,7 +32,13 @@ function setClickChangePhotoEventHandler() {
 
 function setChangePhotoEventHandler() {
     $(".edit_section > .ready_dish_photo > .photo_list > .photo_item > .photo_wrapper > .image_wrapper > .image_input").off("change").on("change", function () {
-        readURL(this, $(this).closest(".image_wrapper").find(".back_image"));
+        if(this.files[0].size > max_image_size_Bytes) {
+            alert("Размер файла не должен превышать 1 МБ");
+            this.value = "";
+        }
+        else {
+            readURL(this, $(this).closest(".image_wrapper").find(".back_image"));
+        }
     });
 }
 

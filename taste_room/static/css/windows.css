@@ -170,6 +170,17 @@
     border-radius: var(--small);
     padding: var(--big);
 }
+.profile_window.unpublic_warning > .titles {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--small);
+    justify-content: center;
+}
+.profile_window.unpublic_warning > .titles > h4,
+.profile_window.unpublic_warning > .titles > h3 {
+    text-align: center;
+}
 .profile_window.unpublic_warning > .buttons {
     display: flex;
     align-items: center;
@@ -184,12 +195,13 @@
     border-radius: var(--small);
     padding: var(--small) var(--huge);
     flex-basis: 50%;
+    flex-grow: 1;
     cursor: pointer;
 }
-.profile_window.unpublic_warning > .buttons > .button_item.unpublic {
+.profile_window.unpublic_warning > .buttons > .button_item.agree {
     background-color: var(--color-red);
 }
-.profile_window.unpublic_warning > .buttons > .button_item.save_public {
+.profile_window.unpublic_warning > .buttons > .button_item.disagree {
     background-color: var(--color-cookie);
 }
 .profile_window.unpublic_warning > .buttons > .button_item > h4 {
@@ -265,6 +277,7 @@
     display: flex;
     align-items: center;
     gap: var(--small);
+    position: relative;
 }
 .burger_menu > .socials_info img {
     height: 20px;
