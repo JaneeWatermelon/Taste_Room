@@ -53,6 +53,18 @@ textarea {
     padding: 0;
 }
 
+.rotate_180 {
+    transform: rotate(180deg);
+}
+
+.hide_text_line_1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .image_input {
     width: 100%;
     height: 100%;
@@ -432,27 +444,6 @@ footer {
         border-radius: 2px;
         background-color: var(--color-black);
     }
-    .header_wrapper > .input_wrapper {
-        gap: var(--small);
-        padding: var(--tiny) var(--tiny) var(--tiny) var(--normal);
-    }
-    .header_wrapper .input_wrapper input::placeholder {
-        font-size: 0.75rem; /*12px*/
-        line-height: 0.875rem; /*14px*/
-    }
-    .header_wrapper .input_wrapper.magnifier {
-        padding: var(--tiny);
-    }
-    .header_wrapper .input_wrapper .input_button {
-        padding: var(--normal) var(--mid);
-    }
-    .header_wrapper .input_wrapper .input_button.magnifier {
-        padding: 6px 22px;
-    }
-    .header_wrapper .input_wrapper .input_button.magnifier > img {
-        height: 22px;
-    }
-
     
 }
 @media (min-width: 721px) {

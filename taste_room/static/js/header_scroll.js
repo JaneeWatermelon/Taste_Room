@@ -18,7 +18,7 @@ $(".navigation_section").css({
   "top": `${header_height}px`,
 });
 
-$(window).on('load', function() {
+$(window).on('load', function () {
   $("main").css({
     "opacity": "1",
   });
@@ -27,50 +27,50 @@ $(window).on('load', function() {
 let scrollTimeoutId;
 let settedTimeout = false;
 
-$(window).scroll(function() {
-    const scrollPosition = $(this).scrollTop();
-    const element = $('#top_waves');
-  
-    if (scrollPosition > document.querySelector('body').scrollHeight/4) {
-      $("#go_up_wrapper").css({
-        "display": "flex",
-      });
-      setTimeout(function() {
-        $("#go_up_wrapper").css("opacity", "1");
-      }, 1)
-    }
-    else {
-      $("#go_up_wrapper").css({
-        "display": "none",
-        "opacity": "0",
-      });
-    }
+$(window).scroll(function () {
+  const scrollPosition = $(this).scrollTop();
+  const element = $('#top_waves');
+
+  if (scrollPosition > document.querySelector('body').scrollHeight / 4) {
+    $("#go_up_wrapper").css({
+      "display": "flex",
+    });
+    setTimeout(function () {
+      $("#go_up_wrapper").css("opacity", "1");
+    }, 1)
+  }
+  else {
+    $("#go_up_wrapper").css({
+      "display": "none",
+      "opacity": "0",
+    });
+  }
 
 
-    if (scrollPosition > 0) {
+  if (scrollPosition > 0) {
 
-      if (!settedTimeout) {
-        settedTimeout = true;
-        element.css('clip-path', 'inset(0 0 100% 0)');
-        scrollTimeoutId = setTimeout(function() {
-          $("header > .header_wrapper").css('outline', '3px solid black');
-          element.addClass("d_none");
-        }, 300);
-      }
-
-    } else {
-
-      clearTimeout(scrollTimeoutId);
-      settedTimeout = false;
-      
-
-      setTimeout(function() {
-        $("header > .header_wrapper").css('outline', 'none');
+    if (!settedTimeout) {
+      settedTimeout = true;
+      element.css('clip-path', 'inset(0 0 100% 0)');
+      scrollTimeoutId = setTimeout(function () {
+        $("header > .header_wrapper").css('outline', '3px solid black');
+        element.addClass("d_none");
       }, 300);
-
-      element.removeClass("d_none");
-      setTimeout(function() {
-        element.css('clip-path', `inset(0 0 0 0)`);
-      }, 1);
     }
-  });
+
+  } else {
+
+    clearTimeout(scrollTimeoutId);
+    settedTimeout = false;
+
+
+    setTimeout(function () {
+      $("header > .header_wrapper").css('outline', 'none');
+    }, 300);
+
+    element.removeClass("d_none");
+    setTimeout(function () {
+      element.css('clip-path', `inset(0 0 0 0)`);
+    }, 1);
+  }
+});

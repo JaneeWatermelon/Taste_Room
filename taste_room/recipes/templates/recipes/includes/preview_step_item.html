@@ -22,9 +22,6 @@
                     </div>
                 </div>
                 <input class="image_input" name="step_image_{{ item_number }}" type="file" accept="image/png,image/jpeg">
-                {% if first_start %}
-                <input hidden="hidden" name="existing_step_image_name_{{ item_number }}" type="text" value="{{ item.image.name }}">
-                {% endif %}
             </div>
         </div>
         <div class="field_wrapper">

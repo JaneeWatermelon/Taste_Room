@@ -5,6 +5,7 @@
 {% block custom_styles %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css">
     <link rel="stylesheet" href="{% static 'css/recipe/add_recipe.css' %}">
+    <link rel="stylesheet" href="{% static 'css/general/marks_limits.css' %}">
     <link rel="stylesheet" href="{% static 'css/recipe/ui_autocomplete.css' %}">
 {% endblock %}
 
@@ -63,7 +64,7 @@
                             </datalist>
                         </div>
                     </div>
-                    <div class="ingredients" id="ingredients-container" data-delete-ids="">
+                    <div class="ingredients" id="ingredients-container">
                         {% include "recipes/includes/ingredient_recipe_items.html" with choices=units_choices recipe_ingredients=object.recipeingredient_set.all %}
                     </div>
                     <div class="portions">
@@ -154,14 +155,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="steps_list" data-delete-ids="">
+                    <div class="steps_list">
                         {% if object.recipestep_set.all.exists %}
-                            {% include "recipes/includes/preview_step_item.html" with first_start='true' steps=object.recipestep_set.all %}
+                            {% include "recipes/includes/preview_step_item.html" with steps=object.recipestep_set.all %}
                         {% else %}
                             {% include "recipes/includes/preview_step_item.html" with steps='123' %}
                         {% endif %}
                     </div>
-                    <button name="button_add_step" data-url="{% url 'recipes:add_recipe_step_ajax' %}" type="button" class="add_step_button">
+                    <button name="button_add_step" data-url="{% url 'recipes:add_recipe_step_ajax' %}" type="button" class="add_button">
                         <img src="{% static 'svg/Plus_Minus/Plus_white.svg' %}">
                         <h3 class="white medium_font">Добавить следующий шаг</h3>
                     </button>
@@ -214,13 +215,17 @@
                             {% endif %}
                         {% endif %}
                     </div>
-                    <div data-url="{% url 'recipes:add_ready_photo_ajax' %}" class="add_photo_button {% if object.previews.preview_1 and object.previews.preview_2 and object.previews.preview_3 %}d_none{% endif %}">
-                        <img src="{% static 'svg/Cookie/Add_image_half_black.svg' %}">
-                        <div class="info">
-                            <p class="black_50">Добавь фото готового блюда к своему рецепту</p>
-                            <p class="black_50">Перетащи или нажми, чтобы выбрать</p>
-                        </div>
-                    </div>
+<!--                    <div data-url="{% url 'recipes:add_ready_photo_ajax' %}" class="add_photo_button {% if object.previews.preview_1 and object.previews.preview_2 and object.previews.preview_3 %}d_none{% endif %}">-->
+<!--                        <img src="{% static 'svg/Cookie/Add_image_half_black.svg' %}">-->
+<!--                        <div class="info">-->
+<!--                            <p class="black_50">Добавь фото готового блюда к своему рецепту</p>-->
+<!--                            <p class="black_50">Перетащи или нажми, чтобы выбрать</p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <button name="button_add_ready_photo" data-url="{% url 'recipes:add_ready_photo_ajax' %}" type="button" class="add_button {% if object.previews.preview_1 and object.previews.preview_2 and object.previews.preview_3 %}d_none{% endif %}">
+                        <img src="{% static 'svg/Plus_Minus/Plus_white.svg' %}">
+                        <h3 class="white medium_font">Добавить ещё фото</h3>
+                    </button>
                 </div>
                 <span class="line"></span>
                 <div class="sub_section description_to_recipe">

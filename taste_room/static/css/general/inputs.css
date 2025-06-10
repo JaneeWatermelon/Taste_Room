@@ -8,6 +8,9 @@
     border-radius: 100px;
     outline: 1px solid var(--color-light-ghost);
 }
+.input_wrapper.magnifier {
+    padding: var(--small);
+}
 
 .input_wrapper input, .input_wrapper select {
     width: 100%;
@@ -32,4 +35,27 @@
 }
 .input_wrapper .input_button.magnifier {
     padding: var(--small) 36px;
+}
+
+@media (max-width: 720px) {
+    .input_wrapper {
+        gap: var(--small);
+        padding: var(--tiny) var(--tiny) var(--tiny) var(--normal);
+    }
+    .input_wrapper input::placeholder {
+        font-size: 0.75rem; /*12px*/
+        line-height: 0.875rem; /*14px*/
+    }
+    .input_wrapper.magnifier {
+        padding: var(--tiny);
+    }
+    .input_wrapper .input_button {
+        padding: var(--normal) var(--mid);
+    }
+    .input_wrapper .input_button.magnifier {
+        padding: 6px 22px;
+    }
+    .input_wrapper .input_button.magnifier > img {
+        height: 22px;
+    }
 }

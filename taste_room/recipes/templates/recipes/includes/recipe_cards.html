@@ -2,9 +2,8 @@
 {% load custom_filters %}
 {% load cache %}
 
-{% with user_liked_recipes=user_liked_recipes %}
 {% for item in recipes_list %}
-{% cache 60 recipes_list item.id item.cache_version user.is_authenticated swiper_slide is_buttons %}
+{% cache 60 recipes_list item.id item.cache_version user.is_authenticated user.liked_recipes swiper_slide is_buttons %}
 <div data-id="{{ item.id }}" class="card_item recipe_item {% if swiper_slide %}swiper-slide{% endif %}">
     <div class="recipe_item_header">
         <div class="image_wrapper">
@@ -13,7 +12,7 @@
             </a>
             <div class="visibility_and_adds">
                 {% if is_buttons %}
-                <div class="heart_wrapper delete" data-popup-id="card_delete_warning" data-url="{% url 'recipes:recipe_delete_ajax' %}" data-id="{{ item.id }}">
+                <div class="fit_wrapper delete" data-popup-id="card_delete_warning" data-url="{% url 'recipes:recipe_delete_ajax' %}" data-id="{{ item.id }}">
                     <img src="{% static 'svg/Random_icons/Trash_icon.svg' %}">
                 </div>
                 <div class="visibility_wrapper">
@@ -22,17 +21,17 @@
                 </div>
                 {% endif %}
                 {% if user.is_authenticated %}
-                    {% if item in user_liked_recipes %}
-                    <div class="heart_wrapper active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                    {% if item in user.liked_recipes.all %}
+                    <div class="fit_wrapper heart active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
                         <img src="{% static 'svg/Random_icons/Heart_fill.svg' %}">
                     </div>
                     {% else %}
-                    <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                    <div class="fit_wrapper heart" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
                         <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
                     </div>
                     {% endif %}
                 {% else %}
-                <div data-require-auth class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                <div data-require-auth class="fit_wrapper heart" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
                     <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
                 </div>
                 {% endif %}
@@ -112,4 +111,3 @@
 </div>
 {% endcache %}
 {% endfor %}
-{% endwith %}

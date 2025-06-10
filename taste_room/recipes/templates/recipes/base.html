@@ -3,6 +3,34 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZSJEW6L1LC"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-ZSJEW6L1LC');
+    </script>
+
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript" >
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+       ym(101847031, "init", {
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true
+       });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/101847031" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -30,24 +58,6 @@
     <meta name="csrf-token" content="{{ csrf_token }}">
     <meta name="user-authenticated" content="{{ user.is_authenticated }}">
 
-    <!-- Yandex.Metrika counter -->
-    <script type="text/javascript" >
-       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-       m[i].l=1*new Date();
-       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-       ym(101847031, "init", {
-            clickmap:true,
-            trackLinks:true,
-            accurateTrackBounce:true,
-            webvisor:true
-       });
-    </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/101847031" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-    <!-- /Yandex.Metrika counter -->
-
     {% block base_styles %}
     <link rel="stylesheet" href="{% static 'css/general/vars.css' %}">
     <link rel="stylesheet" href="{% static 'css/general/fonts.css' %}">
@@ -70,8 +80,8 @@
     <header>
         <div class="header_wrapper">
             <div class="header_buttons">
-                <a href="{% url 'main' %}">
-                    <img id="main_cookie" src="{% static 'svg/Cookie/TR.svg' %}">
+                <a id="main_cookie_link" data-type="banner" data-name="Название баннера" href="{% url 'main' %}">
+                    <img data-for="main_cookie_link" id="main_cookie" src="{% static 'svg/Cookie/TR.svg' %}">
                 </a>
             </div>
             <form action="{% url 'recipes:search' %}" method="get" class="input_wrapper">
@@ -118,7 +128,7 @@
     {% block main %}
     {% endblock %}
     {% block back_black %}
-    <div class="back_black d_none">
+    <div class="back_black {% if not reloading %}d_none{% endif %}" {% if reloading %}style="opacity:1;"{% endif %}>
         <div id="burger_menu" class="burger_menu d_none">
             {% if user.is_authenticated %}
             <div class="profile_info">
@@ -220,7 +230,7 @@
             </div>
             <img class="overflow_icon" src="{% static 'svg/Cookie/TR_avatar.svg' %}">
         </div>
-        <div id="login_window" class="profile_window d_none">
+        <div id="login_window" class="profile_window {% if reloading != 'login_window' %}d_none{% endif %}">
             <div class="title">
                 <h2 class="cookie lilita_font">Вход</h2>
                 <h3 class="cookie lilita_font">Ваша комната вкусов уже ждёт вас!</h3>
@@ -399,6 +409,7 @@
         const USER_AUTHENTICATED = $('meta[name="user-authenticated"]').attr("content") == "True";
     </script>
 
+    <script src="{% static 'js/general/GA.js' %}"></script>
     <script src="{% static 'js/swiper.js' %}"></script>
     <script src="{% static 'js/textarea.js' %}"></script>
     <script src="{% static 'js/header_scroll.js' %}"></script>

@@ -77,6 +77,7 @@
     }
     .ingredient_item {
         gap: var(--normal);
+        padding: var(--tiny) var(--tiny) var(--mid) var(--tiny);
     }
     #choices_ingredients_container > .ingredient_item:nth-child(6) {
         display: none;

@@ -93,17 +93,17 @@
 .recipe_item > .recipe_item_header > .image_wrapper > .visibility_and_adds > .visibility_wrapper {
     width: 100%;
 }
-.recipe_item > .recipe_item_header > .image_wrapper > .visibility_and_adds > .heart_wrapper {
+.recipe_item > .recipe_item_header > .image_wrapper > .visibility_and_adds > .fit_wrapper {
     width: fit-content;
     height: -webkit-fill-available;
     aspect-ratio: 1;
     transition: transform 0.15s ease;
     cursor: pointer;
 }
-.recipe_item > .recipe_item_header > .image_wrapper > .visibility_and_adds > .heart_wrapper:hover {
+.recipe_item > .recipe_item_header > .image_wrapper > .visibility_and_adds > .fit_wrapper:hover {
     transform: scale(1.1);
 }
-.recipe_item > .recipe_item_header > .image_wrapper > .visibility_and_adds > .heart_wrapper > img {
+.recipe_item > .recipe_item_header > .image_wrapper > .visibility_and_adds > .fit_wrapper > img {
     height: 18px;
     width: 18px;
     max-width: 100%;

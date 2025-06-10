@@ -22,7 +22,7 @@ color_items2.on("click", function() {
 })
 
 function setAvatarAddImageEventHandler() {
-    $(".settings_section > .settings > .background_and_avatar > .avatar > .image_item.add_image, .profile_header > .content > .image_wrapper").off("click").on("click", function() {
+    $(".settings_section > .settings > .background_and_avatar > .avatar > .image_item.add_image, .profile_header .image_wrapper").off("click").on("click", function() {
         $("#hidden_profile_image_input").click();
     });
     $("#hidden_profile_image_input").off("change").on("change", function() {
@@ -60,6 +60,7 @@ $(".settings_section > .settings > .background_and_avatar > form.avatar").on("su
             console.log('Ответ сервера:', data["answer"]);
 
             $(".profile_header > .content > .image_wrapper").load(window.location.href + " .profile_header > .content > .image_wrapper > *");
+            $(".profile_header > .avatar_and_settings > .image_wrapper").load(window.location.href + " .profile_header > .avatar_and_settings > .image_wrapper > *");
             $(".header_buttons > .profile_icon_wrapper").load(window.location.href + " .header_buttons > .profile_icon_wrapper > *");
             $(".settings_section > .settings > .background_and_avatar > form.avatar").load(window.location.href + " .settings_section > .settings > .background_and_avatar > form.avatar > *", function() {
                 setAvatarAddImageEventHandler();
@@ -233,9 +234,9 @@ function set_recipes_active_status(status) {
     recipes_active_status = status;
 }
 
-$(".profile_chapters > .chapter_wrapper > .chapter > .chapter_item").on("click", function() {
+$(".profile_chapters .chapter_wrapper > .chapter > .chapter_item").on("click", function() {
     $this = $(this);
-    all_buttons = $(".profile_chapters > .chapter_wrapper > .chapter > .chapter_item");
+    all_buttons = $(".profile_chapters .chapter_wrapper > .chapter > .chapter_item");
     linked_block = $(`#${$this.attr("data-for")}`);
     possible_blocks = $(".possible_block");
 
@@ -248,11 +249,33 @@ $(".profile_chapters > .chapter_wrapper > .chapter > .chapter_item").on("click",
         linked_block.removeClass("d_none");
     }
 })
+
+function hideChapterItems() {
+    $(".profile_chapters .chapter_wrapper.navigation.inner").addClass("d_none");
+    $(".profile_chapters .chapter_wrapper > .chapter > .chapter_item.show_hide_chapter_items > #chapters_arrow").addClass("rotate_180");
+}
+
+$(".profile_chapters .chapter_wrapper > .chapter > .chapter_item.show_hide_chapter_items").off("click").on("click", function(event) {
+    $this = $(this);
+    navigation_wrapper = $(".profile_chapters .chapter_wrapper.navigation.inner");
+    chapters_arrow = $this.find("#chapters_arrow");
+
+    if (!navigation_wrapper.hasClass("d_none")) {
+        navigation_wrapper.addClass("d_none");
+        chapters_arrow.addClass("rotate_180");
+    }
+    else {
+        navigation_wrapper.removeClass("d_none");
+        chapters_arrow.removeClass("rotate_180");
+    }
+})
 $(".profile_header .settings > .settings_item.change_settings").on("click", function() {
     $this = $(this);
-    all_buttons = $(".profile_chapters > .chapter_wrapper > .chapter > .chapter_item");
+    all_buttons = $(".profile_chapters .chapter_wrapper > .chapter > .chapter_item");
     linked_block = $(`#${$this.attr("data-for")}`);
     possible_blocks = $(".possible_block");
+
+    hideChapterItems();
 
     if (!$this.hasClass("active")) {
         all_buttons.removeClass("active");
@@ -278,7 +301,7 @@ function reloadMyRecipesAJAX(data_url, data_status, page=1) {
             window.setCardShareWindows();
             window.setCardIngredientAndCooktimeWindows();
             window.setHeartAnimEventHandler();
-            setMultipleCardButtonsEventHandler();
+            // setMultipleCardButtonsEventHandler();
             
             if (data.html.trim()) {
                 $("#my_recipes_section > .empty_section").addClass("d_none");
@@ -332,7 +355,7 @@ $(".articles_section > .publish_types > .publish_type_item").on("click", functio
             success: function (data) {
                 $(".articles_section > .cards_wrapper").html(data.html);
                 window.setCardShareWindows();
-                setMultipleCardButtonsEventHandler();
+                // setMultipleCardButtonsEventHandler();
                 if (data.html.trim()) {
                     $(".articles_section > .empty_section").addClass("d_none");
                 }
@@ -435,23 +458,23 @@ $(".subs_section > .remove_filters").on("click", function() {
     });
 })
 
-$(".image_wrapper > .buttons > *").off("click").on("click", function(event) {
-    $this = $(this);
-    let action_status;
-    let data_status;
-    let card_type;
-    const data_url = $this.attr("data-url");
-    const card_item = $this.closest(".card_item");
-    const item_id = card_item.attr("data-id");
-
-    if (card_item.hasClass("recipe_item")) {
-        card_type = "recipe";
-    }
-    else {
-        card_type = "news";
-    }
-
-    if ($this.hasClass("public")) {
+function setCardPublicEventHandler() {
+    $(".cards_wrapper").on("click", ".card_item .image_wrapper > .buttons > .public", function(event) {
+        $this = $(this);
+        let action_status;
+        let data_status;
+        let card_type;
+        const data_url = $this.attr("data-url");
+        const card_item = $this.closest(".card_item");
+        const item_id = card_item.attr("data-id");
+    
+        if (card_item.hasClass("recipe_item")) {
+            card_type = "recipe";
+        }
+        else {
+            card_type = "news";
+        }
+    
         action_status = "4";
         if (card_type == "recipe") {
             data_status = recipes_active_status;
@@ -476,14 +499,28 @@ $(".image_wrapper > .buttons > *").off("click").on("click", function(event) {
                 console.log('Ответ сервера:', data["answer"]);
                 $this.closest(".cards_wrapper").html(data.html);
                 window.setCardShareWindows();
-                setMultipleCardButtonsEventHandler();
+                // setMultipleCardButtonsEventHandler();
+                // const pop_up = $("#recipe_in_moderation_message");
+
+                // window.showHideBackBlack(event, pop_up);
+                // $(document).off('click').on('click', function (my_event) {
+                //     window.HideBackBlackOverWindowClick(my_event, pop_up, $this);
+                // });
+
+                // pop_up.off('click').on('click', function (my_event) {
+                //     my_event.stopPropagation(); // Останавливаем всплытие события
+                // });
             },
             error: function (error) {
                 console.error('Ошибка:', error);
             },
         });
-    }
-})
+    })
+
+}
+
+setCardPublicEventHandler();
+
 
 function setElementAttrs(element, kwargs={}) {
     Object.keys(kwargs).forEach(key => {
@@ -492,8 +529,7 @@ function setElementAttrs(element, kwargs={}) {
 }
 
 function setMultipleCardButtonsEventHandler() {
-    const unpublic_button = $(".image_wrapper > .buttons > .unpublic");
-    unpublic_button.off("click").on("click", function(event) {
+    $(".cards_wrapper").on("click", ".card_item .image_wrapper > .buttons > .unpublic", function(event) {
         const $this = $(this);
         setCardButtonsEventHandler(
             $this, 
@@ -505,7 +541,7 @@ function setMultipleCardButtonsEventHandler() {
     });
 
     const delete_button = $(".image_wrapper > .visibility_and_adds > .delete");
-    delete_button.off("click").on("click", function(event) {
+    $(".cards_wrapper").on("click", ".card_item .image_wrapper > .visibility_and_adds > .delete", function(event) {
         const $this = $(this);
         setCardButtonsEventHandler(
             $this, 
@@ -522,6 +558,13 @@ function setCardButtonsEventHandler(target_button, data_url, item_id, send_kwarg
     const pop_up = $(`#${target_button.attr("data-popup-id")}`);
 
     window.showHideBackBlack(target_event, pop_up);
+    $(document).off('click').on('click', function (event) {
+        window.HideBackBlackOverWindowClick(event, pop_up, target_button);
+    });
+
+    pop_up.off("click").on('click', function (event) {
+        event.stopPropagation(); // Останавливаем всплытие события
+    });
 
     if (target_button.closest(".card_item").hasClass("recipe_item")) {
         card_type = "recipe";
@@ -530,13 +573,6 @@ function setCardButtonsEventHandler(target_button, data_url, item_id, send_kwarg
         card_type = "news";
     }
 
-    $(document).off('click').on('click', function (event) {
-        window.HideBackBlackOverWindowClick(event, pop_up, target_button);
-    });
-
-    pop_up.off("click").on('click', function (event) {
-        event.stopPropagation(); // Останавливаем всплытие события
-    });
 
     const agree_button = pop_up.find(".buttons > .button_item.agree");
     
@@ -583,7 +619,7 @@ function setCardButtonsEventHandler(target_button, data_url, item_id, send_kwarg
 
                 window.hideBackBlack_andPopup(pop_up);
                 
-                setMultipleCardButtonsEventHandler();
+                // setMultipleCardButtonsEventHandler();
             },
             error: function (error) {
                 console.error('Ошибка:', error);

@@ -16,6 +16,7 @@ from additions.models import EmailCode
 from additions.views import get_recipes_author_page, get_news_author_page, set_meta_tags
 from news.models import News
 from recipes.models import Recipe
+from taste_room.decorators import login_required_with_modal
 from users.forms import (ChangePasswordForm, ChangeUserForm, UserLoginForm,
                          UserRegistrationForm)
 from users.models import (Achievement, CategoryAchievement, Color,
@@ -123,6 +124,7 @@ class AuthorPageView(DetailView):
 
         return context
 
+@login_required_with_modal
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('main'))

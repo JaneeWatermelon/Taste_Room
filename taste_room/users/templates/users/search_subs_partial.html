@@ -13,11 +13,11 @@
             {% endif %}
         </a>
         <a href="{% url 'users:author' item.username %}" class="name_and_tag">
-            <h4>{{ item.name }}</h4>
+            <h4 class="hide_text_line_1">{{ item.name }}</h4>
             <h4 class="black_50">@{{ item.username }}</h4>
         </a>
     </div>
-    {% if item.id in user.subscriptions_id %}
+    {% if item in user.subscriptions.all %}
     <div data-type="sub" class="sub_button d_none active">
         <h4>Подписаться</h4>
     </div>

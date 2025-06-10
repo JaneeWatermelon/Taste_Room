@@ -1,6 +1,7 @@
 from decimal import Decimal
 from difflib import SequenceMatcher
 
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Count, Q, prefetch_related_objects, F, Case, When, Value, IntegerField
 from django.db.models.functions import Lower, Length, StrIndex
@@ -25,6 +26,7 @@ from recipes.models import (Difficulty, Ingredient, Recipe, RecipeComment,
                             RecipeIngredient, RecipePreview, RecipeReview,
                             RecipeStep, Scipy, Units)
 from recipes.templatetags.custom_filters import short_timedelta
+from taste_room.decorators import login_required_with_modal
 from users.views import _prepare_recipes_data, validate_image_extension
 
 
@@ -62,6 +64,7 @@ class MainView(TemplateView):
         context['recipes_popular_count'] = (context['recipes_popular_1'] | context['recipes_popular_2']).count()
 
         context['articles'] = get_news_PUBLISHED_ALL_SUBS(user)[:10]
+        context['reloading'] = self.request.session.pop('reloading', None)
 
         return context
 
@@ -315,6 +318,7 @@ class PopularRecipesView(ListView):
 
         return context
 
+@login_required_with_modal
 def recipe_create_view(request):
     if request.method == "GET":
         form = CreateRecipeForm()
@@ -419,6 +423,7 @@ def recipe_create_view(request):
             'url': reverse("recipes:edit", kwargs={'pk': recipe.id})
         })
 
+@login_required_with_modal
 def recipe_edit_view(request, pk):
     if request.method == "GET":
         recipe = get_object_or_404(Recipe, id=pk)
@@ -521,47 +526,48 @@ def recipe_edit_view(request, pk):
         recipe.__dict__.update(recipe_data)  # Обновляем атрибуты
         recipe.save()
 
-
         recipe.categories.set(categories)
 
-        new_step_ids = dict()
+        recipe_steps_ids = list(map(str, list(RecipeStep.objects.filter(recipe=recipe).values_list("id", flat=True))))
 
-        for i in range(1, 21):
+        for i in range(1, int(data.get("steps_count", 20)) + 1):
             new_image = files.get(f"step_image_{i}")
-            existing_image_name = data.get(f"existing_step_image_name_{i}")
 
             step_id = data.get(f"step_id_{i}")
             step_text = data.get(f"text_{i}")
 
-            if new_image:
-                if step_id:
-                    step = RecipeStep.objects.get(id=step_id)
-
-                    # Удаляем старое изображение, если оно есть
+            if step_id in recipe_steps_ids:
+                step = get_object_or_404(RecipeStep, id=step_id)
+                if new_image:
                     if step.image:
                         step.image.delete(save=False)
-
+                    if step.image_watermark:
+                        step.image_watermark.delete(save=False)
                     step.image = new_image
-                    step.text = step_text
-                    step.sort_order = i
-                    step.save()
-                else:
-                    new_step = RecipeStep.objects.create(recipe=recipe, image=new_image, text=step_text, sort_order=i)
-                    new_step_ids[f"step_id_{i}"] = new_step.id
-            elif existing_image_name:
-                RecipeStep.objects.filter(id=step_id).update(text=step_text, sort_order=i)
-            else:
-                pass
 
-        delete_step_ids = data.get(f"delete_step_ids")
-        for step_id in delete_step_ids.split(','):
+                step.text = step_text
+                step.sort_order = i
+                step.save()
+
+                recipe_steps_ids.remove(step_id)
+            else:
+                RecipeStep.objects.create(
+                    recipe=recipe,
+                    image=new_image,
+                    text=step_text,
+                    sort_order=i
+                )
+
+        for step_id in recipe_steps_ids:
             try:
                 step = get_object_or_404(RecipeStep, id=step_id)
                 step.delete()
             except:
                 pass
 
-        new_recipe_ingredient_ids = {}
+
+        recipe_ingredients_ids = list(map(str, list(RecipeIngredient.objects.filter(recipe=recipe).values_list("id", flat=True))))
+
         for i in range(1, int(data.get("ingredients_count", 25)) + 1):
             ingredient_id = data.get(f"ingredient_id_{i}")
             recipe_ingredient_id = data.get(f"recipe_ingredient_id_{i}")
@@ -570,32 +576,31 @@ def recipe_edit_view(request, pk):
             if not ingredient_count.isdigit():
                 ingredient_count = 0
             else:
-                ingredient_count = min(int(ingredient_count), 10000)
+                ingredient_count = min(int(ingredient_count), 9999)
             ingredient_measurement = data.get(f"ingredient_measurement_{i}", "гр")
             ingredient_checkbox = True if data.get(f"ingredient_checkbox_{i}") else False
 
-            if ingredient_id:
-                ingredient = get_object_or_404(Ingredient, id=ingredient_id)
-                if recipe_ingredient_id:
-                    RecipeIngredient.objects.filter(id=recipe_ingredient_id).update(
-                        quantity=ingredient_count,
-                        unit=ingredient_measurement,
-                        can_exclude=ingredient_checkbox,
-                    )
-                else:
-                    new_recipe_ingredient = RecipeIngredient.objects.create(
+            if recipe_ingredient_id in recipe_ingredients_ids:
+                RecipeIngredient.objects.filter(id=recipe_ingredient_id).update(
+                    quantity=ingredient_count,
+                    unit=ingredient_measurement,
+                    can_exclude=ingredient_checkbox,
+                )
+                recipe_ingredients_ids.remove(recipe_ingredient_id)
+            else:
+                if ingredient_id:
+                    ingredient = get_object_or_404(Ingredient, id=ingredient_id)
+                    RecipeIngredient.objects.create(
                         recipe=recipe,
                         ingredient=ingredient,
                         quantity=ingredient_count,
                         unit=ingredient_measurement,
                         can_exclude=ingredient_checkbox,
                     )
-                    new_recipe_ingredient_ids[f"recipe_ingredient_id_{i}"] = new_recipe_ingredient.id
 
-        delete_recipe_ingredient_ids = data.get(f"delete_recipe_ingredient_ids")
-        for ingredient_id in delete_recipe_ingredient_ids.split(','):
+        for ing_id in recipe_ingredients_ids:
             try:
-                recipe_ingredient = get_object_or_404(RecipeIngredient, id=ingredient_id)
+                recipe_ingredient = get_object_or_404(RecipeIngredient, id=ing_id)
                 recipe_ingredient.delete()
             except:
                 pass
@@ -603,8 +608,6 @@ def recipe_edit_view(request, pk):
         if "save" in data:
             return JsonResponse({
                 'answer': 'Рецепт успешно создан или изменён',
-                'new_step_ids': new_step_ids,
-                'new_recipe_ingredient_ids': new_recipe_ingredient_ids,
                 'redirect': False,
             })
         elif "publish" in data:
@@ -617,8 +620,6 @@ def recipe_edit_view(request, pk):
         else:
             return JsonResponse({
                 'answer': 'Рецепт успешно создан или изменён',
-                'new_step_ids': new_step_ids,
-                'new_recipe_ingredient_ids': new_recipe_ingredient_ids,
                 'redirect': False,
             })
 

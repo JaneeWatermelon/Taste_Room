@@ -37,6 +37,7 @@
 @media (max-width: 720px) {
     :root {
         --padding-window: var(--normal);
+        font-weight: bold;
     }
 }
 

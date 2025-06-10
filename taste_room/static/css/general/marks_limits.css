@@ -1,0 +1,37 @@
+.marks_limits {
+    display: flex;
+    align-items: center;
+    gap: var(--small);
+}
+.marks_limits > h4 {
+    color: var(--color-black-50);
+}
+.marks_limits > .progress_bar {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    height: 100%;
+    border-radius: var(--tiny);
+    outline: 1px solid var(--color-light-ghost);
+    background-color: var(--color-white);
+    position: relative;
+    overflow: hidden;
+}
+.marks_limits > .progress_bar > .limits {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--tiny);
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+.marks_limits > .progress_bar > .limits > h5 {
+    color: var(--color-black-50);
+}
+.marks_limits > .progress_bar > .filler_bar {
+    background-color: var(--color-cream);
+    width: 0%;
+    height: 100%;
+    position: absolute;
+}

@@ -1,5 +1,5 @@
 window.setHeartAnimEventHandler = function() {
-    const heart_wrappers = $(".heart_wrapper")
+    const heart_wrappers = $(".fit_wrapper.heart")
 
     heart_wrappers.off("click").on("click", function() {
         if (USER_AUTHENTICATED) {
@@ -7,7 +7,6 @@ window.setHeartAnimEventHandler = function() {
             const heart_wrapper = $(this);
             const data_url = $(this).attr("data-url");
             const data_id = $(this).attr("data-id");
-            const CSRF_TOKEN = $('meta[name="csrf-token"]').attr("content");
     
             heart.css({
                 "transform": "scale(0.8)",
@@ -19,7 +18,6 @@ window.setHeartAnimEventHandler = function() {
                 else {
                     heart.attr("src", heart_fill_icon);
                 }
-                console.log(heart_wrapper);
                 heart_wrapper.toggleClass("active");
                 heart.css({
                     "transform": "scale(1)",

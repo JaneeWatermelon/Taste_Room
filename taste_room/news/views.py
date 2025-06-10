@@ -17,6 +17,7 @@ from news.models import News, NewsComment, NewsReview
 from recipes.forms import validate_image_size
 from recipes.models import Recipe
 from recipes.views import get_recs_recipes
+from taste_room.decorators import login_required_with_modal
 from users.views import (_prepare_articles_data, validate_image_extension)
 
 paginate_by = 32
@@ -54,6 +55,7 @@ class NewsView(ListView):
             context["kwargs"]["slug_name"] = RecipeCategory.objects.get(slug=self.kwargs["slug"]).name
         return context
 
+@login_required_with_modal
 def news_create_view(request):
     if request.method == "GET":
         form = CreateNewsForm()
@@ -109,6 +111,7 @@ def news_create_view(request):
             return JsonResponse({
                 'answer': 'Статья успешно создана или изменёна',
                 'redirect': True,
+                'is_published': True,
                 'url': reverse("users:profile")
             })
         else:
@@ -118,6 +121,7 @@ def news_create_view(request):
                 'redirect': True,
             })
 
+@login_required_with_modal
 def news_edit_view(request, pk):
     if request.method == "GET":
         item_object = get_object_or_404(News, id=pk)
@@ -196,6 +200,7 @@ def news_edit_view(request, pk):
             return JsonResponse({
                 'answer': 'Статья успешно создана или изменёна',
                 'redirect': True,
+                'is_published': True,
                 'url': reverse("users:profile")
             })
         else:

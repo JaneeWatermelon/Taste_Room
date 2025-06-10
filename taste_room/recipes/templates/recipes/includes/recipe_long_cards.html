@@ -14,16 +14,16 @@
                 </a>
                 {% if user.is_authenticated %}
                     {% if item in user.liked_recipes %}
-                    <div class="heart_wrapper active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                    <div class="fit_wrapper heart active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
                         <img src="{% static 'svg/Random_icons/Heart_fill.svg' %}">
                     </div>
                     {% else %}
-                    <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                    <div class="fit_wrapper heart" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
                         <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
                     </div>
                     {% endif %}
                 {% else %}
-                <div data-require-auth class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
+                <div data-require-auth class="fit_wrapper heart" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ item.id }}">
                     <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
                 </div>
                 {% endif %}

@@ -99,7 +99,7 @@ function addRecipeStep(add_button) {
     });
 }
 
-$(".edit_section > .step_photos > .add_step_button").on("click", function () {
+$(".edit_section > .step_photos > .add_button").on("click", function () {
     addRecipeStep($(this));
 });
 
@@ -122,7 +122,7 @@ function setDeleteStepEventHandler() {
         const item_id = item.attr("data-id");
 
         step_list.attr("data-delete-ids", step_list.attr("data-delete-ids") + item_id + ',');
-        $(".edit_section > .step_photos > .add_step_button").removeAttr("disabled");
+        $(".edit_section > .step_photos > .add_button").removeAttr("disabled");
 
         item.css("height", `${item.height()}px`);
         setTimeout(() => {
@@ -146,8 +146,8 @@ setClickStepImageEventHandler();
 setDeleteStepEventHandler();
 
 
-function addReadyPhoto() {
-    const data_url = $(".edit_section > .ready_dish_photo > .add_photo_button").attr("data-url");
+function addReadyPhoto(button) {
+    const data_url = button.attr("data-url");
     const next_item_number = $(".edit_section > .ready_dish_photo > .photo_list > *").length + 1;
 
     $.ajax({
@@ -164,7 +164,7 @@ function addReadyPhoto() {
                 setClickReadyImageImageEventHandler();
 
                 if ($(".edit_section > .ready_dish_photo > .photo_list > .photo_item").length >= 3) {
-                    $(".edit_section > .ready_dish_photo > .add_photo_button").addClass("d_none");
+                    button.addClass("d_none");
                 }
             }
         },
@@ -174,8 +174,8 @@ function addReadyPhoto() {
     });
 }
 
-$(".edit_section > .ready_dish_photo > .add_photo_button").on("click", function () {
-    addReadyPhoto();
+$(".edit_section > .ready_dish_photo > .add_button").on("click", function () {
+    addReadyPhoto($(this));
 });
 
 
@@ -207,7 +207,7 @@ function setDeleteReadyImageEventHandler() {
         } else {
             item.remove();
         }
-        $(".edit_section > .ready_dish_photo > .add_photo_button").removeClass("d_none");
+        $(".edit_section > .ready_dish_photo > .add_button").removeClass("d_none");
     })
 }
 function setClickReadyImageImageEventHandler() {

@@ -288,7 +288,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: var(--small);
+    padding: var(--small) var(--mid);
     background-color: var(--color-light-ghost);
     border-radius: var(--huge);
     height: calc(100% - 16px);
@@ -548,6 +548,21 @@
         height: 120px;
         aspect-ratio: 1;
     }
+    .profile_header > .avatar_and_settings > .image_wrapper > .change_image_hover {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.5);
+        position: absolute;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    .profile_header > .avatar_and_settings > .image_wrapper > .change_image_hover > img {
+        height: 25px;
+        width: 25px;
+    }
     .profile_header > .avatar_and_settings > .image_wrapper > img {
         object-fit: cover;
         width: 100%;
@@ -658,6 +673,9 @@
         display: flex;
         flex-direction: column;
     }
+    .subs_section > .subs_wrapper > .subs_item {
+        padding: var(--tiny);
+    }
     .subs_section > .subs_wrapper > .subs_item > .info > .name_and_tag {
         flex-direction: column;
         gap: var(--tiny);
@@ -672,6 +690,9 @@
         flex-direction: row;
         gap: var(--small);
     }
+    .settings_section > .settings > .background_and_avatar > * {
+        flex-basis: 50%;
+    }
     .settings_section > .settings > .background_and_avatar > * > .title {
         gap: var(--tiny);
     }
@@ -679,6 +700,13 @@
         height: 17px;
     }
     .settings_section > .settings > .background_and_avatar > .avatar > .image_item {
+        height: 100%;
+    }
+    .settings_section > .settings > .background_and_avatar > .background > .colors > .color_item {
+        border-radius: var(--tiny);
+        padding: var(--tiny);
+    }
+    .settings_section > .settings > .background_and_avatar > .avatar > .image_item > .content > img {
         height: 100%;
     }
     .settings_section > .settings > .fields_form > .fields_wrapper {

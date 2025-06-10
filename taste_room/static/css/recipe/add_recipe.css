@@ -10,6 +10,7 @@
 main .input_wrapper {
     padding: var(--small);
     border-radius: var(--small);
+    /* transition: padding 0.3s ease; */
 }
 main .input_wrapper.fit {
     max-width: 25%;
@@ -22,44 +23,6 @@ textarea.fixed {
 
 .input_wrapper.disabled {
     background-color: #F5F5F5;
-}
-
-.marks_limits {
-    display: flex;
-    align-items: center;
-    gap: var(--small);
-}
-.marks_limits > h4 {
-    color: var(--color-black-50);
-}
-.marks_limits > .progress_bar {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
-    height: 100%;
-    border-radius: var(--tiny);
-    outline: 1px solid var(--color-light-ghost);
-    background-color: var(--color-white);
-    position: relative;
-    overflow: hidden;
-}
-.marks_limits > .progress_bar > .limits {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 var(--tiny);
-    width: 100%;
-    position: relative;
-    z-index: 1;
-}
-.marks_limits > .progress_bar > .limits > h5 {
-    color: var(--color-black-50);
-}
-.marks_limits > .progress_bar > .filler_bar {
-    background-color: var(--color-cream);
-    width: 50%;
-    height: 100%;
-    position: absolute;
 }
 
 .main_content {
@@ -160,6 +123,7 @@ textarea.fixed {
     flex-direction: column;
     outline: 1px dashed var(--color-light-gray);
     border-radius: var(--tiny);
+    width: fit-content;
 }
 .edit_section > .sub_section > .title > .conditions > .condition {
     display: flex;
@@ -227,13 +191,6 @@ textarea.fixed {
     display: flex;
     flex-direction: column;
     gap: var(--small);
-}
-.edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .info_wrapper > .info > .info_inner > h4 {
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 .edit_section > .ingredients_and_portions > .ingredients > .ingredient_item > .info_wrapper > .info > .info_inner > .settings {
     display: flex;
@@ -409,7 +366,7 @@ textarea.fixed {
     align-items: start;
     height: 100%;
 }
-.edit_section > .step_photos > .add_step_button {
+.edit_section .add_button {
     display: flex;
     gap: var(--mid);
     align-items: center;
@@ -417,9 +374,9 @@ textarea.fixed {
     padding: var(--small) var(--mid);
     border-radius: var(--small);
     background-color: var(--color-cookie);
-    width: fit-content;
+    width: 100%;
 }
-.edit_section > .step_photos > .add_step_button > img {
+.edit_section .add_button > img {
     height: 21px;
 }
 
@@ -566,6 +523,9 @@ textarea.fixed {
     .edit_section > .sub_section {
         gap: var(--normal);
     }
+    .edit_section > .sub_section > .title > .conditions {
+        width: 100%;
+    }
     .edit_section > .categories > .categories_list {
         gap: var(--normal);
         display: grid;
@@ -589,7 +549,7 @@ textarea.fixed {
     .edit_section > .step_photos > .steps_list > .step_item > .content > .field_wrapper > .input_wrapper {
         min-height: 100px;
     }
-    .edit_section > .step_photos > .add_step_button {
+    .edit_section .add_button {
         width: auto;
     }
     .edit_section > .ready_dish_photo > .add_photo_button {

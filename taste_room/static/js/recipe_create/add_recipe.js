@@ -81,18 +81,16 @@ $(document).ready(function () {
             item.find(".order").html(`${i + 1}.`);
             item.find(".ingredient_id_input").attr('name', `ingredient_id_${i + 1}`);
             item.find(".ingredient_checkbox_input").attr('name', `ingredient_checkbox_${i + 1}`);
-            item.find(".input_wrapper > input").attr('name', `ingredient_count_${i + 1}`);
-            item.find(".input_wrapper > select").attr('name', `ingredient_measurement_${i + 1}`);
+            item.find(".settings > input").attr('name', `ingredient_count_${i + 1}`);
+            item.find(".settings > select").attr('name', `ingredient_measurement_${i + 1}`);
             item.find(".recipe_ingredient_id_input").attr('name', `recipe_ingredient_id_${i + 1}`);
         }
         delete_ingredient_event_handler();
     }
 
     function delete_ingredient_event_handler() {
-        $(".ingredient_item > .trash_icon").off("click").on("click", function () {
+        $(".ingredient_item button[name='button_remove_recipe_ingredient']").off("click").on("click", function () {
             const item = $(this).closest(".ingredient_item");
-            $("#ingredients-container").attr("data-delete-ids", $("#ingredients-container").attr("data-delete-ids") + item.find(".recipe_ingredient_id_input").val() + ',');
-            console.log(item);
             item.remove();
             reorder_ingredients();
         })
@@ -113,8 +111,7 @@ $("form.edit_section").on("submit", function (event) {
     const formData = new FormData(this);
 
     formData.append("ingredients_count", $(".edit_section > .ingredients_and_portions > .ingredients > .ingredient_item").length);
-    formData.append("delete_step_ids", $(".edit_section > .step_photos > .steps_list").attr("data-delete-ids"));
-    formData.append("delete_recipe_ingredient_ids", $("#ingredients-container").attr("data-delete-ids"));
+    formData.append("steps_count", $(".edit_section > .step_photos > .steps_list > .step_item").length);
     if (isPublish) {
         formData.append("publish", true);
     }
@@ -139,15 +136,7 @@ $("form.edit_section").on("submit", function (event) {
                 }
             } else {
                 console.log("added");
-                $(".edit_section > .step_photos > .steps_list").attr("data-delete-ids", "");
-                $("#ingredients-container").attr("data-delete-ids", "");
-                Object.keys(data.new_step_ids).forEach(name => {
-                    $(`input[name='${name}']`).prop("value", `${data.new_step_ids[name]}`);
-                });
-                console.log(data.new_recipe_ingredient_ids);
-                Object.keys(data.new_recipe_ingredient_ids).forEach(name => {
-                    $(`input[name='${name}']`).prop("value", `${data.new_recipe_ingredient_ids[name]}`);
-                });
+                location.reload();
             }
         },
         error: function (error) {

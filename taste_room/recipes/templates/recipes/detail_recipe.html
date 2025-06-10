@@ -1,5 +1,6 @@
 {% extends 'recipes/base.html' %}
 {% load static %}
+{% load cache %}
 {% load custom_filters %}
 {% load humanize %}
 
@@ -85,16 +86,16 @@
                         </div>
                         {% if user.is_authenticated %}
                             {% if object in user.liked_recipes.all %}
-                            <div class="heart_wrapper active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ object.id }}">
+                            <div class="fit_wrapper heart active" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ object.id }}">
                                 <img src="{% static 'svg/Random_icons/Heart_fill.svg' %}">
                             </div>
                             {% else %}
-                            <div class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ object.id }}">
+                            <div class="fit_wrapper heart" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ object.id }}">
                                 <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
                             </div>
                             {% endif %}
                         {% else %}
-                        <div data-require-auth class="heart_wrapper" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ object.id }}">
+                        <div data-require-auth class="fit_wrapper heart" data-url="{% url 'recipes:recipe_like_ajax' %}" data-id="{{ object.id }}">
                             <img src="{% static 'svg/Random_icons/Heart_blank.svg' %}">
                         </div>
                         {% endif %}
@@ -221,19 +222,23 @@
                         <h4>Учтите это при изменении количества порций</h4>
                     </div>
                 </div>
+                {% cache 60 recipe_content user.is_authenticated %}
                 <div class="recipe_content">
                     {% for item in object.recipestep_set.all %}
                     <div class="step">
                         <h3>Шаг {{ forloop.counter }}</h3>
                         <div class="info">
                             <h4>{{ item.text }}</h4>
+                            {% if item.image %}
                             <div class="image_wrapper">
-                                <img src="{{ item.optimized_image_watermark.url }}">
+                                <img src="{% if item.image_watermark %}{{ item.optimized_image_watermark.url }}{% else %}{{ item.optimized_image.url }}{% endif %}">
                             </div>
+                            {% endif %}
                         </div>
                     </div>
                     {% endfor %}
                 </div>
+                {% endcache %}
                 <div class="recipe_categories">
                     <h4>Категории:
                         {% for item in object.categories.all %}

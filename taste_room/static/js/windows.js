@@ -14,6 +14,7 @@ window.hideBackBlack_andPopup = function(popup) {
         $(".back_black").addClass('d_none');
         popup.addClass('d_none');
     }, 300);
+    console.log("hide");
 }
 
 window.showHideBackBlack = function(event, popup) {
@@ -30,13 +31,7 @@ window.showHideBackBlack = function(event, popup) {
 }
 window.HideBackBlackOverWindowClick = function(event, popup, hoverEl = null) {
     if (!$(event.target).closest(popup).length && !$(event.target).closest(hoverEl).length) {
-        $(".back_black").css({
-            "opacity": 0,
-        });
-        setTimeout(function() {
-            $(".back_black").addClass('d_none');
-            popup.addClass('d_none');
-        }, 300);
+        hideBackBlack_andPopup(popup);
     }
 }
 
@@ -49,16 +44,17 @@ window.reloadPage = function(pop_up_id, redirect_url=null) {
         location.reload();
     }
 }
+
 $(window).on('load', function(event) {
     var reloading = sessionStorage.getItem("reloading");
     if (reloading) {
         sessionStorage.removeItem("reloading");
         const pop_up = $(`#${reloading}`);
-        window.showHideBackBlack(event, pop_up)
+        window.showHideBackBlack(event, pop_up);
     }
 });
 
-window.setListenersWithBlackBack = function(popup, hoverEl) {
+window.setListenersWithBlackBack = function(popup, hoverEl = null) {
     // Обработчик клика на элемент, который открывает окно
     hoverEl.on('click', function (event) {
         showHideBackBlack(event, popup);

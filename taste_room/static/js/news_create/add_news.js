@@ -7,7 +7,7 @@ $("form.edit_section").on("submit", function (event) {
   const isPublish = button.attr('name') === 'publish';
 
   const formData = new FormData(this);
-  const photo_item =  $(".edit_section > .ready_dish_photo > .photo_list > .photo_item");
+  const photo_item = $(".edit_section > .ready_dish_photo > .photo_list > .photo_item");
   if (photo_item.attr("data-deleted") != undefined) {
     formData.append("preview_deleted", $(".edit_section > .ready_dish_photo > .photo_list > .photo_item").attr("data-deleted"));
   }
