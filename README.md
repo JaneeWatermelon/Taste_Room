@@ -1,8 +1,8 @@
-![Главная страница](https://github.com/user-attachments/assets/ead9acb7-7f9a-4c7d-b7a5-a7fd49a77834)
-
 # Сайт рецептов
 
-Этот проект — современный сайт для обмена и поиска рецептов, созданный с использованием Django, HTML, CSS, JavaScript, PostgreSQL, Redis и Celery.
+Этот проект — сайт для обмена и поиска рецептов, основной задачей которого являлось создание удобного и визуально понятного интерфейса по сравнению с сайтами аналогами.
+
+![Главная страница](https://github.com/user-attachments/assets/ead9acb7-7f9a-4c7d-b7a5-a7fd49a77834)
 
 ## Технологии
 - **Django** — основной backend-фреймворк
@@ -16,34 +16,28 @@
 - Детальные user-friendly формы для добавления, редактирования и удаления рецептов
 - Поиск и фильтрация рецептов по названию и ингредиентам
 - Комментарии и рейтинги
-- Асинхронные задачи (например, уведомления)
 
 ## Установка и запуск
 
 1. Клонируйте репозиторий:
    ```bash
-   git clone <ваш-репозиторий>
-   cd <папка-проекта>
+   git clone https://github.com/JaneeWatermelon/Taste_Room.git
+   cd taste_room
    ```
 2. Установите зависимости:
    ```bash
    pip install -r requirements.txt
    ```
-3. Настройте базу данных PostgreSQL и переменные окружения.
-4. Примените миграции:
+3. Примените миграции:
    ```bash
    python manage.py migrate
    ```
-5. Запустите сервер разработки:
+4. Запустите сервер разработки:
    ```bash
    python manage.py runserver
    ```
-6. Запустите Redis и Celery:
+5. Запустите Redis и Celery:
    ```bash
    redis-server
-   celery -A <имя_проекта> worker -l info
+   celery -A taste_room worker -l info
    ```
-
-## Лицензия
-
-Проект распространяется под лицензией MIT. 
