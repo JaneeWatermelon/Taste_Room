@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: backend
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    depends_on:
+      - redis
+      - db
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/app/static:ro
+      - media_volume:/app/media:ro
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  celery:
+    build: .
+    container_name: celery
+    command: celery -A taste_room worker --loglevel=info
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - backend
+
+  celery_beat:
+    build: .
+    container_name: celery_beat
+    command: celery -A taste_room beat --loglevel=info
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - backend
+
+  db:
+    image: postgres:13
+    container_name: postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: taste_room_user
+      POSTGRES_PASSWORD: sj18s0agpmv8zfwr
+      POSTGRES_DB: taste_room_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

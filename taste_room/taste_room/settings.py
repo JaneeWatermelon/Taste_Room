@@ -10,10 +10,11 @@ env = environ.Env(
     SECRET_KEY=(str, False),
     REDIS_LOCATION=(str, False),
 
-    DATABASES_NAME=(str, False),
-    DATABASES_USER=(str, False),
-    DATABASES_PASSWORD=(str, False),
-    DATABASES_PORT=(str, False),
+    POSTGRES_DB=(str, False),
+    POSTGRES_USER=(str, False),
+    POSTGRES_PASSWORD=(str, False),
+    POSTGRES_PORT=(str, False),
+    POSTGRES_HOST=(str, False),
 
     EMAIL_HOST=(str, False),
     EMAIL_HOST_PASSWORD=(str, False),
@@ -39,7 +40,7 @@ DEBUG = env('DEBUG')
 
 DOMAIN_NAME = env('DOMAIN_NAME')
 
-ALLOWED_HOSTS = ["127.0.0.1", "45.131.40.35", "tasteroom.ru"]
+ALLOWED_HOSTS = ["127.0.0.1", "84.38.180.21", "45.131.40.35", "tasteroom.ru"]
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -135,11 +136,11 @@ WSGI_APPLICATION = 'taste_room.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('DATABASES_NAME'),
-        'USER': env('DATABASES_USER'),
-        'PASSWORD': env('DATABASES_PASSWORD'),
-        'HOST': '127.0.0.1',
-        'PORT': env('DATABASES_PORT'),
+        'NAME': env('POSTGRES_DB'),
+        'USER': env('POSTGRES_USER'),
+        'PASSWORD': env('POSTGRES_PASSWORD'),
+        'HOST': env('POSTGRES_HOST'),
+        'PORT': env('POSTGRES_PORT'),
     }
 }
 
@@ -252,12 +253,13 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 STATIC_URL = '/static/'
 
-if DEBUG:
-    STATICFILES_DIRS = [
-        BASE_DIR / 'static'
-    ]
-else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# if DEBUG:
+#     STATICFILES_DIRS = [
+#         BASE_DIR / 'static'
+#     ]
+# else:
+#     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # media
 

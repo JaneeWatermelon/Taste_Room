@@ -1,0 +1,11 @@
+venv/
+*.sqlite3
+Passwords.txt
+.env
+Q_check_list.py
+fixtures.json
+ingreadients.csv
+celerybeat-schedule
+.idea
+__pycache__/
+media/
